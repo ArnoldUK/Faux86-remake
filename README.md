@@ -5,6 +5,7 @@ A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 ## Current Status
 
 25-06-2023 Upload of initial build v1.0 for Windows
+[Faux86-remake Pre-Release Build V1.0 Win32](https://github.com/ArnoldUK/Faux86-remake/releases)
 
 # Release Notes
 Faux86-remake is still work in progress but fixes many issues and adds more features including:
