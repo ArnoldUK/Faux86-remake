@@ -4,7 +4,7 @@ A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 
 ## Current Status
 
-Preparing Upload of initial build v1.0
+25-06-2023 Preparing Upload of initial build v1.0
 
 # Release Notes
 Faux86-remake is still work in progress but fixes many issues and adds more features including:
@@ -18,7 +18,7 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Fully working mouse control in both DOS and Windows.
 - Many bug fixes.
 
-# Emulator Features
+## Emulator Features
 - 8086, V20, 80186 and 286 instruction set.
 - Configurable CPU speeds from 5Mhz upto 100Mhz.
 - Custom Hardware BIOS's supported.
@@ -30,6 +30,7 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Serial Port 2-Button mouse.
 
 # Emulator Requirements
+
 ## Machine BIOS ROM
 The emulator will not boot without BIOS and Video ROM files. Included within the data folder
 are several ROM files for various machines and video cards that are compatible with the emulator.
@@ -54,11 +55,11 @@ The naming of disk images should be as follows but this is not a strict requirem
 - hd1.img (Drive D:)
 
 # Operation Instructions
+
 ## Usage with Windows
 The Windows build is a Win32 execuatble (64-Bit execuatble will also be available).
 The emulator must be run with command line parameters to boot a disk image and will default to ROM Basic
 by default if no option parameters are supplied for the disk images.
-
 
 ## Usage with Raspberry Pi
 Raspberry Pi models 1,2,3 and 4 are supported but models 3 and 4 may still need improvement.
@@ -70,16 +71,17 @@ The emulator also supports booting hard disk images (hd0.img Drive C:) (hd1.img 
 USB keyboard and mouse should be plugged in before booting and must not be removed once detected.
 
 # Credits
-Faux86-remake was originally based on the Fake86 emulator by Mike Chambers. 
-A lot of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
+Faux86-remake was originally based on the Fake86 emulator by Mike Chambers and James Howard.
+Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
 
-Faux86 uses RSTA2's Circle library to interface directly with the Raspberry Pi hardware.
-https://github.com/rsta2/circle
+The Raspberry Pi build uses RSTA2's Circle SDK to interface directly with the Raspberry Pi hardware.
+This build would not of been possible without the support from RSTA2 and the Circle SDK. 
+For more details about the Raspberry Pi Circle SDK visit [RSTA2 Circle SDK](https://github.com/rsta2/circle)
 
 ## Copyright
-Based on Fake86 Copyright (C)2010-2013 Mike Chambers
-Faux86 Copyright (C)2018 James Howard
-Faux86-remake (c)2023 Curtis aka ArnoldUK
+Based on Fake86 Copyright (C)2010-2013 Mike Chambers.
+Faux86 Copyright (C)2018 James Howard.
+Faux86-remake (c)2023 Curtis aka ArnoldUK.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
