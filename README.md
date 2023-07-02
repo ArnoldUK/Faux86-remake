@@ -9,7 +9,7 @@ A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 
 - Additional Menu options and some fixes.
 - Video rendering improvements.
-- Display monitor emulation (VGA Color, Amber Gas Plasma, Green CRT and Blue LCD).
+- Far from optimal display monitor emulation (VGA Color, Amber Gas Plasma, Green CRT and Blue LCD).
 
 # Release Notes
 Faux86-remake is still work in progress but fixes many issues and adds more features including:
