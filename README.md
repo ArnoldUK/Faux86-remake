@@ -4,8 +4,12 @@ A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 
 ## Current Status
 
-25-06-2023 Upload of initial build v1.0 for Windows
-[Faux86-remake Pre-Release Build V1.0 Win32](https://github.com/ArnoldUK/Faux86-remake/releases)
+01-07-2023 Upload of build v1.1 for Windows
+[Faux86-remake Pre-Release Build V1.1 Win32](https://github.com/ArnoldUK/Faux86-remake/releases)
+
+- Additional Menu options and some fixes.
+- Video rendering improvements.
+- Display monitor emulation (VGA Color, Amber Gas Plasma, Green CRT and Blue LCD).
 
 # Release Notes
 Faux86-remake is still work in progress but fixes many issues and adds more features including:
@@ -14,6 +18,7 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Improved video rendering and mode switching.
 - Improved audio emulation.
 - Improved disk and file access, including writeable disk images.
+- Additional monitor displays supported.
 - Updated PCXT BIOS and Video Roms.
 - More configuration parameters.
 - Fully working mouse control in both DOS and Windows.
@@ -94,6 +99,11 @@ The following parameter options are currently supported:
 - 0 = nearest (fastest low quality).
 - 1 = linear (quick good quality).
 - 2 = best (slow best quality) (default).
+- -monitor #				Set monitor display type to emulate.
+- 0 = Color VGA (default).
+- 1 = Amber Gas Plasma.
+- 2 = Green CRT Monochrome.
+- 3 = Blue LCD.
 - -sndsource       Enable Disney Sound Source emulation on LPT1.
 - -latency #       Change audio buffering and output latency. (default: 100 ms).
 - -samprate #      Change audio emulation sample rate. (default: 48000 Hz).
