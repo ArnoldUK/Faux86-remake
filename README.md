@@ -36,7 +36,10 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Serial Port 2-Button mouse.
 
 ## Screenshots
-![screenshot 1](/screenshots/faux86-remake-screenshot-1.png)
+![screenshot1](/screenshots/faux86-remake-screenshot-1.png)
+![screenshot2](/screenshots/faux86-remake-screenshot-2.png)
+![screenshot3](/screenshots/faux86-remake-screenshot-3.png)
+![screenshot4](/screenshots/faux86-remake-screenshot-4.png)
 
 # Emulator Requirements
 
