@@ -1,0 +1,126 @@
+# Project: faux86
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+RES      = build/faux86_private.res
+OBJ      = build/main.o build/SDLInterface.o build/StdioDiskInterface.o build/Config.o build/Adlib.o build/ata.o build/Audio.o build/console.o build/CPU.o build/Debugger.o build/DisneySoundSource.o build/DMA.o build/DriveManager.o build/InputManager.o build/MemUtils.o build/netcard.o build/opl3.o build/packet.o build/PCSpeaker.o build/PIC.o build/PIT.o build/Ports.o build/Ram.o build/Renderer.o build/SerialMouse.o build/SoundBlaster.o build/TaskManager.o build/Timing.o build/Video.o build/VM.o build/UART.o build/menus.o $(RES)
+LINKOBJ  = build/main.o build/SDLInterface.o build/StdioDiskInterface.o build/Config.o build/Adlib.o build/ata.o build/Audio.o build/console.o build/CPU.o build/Debugger.o build/DisneySoundSource.o build/DMA.o build/DriveManager.o build/InputManager.o build/MemUtils.o build/netcard.o build/opl3.o build/packet.o build/PCSpeaker.o build/PIC.o build/PIT.o build/Ports.o build/Ram.o build/Renderer.o build/SerialMouse.o build/SoundBlaster.o build/TaskManager.o build/Timing.o build/Video.o build/VM.o build/UART.o build/menus.o $(RES)
+LIBS     = -L"D:/Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -L"D:/AVR-GCC/projects/SDL/SDL-V22/lib/x86" ../../SDL/SDL-V22/lib/x86/SDL2main.lib ../../SDL/SDL-V22/lib/x86/SDL2.lib ../../../../Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32/libcomdlg32.a -m32
+INCS     = -I"D:/Dev/Dev-Cpp/MinGW64/include" -I"D:/Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/AVR-GCC/projects/faux86/src" -I"D:/AVR-GCC/projects/SDL/SDL-V22/include"
+CXXINCS  = -I"D:/Dev/Dev-Cpp/MinGW64/include" -I"D:/Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/Dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++" -I"D:/AVR-GCC/projects/faux86/src" -I"D:/AVR-GCC/projects/SDL/SDL-V22/include"
+BIN      = bin/faux86.exe
+CXXFLAGS = $(CXXINCS) -O3 -m32 -std=gnu++11
+CFLAGS   = $(INCS) -O3 -m32 -std=gnu++11
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+build/main.o: main.cpp
+	$(CPP) -c main.cpp -o build/main.o $(CXXFLAGS)
+
+build/SDLInterface.o: SDLInterface.cpp
+	$(CPP) -c SDLInterface.cpp -o build/SDLInterface.o $(CXXFLAGS)
+
+build/StdioDiskInterface.o: StdioDiskInterface.cpp
+	$(CPP) -c StdioDiskInterface.cpp -o build/StdioDiskInterface.o $(CXXFLAGS)
+
+build/Config.o: ../src/Config.cpp
+	$(CPP) -c ../src/Config.cpp -o build/Config.o $(CXXFLAGS)
+
+build/Adlib.o: ../src/Adlib.cpp
+	$(CPP) -c ../src/Adlib.cpp -o build/Adlib.o $(CXXFLAGS)
+
+build/ata.o: ../src/ata.cpp
+	$(CPP) -c ../src/ata.cpp -o build/ata.o $(CXXFLAGS)
+
+build/Audio.o: ../src/Audio.cpp
+	$(CPP) -c ../src/Audio.cpp -o build/Audio.o $(CXXFLAGS)
+
+build/console.o: ../src/console.cpp
+	$(CPP) -c ../src/console.cpp -o build/console.o $(CXXFLAGS)
+
+build/CPU.o: ../src/CPU.cpp
+	$(CPP) -c ../src/CPU.cpp -o build/CPU.o $(CXXFLAGS)
+
+build/Debugger.o: ../src/Debugger.cpp
+	$(CPP) -c ../src/Debugger.cpp -o build/Debugger.o $(CXXFLAGS)
+
+build/DisneySoundSource.o: ../src/DisneySoundSource.cpp
+	$(CPP) -c ../src/DisneySoundSource.cpp -o build/DisneySoundSource.o $(CXXFLAGS)
+
+build/DMA.o: ../src/DMA.cpp
+	$(CPP) -c ../src/DMA.cpp -o build/DMA.o $(CXXFLAGS)
+
+build/DriveManager.o: ../src/DriveManager.cpp
+	$(CPP) -c ../src/DriveManager.cpp -o build/DriveManager.o $(CXXFLAGS)
+
+build/InputManager.o: ../src/InputManager.cpp
+	$(CPP) -c ../src/InputManager.cpp -o build/InputManager.o $(CXXFLAGS)
+
+build/MemUtils.o: ../src/MemUtils.cpp
+	$(CPP) -c ../src/MemUtils.cpp -o build/MemUtils.o $(CXXFLAGS)
+
+build/netcard.o: ../src/netcard.cpp
+	$(CPP) -c ../src/netcard.cpp -o build/netcard.o $(CXXFLAGS)
+
+build/opl3.o: ../src/opl3.cpp
+	$(CPP) -c ../src/opl3.cpp -o build/opl3.o $(CXXFLAGS)
+
+build/packet.o: ../src/packet.cpp
+	$(CPP) -c ../src/packet.cpp -o build/packet.o $(CXXFLAGS)
+
+build/PCSpeaker.o: ../src/PCSpeaker.cpp
+	$(CPP) -c ../src/PCSpeaker.cpp -o build/PCSpeaker.o $(CXXFLAGS)
+
+build/PIC.o: ../src/PIC.cpp
+	$(CPP) -c ../src/PIC.cpp -o build/PIC.o $(CXXFLAGS)
+
+build/PIT.o: ../src/PIT.cpp
+	$(CPP) -c ../src/PIT.cpp -o build/PIT.o $(CXXFLAGS)
+
+build/Ports.o: ../src/Ports.cpp
+	$(CPP) -c ../src/Ports.cpp -o build/Ports.o $(CXXFLAGS)
+
+build/Ram.o: ../src/Ram.cpp
+	$(CPP) -c ../src/Ram.cpp -o build/Ram.o $(CXXFLAGS)
+
+build/Renderer.o: ../src/Renderer.cpp
+	$(CPP) -c ../src/Renderer.cpp -o build/Renderer.o $(CXXFLAGS)
+
+build/SerialMouse.o: ../src/SerialMouse.cpp
+	$(CPP) -c ../src/SerialMouse.cpp -o build/SerialMouse.o $(CXXFLAGS)
+
+build/SoundBlaster.o: ../src/SoundBlaster.cpp
+	$(CPP) -c ../src/SoundBlaster.cpp -o build/SoundBlaster.o $(CXXFLAGS)
+
+build/TaskManager.o: ../src/TaskManager.cpp
+	$(CPP) -c ../src/TaskManager.cpp -o build/TaskManager.o $(CXXFLAGS)
+
+build/Timing.o: ../src/Timing.cpp
+	$(CPP) -c ../src/Timing.cpp -o build/Timing.o $(CXXFLAGS)
+
+build/Video.o: ../src/Video.cpp
+	$(CPP) -c ../src/Video.cpp -o build/Video.o $(CXXFLAGS)
+
+build/VM.o: ../src/VM.cpp
+	$(CPP) -c ../src/VM.cpp -o build/VM.o $(CXXFLAGS)
+
+build/UART.o: ../src/UART.cpp
+	$(CPP) -c ../src/UART.cpp -o build/UART.o $(CXXFLAGS)
+
+build/menus.o: menus.cpp
+	$(CPP) -c menus.cpp -o build/menus.o $(CXXFLAGS)
+
+build/faux86_private.res: faux86_private.rc 
+	$(WINDRES) -i faux86_private.rc -F pe-i386 --input-format=rc -o build/faux86_private.res -O coff 
+

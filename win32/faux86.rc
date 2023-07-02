@@ -1,0 +1,147 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+  POPUP "Main"
+  BEGIN
+		MENUITEM "E&xit",                       ID_MAIN_EXIT
+  END
+  POPUP "Emulation"
+  BEGIN
+    MENUITEM "&Soft Reset",        					ID_EMULATION_SOFTRESET
+    MENUITEM "&Hard Reset",        					ID_EMULATION_HARDRESET
+		MENUITEM SEPARATOR
+    MENUITEM "Speed &Automatic",						ID_EMULATION_SPEED_AUTOMATIC
+    MENUITEM "Speed 5Mhz",									ID_EMULATION_SPEED_5MHZ
+    MENUITEM "Speed 10Mhz",									ID_EMULATION_SPEED_10MHZ
+    MENUITEM "Speed 16Mhz",									ID_EMULATION_SPEED_16MHZ
+    MENUITEM "Speed 20Mhz",									ID_EMULATION_SPEED_20MHZ
+    MENUITEM "Speed 33Mhz",									ID_EMULATION_SPEED_33MHZ
+    MENUITEM "Speed 50Mhz",									ID_EMULATION_SPEED_50MHZ
+    MENUITEM "Speed 100Mhz",								ID_EMULATION_SPEED_100MHZ
+  END
+  POPUP "Drives"
+  BEGIN
+    POPUP "Floppy 0"
+    BEGIN
+      MENUITEM "Insert Disk...",          ID_FLOPPY0_INSERTDISK
+      MENUITEM "Eject Disk",              ID_FLOPPY0_EJECTDISK
+    END
+    POPUP "Floppy 1"
+    BEGIN
+      MENUITEM "Insert Disk...",          ID_FLOPPY1_INSERTDISK
+      MENUITEM "Eject Disk",              ID_FLOPPY1_EJECTDISK
+    END
+    POPUP "HardDisk 0"
+    BEGIN
+      MENUITEM "Insert Disk...",          ID_HARDDRIVE0_INSERTDISK
+      MENUITEM "Eject Disk",              ID_HARDDRIVE0_EJECTDISK
+    END
+    POPUP "HardDisk 1"
+    BEGIN
+      MENUITEM "Insert Disk...",          ID_HARDDRIVE1_INSERTDISK
+      MENUITEM "Eject Disk",              ID_HARDDRIVE1_EJECTDISK
+    END
+    MENUITEM SEPARATOR
+    POPUP "Set Boot Drive"
+    BEGIN
+      MENUITEM "Floppy 0",                ID_SETBOOTDRIVE_FLOPPY0
+      MENUITEM "HardDisk 0",              ID_SETBOOTDRIVE_HARDDRIVE0
+    END
+  END
+  POPUP "Video"
+  BEGIN
+    POPUP "Video Resolution"
+    BEGIN
+      MENUITEM "Automatic",                ID_VIDEO_RESOLUTION_AUTOMATIC
+      MENUITEM SEPARATOR
+      MENUITEM "320 x 200",                ID_VIDEO_RESOLUTION_320X200
+      MENUITEM "640 x 350",                ID_VIDEO_RESOLUTION_640X350
+      MENUITEM "640 x 400",                ID_VIDEO_RESOLUTION_640X400
+      MENUITEM "640 x 480",                ID_VIDEO_RESOLUTION_640X480
+      MENUITEM "720 x 400",                ID_VIDEO_RESOLUTION_720X400
+ 			//MENUITEM SEPARATOR
+      //MENUITEM "Render Quality Linear",			ID_VIDEO_RENDER_LINEAR
+      //MENUITEM "Render Quality Nearest",		ID_VIDEO_RENDER_NEAREST
+     	//MENUITEM "Render Quality Best",				ID_VIDEO_RENDER_BEST
+    END
+    POPUP "Render Quality"
+    BEGIN
+    	MENUITEM "Linear",							ID_VIDEO_RENDER_LINEAR
+      MENUITEM "Nearest",							ID_VIDEO_RENDER_NEAREST
+      MENUITEM "Best",								ID_VIDEO_RENDER_BEST
+    END
+    POPUP "Display Monitor"
+    BEGIN
+    	MENUITEM "Color VGA",					ID_VIDEO_MONITOR_COLOR
+      MENUITEM "Amber Plasma",			ID_VIDEO_MONITOR_AMBER
+      MENUITEM "Green CRT",					ID_VIDEO_MONITOR_GREEN
+      MENUITEM "Blue LCD",					ID_VIDEO_MONITOR_BLUE
+    END
+  END
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

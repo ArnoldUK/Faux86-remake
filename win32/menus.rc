@@ -1,0 +1,54 @@
+// Microsoft Visual C++ generated resource script.
+#include "menus.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+
+//#include "winres.h"
+
+#undef APSTUDIO_READONLY_SYMBOLS
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENUBAR MENU
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "Soft &reset (Ctrl-Alt-Del)",  ID_FILE_SOFTRESET
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "Emulation"
+    BEGIN
+        MENUITEM "Set CPU speed to 4.77 MHz",   ID_EMULATION_SETCPUSPEEDTO4
+        MENUITEM "Set CPU speed to 8 MHz",      ID_EMULATION_SETCPUSPEEDTO8MHZ
+        MENUITEM "Set CPU speed to 10 MHz",     ID_EMULATION_SETCPUSPEEDTO10MHZ
+        MENUITEM "Set CPU speed to 16 MHz",     ID_EMULATION_SETCPUSPEEDTO16MHZ
+        MENUITEM "Set CPU speed to 25 MHz",     ID_EMULATION_SETCPUSPEEDTO25MHZ
+        MENUITEM "Set CPU speed to 50 MHz",     ID_EMULATION_SETCPUSPEEDTO50MHZ
+        MENUITEM "Set CPU speed to unlimited",  ID_EMULATION_SETCPUSPEEDTOUNLIMITED
+    END
+    POPUP "Disk"
+    BEGIN
+        MENUITEM "Change floppy 0...",          ID_DISK_CHANGEFLOPPY0
+        MENUITEM "Change floppy 1...",          ID_DISK_CHANGEFLOPPY1
+        MENUITEM SEPARATOR
+        MENUITEM "Eject floppy 0",              ID_DISK_EJECTFLOPPY0
+        MENUITEM "Eject floppy 1",              ID_DISK_EJECTFLOPPY1
+        MENUITEM SEPARATOR
+        MENUITEM "Insert hard disk 0... (forces immediate reboot)", ID_DISK_INSERTHARDDISK0
+        MENUITEM "Insert hard disk 1... (forces immediate reboot)", ID_DISK_INSERTHARDDISK1
+        MENUITEM SEPARATOR
+        MENUITEM "Set boot drive to fd0",       ID_DISK_SETBOOTDRIVETOFD0
+        MENUITEM "Set boot drive to hd0",       ID_DISK_SETBOOTDRIVETOHD0
+    END
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
