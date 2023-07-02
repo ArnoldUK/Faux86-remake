@@ -35,6 +35,9 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Standard PC XT Keyboard.
 - Serial Port 2-Button mouse.
 
+## Screenshots
+![screenshot 1](/screenshots/faux86-remake-screenshot-1.png)
+
 # Emulator Requirements
 
 ## Machine BIOS ROM
