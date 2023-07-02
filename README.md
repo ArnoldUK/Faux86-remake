@@ -86,7 +86,7 @@ The following parameter options are currently supported:
 - -fullscreen      Start Faux86 in fullscreen mode.
 - -verbose         Verbose mode. Operation details will be written to stdout.
 - -speed           Frequency of the CPU in Mhz. Set to 0 for Maximum Speed.
-- Value between 1Mhz and 50Mhz. Default is 10 (10Mhz).	
+- Value between 1Mhz and 100Mhz. Default is 10 (10Mhz).	
 - -delay           Specify how many milliseconds to render each video frame.
 - Value between 1ms and 1000ms. Default is 20ms (50 FPS).
 - -slowsys         If your machine is very slow and have audio dropouts. Affects audio quality.
