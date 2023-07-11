@@ -27,6 +27,7 @@
 #include "../src/VM.h"
 #include "../src/DriveManager.h"
 #include "SDLInterface.h"
+#include "settings.h"
 
 //#include "../data/asciivga.h"
 //#include "../data/pcxtbios.h"
@@ -35,6 +36,7 @@
 Faux86::VM* vm86;
 Faux86::SDLHostSystemInterface hostInterface;
 
+void LoadSettings(Faux86::Config &cfg);
 void HideConsole();
 void ShowConsole();
 bool IsConsoleVisible();
@@ -47,6 +49,7 @@ void SendHardReset();
 
 int main(int argc, char *argv[])
 {
+
 	//Faux86::SDLHostSystemInterface hostInterface;
 	Faux86::Config vmConfig(&hostInterface);
 	
@@ -60,21 +63,24 @@ int main(int argc, char *argv[])
 	//log(Log, "Contributions and Updates (c)2023 Curtis aka ArnoldUK");
 	//log(Log, "Portable, open-source 8086 XT Emulator");
 
-	vmConfig.parseCommandLine(argc, argv);
+	if (!vmConfig.parseCommandLine(argc, argv)) {
+		LoadSettings(vmConfig);
+	}
 	
-	//override command parameters
+	//override settings and command parameters here
+	
 	vmConfig.singleThreaded = true;
-	vmConfig.slowSystem = 0;
+	//vmConfig.slowSystem = 0;
 	//vmConfig.frameDelay = 20; //20ms 50fps
 	//vmConfig.audio.sampleRate = 48000; //44100
 	//vmConfig.audio.latency = 100;
 
-	vmConfig.framebuffer.width = 800;
-	vmConfig.framebuffer.height = 600;
+	//vmConfig.framebuffer.width = 800;
+	//vmConfig.framebuffer.height = 800;
 	//vmConfig.resw = 720;
 	//vmConfig.resh = 400;
 	//vmConfig.renderQuality = 0;
-	vmConfig.monitorDisplay = 0;
+	//vmConfig.monitorDisplay = 0;
 	
 	if (!vmConfig.enableConsole) HideConsole();
 	
@@ -105,6 +111,51 @@ int main(int argc, char *argv[])
 	//ShowConsole();
 
 	return 0;
+}
+
+void LoadSettings(Faux86::Config &cfg) {
+	Settings settings("faux86.cfg", "# FAUX86 XT Emulator Settings File", defaultconfig);
+	settings.load();
+	//settings.defaultconfig[fd0];
+	string str;
+	str = settings.get("fd0");
+	cfg.loadFD0(str.c_str());
+	str = settings.get("fd1");
+	cfg.loadFD1(str.c_str());
+	str = settings.get("hd0");
+	cfg.loadHD0(str.c_str());
+	str = settings.get("hd1");
+	cfg.loadHD1(str.c_str());
+	str = settings.get("biosrom");
+	cfg.loadBiosRom(str.c_str());
+	str = settings.get("videorom");
+	cfg.loadVideoRom(str.c_str());
+	str = settings.get("bootrom");
+	cfg.loadBootRom(str.c_str());
+	str = settings.get("charrom");
+	cfg.loadCharRom(str.c_str());
+	str = settings.get("boot");
+	cfg.setBootDrive(str.c_str());
+	cfg.enableAudio = !settings.getBool("nosound");
+	cfg.useFullScreen = settings.getBool("fullscreen");
+	cfg.verbose = settings.getBool("verbose");
+	cfg.cpuSpeed = settings.getInt("speed");
+	cfg.frameDelay = settings.getInt("delay");
+	cfg.slowSystem = settings.getBool("slowsys");
+	cfg.singleThreaded = !settings.getBool("multithreaded");
+	cfg.resw = settings.getInt("resw");
+	cfg.resh = settings.getInt("resh");
+	cfg.renderQuality = settings.getInt("render");
+	cfg.monitorDisplay = settings.getInt("monitor");
+	cfg.mousePort = settings.getInt("mouseport");
+	cfg.useDisneySoundSource = settings.getBool("snddisney");
+	cfg.useSoundBlaster = settings.getBool("sndblaster");
+	cfg.useAdlib = settings.getBool("sndadlib");
+	cfg.usePCSpeaker = settings.getBool("sndspeaker");
+	cfg.audio.latency = settings.getInt("latency");
+	cfg.audio.sampleRate = settings.getInt("samprate");
+	cfg.enableConsole = settings.getBool("console");
+	cfg.enableMenu = settings.getBool("menu");
 }
 
 void HideConsole() {

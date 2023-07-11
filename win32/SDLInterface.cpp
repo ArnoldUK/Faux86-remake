@@ -97,11 +97,15 @@ void SDLHostSystemInterface::init(VM* inVM)
 
 void SDLHostSystemInterface::resize(uint32_t desiredWidth, uint32_t desiredHeight)
 {
+	#ifdef DEBUG_SDL
 	log(Log, "[SDL] SDLHostSystemInterface::resize %lu x %lu", desiredWidth, desiredHeight);
+	#endif
 	//if ((scrWidth == desiredWidth) && (scrHeight == desiredHeight)) return;
 	scrWidth = desiredWidth;
 	scrHeight = desiredHeight;
-	SDL_SetWindowSize(sdlWindow, scrWidth, scrHeight);	
+	if ((vm->config.resw == 0) && (vm->config.resh == 0)) {
+		SDL_SetWindowSize(sdlWindow, scrWidth, scrHeight);
+	}	
 }
 
 void SDLAudioInterface::init(VM& vm)

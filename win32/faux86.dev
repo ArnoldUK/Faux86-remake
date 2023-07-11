@@ -28,8 +28,8 @@ Folders=src
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=3
-CompilerSettings=000000b1g0000000000000000
-UnitCount=69
+CompilerSettings=000000b1g0000000000001000
+UnitCount=71
 
 [VersionInfo]
 Major=1
@@ -734,6 +734,26 @@ CompileCpp=1
 FileName=..\src\UART.cpp
 CompileCpp=1
 Folder=src
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit70]
+FileName=settings.cpp
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit71]
+FileName=settings.h
+CompileCpp=1
+Folder=
 Compile=1
 Link=1
 Priority=1000

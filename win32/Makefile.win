@@ -5,9 +5,9 @@ CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
 RES      = build/faux86_private.res
-OBJ      = build/main.o build/SDLInterface.o build/StdioDiskInterface.o build/Config.o build/Adlib.o build/ata.o build/Audio.o build/console.o build/CPU.o build/Debugger.o build/DisneySoundSource.o build/DMA.o build/DriveManager.o build/InputManager.o build/MemUtils.o build/netcard.o build/opl3.o build/packet.o build/PCSpeaker.o build/PIC.o build/PIT.o build/Ports.o build/Ram.o build/Renderer.o build/SerialMouse.o build/SoundBlaster.o build/TaskManager.o build/Timing.o build/Video.o build/VM.o build/UART.o build/menus.o $(RES)
-LINKOBJ  = build/main.o build/SDLInterface.o build/StdioDiskInterface.o build/Config.o build/Adlib.o build/ata.o build/Audio.o build/console.o build/CPU.o build/Debugger.o build/DisneySoundSource.o build/DMA.o build/DriveManager.o build/InputManager.o build/MemUtils.o build/netcard.o build/opl3.o build/packet.o build/PCSpeaker.o build/PIC.o build/PIT.o build/Ports.o build/Ram.o build/Renderer.o build/SerialMouse.o build/SoundBlaster.o build/TaskManager.o build/Timing.o build/Video.o build/VM.o build/UART.o build/menus.o $(RES)
-LIBS     = -L"D:/Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -L"D:/AVR-GCC/projects/SDL/SDL-V22/lib/x86" ../../SDL/SDL-V22/lib/x86/SDL2main.lib ../../SDL/SDL-V22/lib/x86/SDL2.lib ../../../../Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32/libcomdlg32.a -m32
+OBJ      = build/main.o build/SDLInterface.o build/StdioDiskInterface.o build/Config.o build/Adlib.o build/ata.o build/Audio.o build/console.o build/CPU.o build/Debugger.o build/DisneySoundSource.o build/DMA.o build/DriveManager.o build/InputManager.o build/MemUtils.o build/netcard.o build/opl3.o build/packet.o build/PCSpeaker.o build/PIC.o build/PIT.o build/Ports.o build/Ram.o build/Renderer.o build/SerialMouse.o build/SoundBlaster.o build/TaskManager.o build/Timing.o build/Video.o build/VM.o build/UART.o build/menus.o build/settings.o $(RES)
+LINKOBJ  = build/main.o build/SDLInterface.o build/StdioDiskInterface.o build/Config.o build/Adlib.o build/ata.o build/Audio.o build/console.o build/CPU.o build/Debugger.o build/DisneySoundSource.o build/DMA.o build/DriveManager.o build/InputManager.o build/MemUtils.o build/netcard.o build/opl3.o build/packet.o build/PCSpeaker.o build/PIC.o build/PIT.o build/Ports.o build/Ram.o build/Renderer.o build/SerialMouse.o build/SoundBlaster.o build/TaskManager.o build/Timing.o build/Video.o build/VM.o build/UART.o build/menus.o build/settings.o $(RES)
+LIBS     = -L"D:/Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32" -static-libgcc -L"D:/AVR-GCC/projects/SDL/SDL-V22/lib/x86" ../../SDL/SDL-V22/lib/x86/SDL2main.lib ../../SDL/SDL-V22/lib/x86/SDL2.lib ../../../../Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32/libcomdlg32.a -m32 -s
 INCS     = -I"D:/Dev/Dev-Cpp/MinGW64/include" -I"D:/Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/AVR-GCC/projects/faux86/src" -I"D:/AVR-GCC/projects/SDL/SDL-V22/include"
 CXXINCS  = -I"D:/Dev/Dev-Cpp/MinGW64/include" -I"D:/Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/Dev/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++" -I"D:/AVR-GCC/projects/faux86/src" -I"D:/AVR-GCC/projects/SDL/SDL-V22/include"
 BIN      = bin/faux86.exe
@@ -120,6 +120,9 @@ build/UART.o: ../src/UART.cpp
 
 build/menus.o: menus.cpp
 	$(CPP) -c menus.cpp -o build/menus.o $(CXXFLAGS)
+
+build/settings.o: settings.cpp
+	$(CPP) -c settings.cpp -o build/settings.o $(CXXFLAGS)
 
 build/faux86_private.res: faux86_private.rc 
 	$(WINDRES) -i faux86_private.rc -F pe-i386 --input-format=rc -o build/faux86_private.res -O coff 

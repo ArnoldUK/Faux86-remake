@@ -1,1 +1,10 @@
+VGA 720x400 (80*9)x(16*25) (9x16 font pixels)
+MDA/Hercules 720x350 (9x14 font pixels)
+EGA 640x350 (8x14 font pixels)
+CGA 640x200 (8x8 font pixels)
 
+MSDOS
+mode con cols=120 lines=50
+mode con cols=132 lines=50
+Using VGA 400 line resolution
+mode con cols=80 lines=25
