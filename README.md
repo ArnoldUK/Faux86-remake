@@ -4,12 +4,17 @@ A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 
 ## Current Status
 
-01-07-2023 Upload of build v1.1 for Windows
-[Faux86-remake Release Build V1.1 Win32](https://github.com/ArnoldUK/Faux86-remake/releases)
+11-07-2023 Release build v1.2 for 32/64Bit Windows
+[Faux86-remake Release Build V1.2 Win32](https://github.com/ArnoldUK/Faux86-remake/releases)
 
-- Additional Menu options and some fixes.
-- Video rendering improvements.
-- Far from optimal display monitor emulation (VGA Color, Amber Gas Plasma, Green CRT and Blue LCD).
+- Configuration file for emulation settings.
+- Command line parameters are still supported and override the configuration file.
+- Mouse COM port can be set to an alternative port.
+- Options to enable or disable Sound Cards supported.
+- More accurate emulation speed. 
+- More video rendering improvements.
+- Some minor fixes.
+- Text cursor bug is not fixed in this release.
 
 # Release Notes
 Faux86-remake is still work in progress but fixes many issues and adds more features including:
@@ -52,6 +57,7 @@ The naming of ROM files should be as follows but this is not a strict requiremen
 - pcxtbios.bin (Turbo XT BIOS)
 - videorom.bin (VGA Video ROM)
 - rombasic.bin (IBM Basic ROM)
+- asciivga.bin (ASCII Char ROM)
 
 ## File Disk Images
 The emulator also requires bootable disk images in either .img or .raw file format.
@@ -69,10 +75,8 @@ The naming of disk images should be as follows but this is not a strict requirem
 # Operation Instructions
 
 ## Usage with Windows
-The Windows build is a Win32 execuatble (64-Bit execuatble will also be available).
-The emulator must be run with command line parameters to boot a disk image and will default to ROM Basic
-by default if no option parameters are supplied for the disk images.
-The following parameter options are currently supported:
+A configuration file named faux86.cfg contains all the available settings for the emulator.
+The emulator also supports the following command line parameters:
 - -fd0 filename    Specify a floppy disk image file to use as floppy 0.
 - -fd1 filename    Specify a floppy disk image file to use as floppy 1.
 - -hd0 filename    Specify a hard disk image file to use as hard drive 0.
@@ -84,7 +88,10 @@ The following parameter options are currently supported:
 - -boot 128 will boot from hard drive 0 (C:).
 - -boot rom will boot to ROM BASIC if available.
 - Default boot device is Harddisk hd0, if it exists, or floppy fd0.
-- -bios filename   Specify an alternate Machine BIOS ROM image.
+- -biosrom file    Specify an alternate Machine BIOS ROM file image.
+- -videorom file   Specify an alternate Video ROM file image.
+- -bootrom file    Specify an alternate Boot ROM file image.
+- -charrom file    Specify an alternate ASCII Char ROM file image.
 - -net #           Enable ethernet emulation via winpcap. # is ID of your host network interface to bridge.
 - -net #           Enable ethernet emulation via libpcap. # is ID of your host network interface to bridge.
 - To get a list of possible interfaces, use -net list.
@@ -110,12 +117,19 @@ The following parameter options are currently supported:
 - 1 = Amber Gas Plasma.
 - 2 = Green CRT Monochrome.
 - 3 = Blue LCD.
-- -sndsource       Enable Disney Sound Source emulation on LPT1.
+- -mouseport #     Serial Mouse COM Port #.
+- 1 = COM1 IO:3F8H IRQ:4
+- 2 = COM2 IO:2F8H IRQ:3 (default).
+- 3 = COM3 IO:3E8H IRQ:4
+- 4 = COM4 IO:2E8H IRQ:3 
+- -snddisney    Enable Disney Sound Source emulation on LPT1.
+- -sndblaster   Enable SoundBlaster emulation (requires Adlib to be enabled).
+- -sndadlib     Enable Adlib emulation (required for SoundBlaster emulation).
+- -sndspeaker   Enable PC Speaker emulation.
 - -latency #       Change audio buffering and output latency. (default: 100 ms).
 - -samprate #      Change audio emulation sample rate. (default: 48000 Hz).
 - -console         Enable debug console on stdio during emulation.
 - -menu						Enable window menu for changing emulation settings.
-
 
 ## Usage with Raspberry Pi
 Raspberry Pi models 1,2,3 and 4 are supported but models 3 and 4 may still need improvement.
