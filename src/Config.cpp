@@ -67,22 +67,25 @@ void showhelp () {
 	printf("Contributions and Updates (c)2023 Curtis aka ArnoldUK\n");
 	printf("Portable, open-source 8086 XT Emulator\n");
 	printf("\n");
-	
-	printf("Faux86 requires parameters to run.\nValid parameters:\n"
+	printf("Start Faux86 with parameters. Use -h for help on supported parameters.\n");
+	printf("Start Faux86 without parameters. Default settings will be loaded from faux86.cfg.\n");
+	printf("Supported command lines parameters are:\n"
 		"  -fd0 filename    Specify a floppy disk image file to use as floppy 0.\n"
 		"  -fd1 filename    Specify a floppy disk image file to use as floppy 1.\n"
 		"  -hd0 filename    Specify a hard disk image file to use as hard drive 0.\n"
 		"  -hd1 filename    Specify a hard disk image file to use as hard drive 1.\n"
-		"										Disk image formats supported are .img and .raw\n" 
-		"  -boot #          Specify which BIOS drive ID boot device to use.\n"
-		"                   Examples: -boot 0 will boot from floppy 0 (A:).\n"
-		"                             -boot 1 will boot from floppy 1 (B:).\n"
-		"                             -boot 128 will boot from hard drive 0 (C:).\n"
-		"                             -boot 255 will boot from hard drive 1 (D:).\n"		
-		"                             -boot rom will boot to ROM BASIC if available.\n"
-		"                   Default boot device is hard drive 0, if it exists.\n"
-		"                   Otherwise, the default is floppy 0.\n"
-		"  -bios filename   Specify an alternate Machine BIOS ROM image.\n"
+		"                   Disk image formats supported are .img and .raw\n" 
+		"  -boot #          Specify which disk boot device to use. Examples:\n"
+		"                   -boot fd0 will boot from floppy 0 (A:).\n"
+		"                   -boot fd1 will boot from floppy 1 (B:).\n"
+		"                   -boot hd0 will boot from hard drive 0 (C:).\n"
+		"                   -boot hd1 will boot from hard drive 1 (D:).\n"		
+		"                   -boot rom will boot to ROM BASIC if available.\n"
+		"                    Default boot device is fd0 or hd0 if exists.\n"
+		"  -biosrom file    Specify an alternate Machine BIOS ROM file image.\n"
+		"  -videorom file   Specify an alternate Video ROM file image.\n"
+		"  -bootrom file    Specify an alternate Boot ROM file image.\n"
+		"  -charrom file    Specify an alternate ASCII Char ROM file image.\n"
 		#ifdef NETWORKING_ENABLED
 		#ifdef _WIN32
 		"  -net #           Enable ethernet emulation via winpcap, where # is the\n"
@@ -92,7 +95,7 @@ void showhelp () {
 		"                   numeric ID of your host's network interface to bridge.\n"
 		"                   To get a list of possible interfaces, use -net list\n"
 		#endif
-		"  -nosound         Disable audio emulation and output.\n"
+		"  -nosound         Disable all audio emulation and sound output.\n"
 		"  -fullscreen      Start Faux86 in fullscreen mode.\n"
 		"  -verbose         Verbose mode. Operation details will be written to stdout.\n"
 		"  -speed           Frequency of the CPU in Mhz. Set to 0 for Maximum Speed.\n"
@@ -104,25 +107,33 @@ void showhelp () {
 		"                   If you still have dropouts, then also decrease sample rate\n"
 		"                   and/or increase latency.\n"
 		"  -multithreaded # Enable multithread processing.\n"
-		"  -resw #				  Set constant SDL window size width in pixels.\n"
-		"  -resh #				  Set constant SDL window size height in pixels.\n"
-		"										Default width and height is 0 and set automatically\n"
-		"  -render #				Set render scaling quality mode for SDL window renderer.\n"
-		"										0 = nearest (fastest low quality).\n"
-		"										1 = linear (quick good quality).\n"
-		"										2 = best (slow best quality) (default).\n"
-		"  -monitor #				Set monitor display type to emulate.\n"
-		"										0 = Color VGA (default).\n"
-		"										1 = Amber Gas Plasma.\n"
-		"										2 = Green CRT Monochrome.\n"
-		"										3 = Blue LCD.\n"
+		"  -resw #          Set constant SDL window size width in pixels.\n"
+		"  -resh #          Set constant SDL window size height in pixels.\n"
+		"                   Default width and height is 0 and set automatically\n"
+		"  -render #        Set render scaling quality mode for SDL window renderer.\n"
+		"                   0 = nearest (fastest low quality).\n"
+		"                   1 = linear (quick good quality).\n"
+		"                   2 = best (slow best quality) (default).\n"
+		"  -monitor #       Set monitor display type to emulate.\n"
+		"                   0 = Color VGA (default).\n"
+		"                   1 = Amber Gas Plasma.\n"
+		"                   2 = Green CRT Monochrome.\n"
+		"                   3 = Blue LCD.\n"
 //		"  -smooth          Apply smoothing to screen rendering.\n"
 //		"  -noscale         Disable 2x scaling of low resolution video modes.\n"
-		"  -sndsource       Enable Disney Sound Source emulation on LPT1.\n"
+		"  -mouseport #     Serial Mouse COM Port #.\n"
+		"                   1 = COM1 IO:3F8H IRQ:4\n"
+		"                   2 = COM2 IO:2F8H IRQ:3 (default).\n"
+		"                   3 = COM3 IO:3E8H IRQ:4\n"
+		"                   4 = COM4 IO:2E8H IRQ:3\n"		
+		"  -snddisney       Enable Disney Sound Source emulation on LPT1.\n"
+		"  -sndblaster      Enable SoundBlaster emulation (requires Adlib to be enabled).\n"
+		"  -sndadlib        Enable Adlib emulation (required for SoundBlaster emulation).\n"
+		"  -sndspeaker      Enable PC Speaker emulation.\n"		
 		"  -latency #       Change audio buffering and output latency. (default: 100 ms)\n"
 		"  -samprate #      Change audio emulation sample rate. (default: 48000 Hz)\n"
 		"  -console         Enable debug console on stdio during emulation.\n"
-		"  -menu						Enable window menu for changing emulation settings.\n"
+		"  -menu            Enable window menu for changing emulation settings.\n"
 //		"  -oprom addr rom  Inject a custom option ROM binary at an address in hex.\n"
 //		"                   Example: -oprom F4000 monitor.bin\n"
 //		"                   This loads the data from monitor.bin at 0xF4000.\n"
@@ -137,11 +148,11 @@ void showhelp () {
 		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
 		"GNU General Public License for more details.\n");
 
-	exit (0);
+	exit(0);
 }
 #endif
 
-void Config::parseCommandLine(int argc, char *argv[]) 
+bool Config::parseCommandLine(int argc, char *argv[]) 
 {
 	#ifdef DEBUG_CONFIG
 	log(Log, "[CONFIG::parseCommandLine] argc %d", argc);
@@ -149,38 +160,43 @@ void Config::parseCommandLine(int argc, char *argv[])
 				
 	#ifdef COMMAND_LINE_PARSING
 	int i, abort = 0;
-	const char* biosFilePath = PATH_DATAFILES "pcxtbios.bin";
+	//const char* biosFilePath = PATH_DATAFILES "pcxtbios.bin";
 
 	uint8_t ethif;	// TODO: FIX
 
 	if (argc < 2) {
-		printf ("Start Faux86 with parameters. Use -h for help and supported parameters.\n");
-		#ifndef _WIN32
-		exit (0);
-		#endif
+		//printf ("Start Faux86 with parameters. Use -h for help on supported parameters.\n");
+		//printf ("Start Faux86 without parameters. Default settings will be loaded from faux86.cfg.\n");
+		//exit(0);
+		return false;
 	}	
 
-	bootDrive = 254;
+	bootDrive = 0;
 	ethif = 254;
 	for (i=1; i<argc; i++) {
-    if (strcmpi (argv[i], "-h") == 0) showhelp ();
-    else if (strcmpi (argv[i], "-?") == 0) showhelp ();
-    else if (strcmpi (argv[i], "-help") == 0) showhelp ();
-		else if (strcmpi (argv[i], "-fd0") == 0) {
+    if (strcmpi (argv[i], "-h") == 0) showhelp();
+    if (strcmpi (argv[i], "-?") == 0) showhelp();
+    if (strcmpi (argv[i], "-help") == 0) showhelp();
+		
+		if (strcmpi (argv[i], "-fd0") == 0) {
 			i++;
-			diskDriveA = hostSystemInterface->openFile(argv[i]);
+			loadFD0(argv[i]);
+			//diskDriveA = hostSystemInterface->openFile(argv[i]);
 		}
 		else if (strcmpi (argv[i], "-fd1") == 0) {
 			i++;
-			diskDriveB = hostSystemInterface->openFile(argv[i]);
+			loadFD1(argv[i]);
+			//diskDriveB = hostSystemInterface->openFile(argv[i]);
 		}
 		else if (strcmpi (argv[i], "-hd0") == 0) {
 			i++;
-			diskDriveC = hostSystemInterface->openFile(argv[i]);
+			loadHD0(argv[i]);
+			//diskDriveC = hostSystemInterface->openFile(argv[i]);
 		}
 		else if (strcmpi (argv[i], "-hd1") == 0) {
 			i++;
-			diskDriveD = hostSystemInterface->openFile(argv[i]);
+			loadHD1(argv[i]);
+			//diskDriveD = hostSystemInterface->openFile(argv[i]);
 		}
 		else if (strcmpi (argv[i], "-net") == 0) {
 			i++;
@@ -189,12 +205,35 @@ void Config::parseCommandLine(int argc, char *argv[])
 		}
 		else if (strcmpi (argv[i], "-boot") == 0) {
 			i++;
-			if (strcmpi (argv[i], "rom") == 0) bootDrive = 255;
-			else bootDrive = atoi (argv[i]);
+			setBootDrive(argv[i]);
+			/*
+			if (strcmpi (argv[i], "fd0") == 0) bootDrive = 0;
+			else if (strcmpi (argv[i], "fd1") == 0) bootDrive = 1;
+			else if (strcmpi (argv[i], "hd0") == 0) bootDrive = 128;
+			else if (strcmpi (argv[i], "hd1") == 0) bootDrive = 254;
+			else if (strcmpi (argv[i], "rom") == 0) bootDrive = 255;
+			else bootDrive = atoi(argv[i]);
+			*/
 		}
-		else if (strcmpi (argv[i], "-sndsource") == 0) {
+		else if (strcmpi (argv[i], "-mouseport") == 0) {
+			i++;
+			mousePort = atoi(argv[i]);
+		}
+		else if (strcmpi (argv[i], "-snddisney") == 0) {
 			i++;
 			useDisneySoundSource = true;
+		}
+		else if (strcmpi (argv[i], "-sndblaster") == 0) {
+			i++;
+			useSoundBlaster = true;
+		}
+		else if (strcmpi (argv[i], "-sndadlib") == 0) {
+			i++;
+			useAdlib = true;
+		}
+		else if (strcmpi (argv[i], "-sndspeaker") == 0) {
+			i++;
+			usePCSpeaker = true;
 		}
 		else if (strcmpi (argv[i], "-latency") == 0) {
 			i++;
@@ -208,13 +247,25 @@ void Config::parseCommandLine(int argc, char *argv[])
 			i++;
 			singleThreaded = false;
 		}
-		else if (strcmpi (argv[i], "-bios") == 0) {
+		else if (strcmpi (argv[i], "-biosrom") == 0) {
 			i++;
-			biosFilePath = argv[i];
+			loadBiosRom(argv[i]);
+			//biosFile = hostSystemInterface->openFile(argv[i]);
 		}
 		else if (strcmpi (argv[i], "-videorom") == 0) {
 			i++;
-			videoRomFile = hostSystemInterface->openFile(argv[i]);
+			loadVideoRom(argv[i]);
+			//videoRomFile = hostSystemInterface->openFile(argv[i]);
+		}
+		else if (strcmpi (argv[i], "-bootrom") == 0) {
+			i++;
+			loadBootRom(argv[i]);
+			//romBasicFile = hostSystemInterface->openFile(argv[i]);
+		}
+		else if (strcmpi (argv[i], "-charrom") == 0) {
+			i++;
+			loadCharRom(argv[i]);
+			//asciiFile = hostSystemInterface->openFile(argv[i]);
 		}
 		else if (strcmpi (argv[i], "-resw") == 0) {
 			i++;
@@ -248,7 +299,7 @@ void Config::parseCommandLine(int argc, char *argv[])
 		else if (strcmpi (argv[i], "-delay") == 0) frameDelay = atol(argv[++i]);
 		else if (strcmpi (argv[i], "-console") == 0) enableConsole = true;
 		else if (strcmpi (argv[i], "-menu") == 0) enableMenu = true;
-		else if (strcmpi (argv[i], "-slowsys") == 0) slowSystem = 1;
+		else if (strcmpi (argv[i], "-slowsys") == 0) slowSystem = true;
 		else if (strcmpi (argv[i], "-oprom") == 0) {
 			// TODO
 			//i++;
@@ -257,7 +308,8 @@ void Config::parseCommandLine(int argc, char *argv[])
 		}
 		else {
 			printf("Unrecognized parameter: %s\n", argv[i]);
-			exit (1);
+			printf("Use -h for a list of supported parameters.\n");
+			exit(1);
 		}
 	}
 
@@ -280,20 +332,116 @@ void Config::parseCommandLine(int argc, char *argv[])
 	}
 
 	// Clamp values
-	if (audio.sampleRate < 4000)
-		audio.sampleRate = 4000;
-	else if (audio.sampleRate > 96000)
-		audio.sampleRate = 96000;
-	if (audio.latency < 10)
-		audio.latency = 10;
-	else if (audio.latency > 1000)
-		audio.latency = 1000;
+	if (audio.sampleRate < 4000) audio.sampleRate = 4000;
+	else if (audio.sampleRate > 96000) audio.sampleRate = 96000;
+	if (audio.latency < 10)	audio.latency = 10;
+	else if (audio.latency > 1000) audio.latency = 1000;
+	
 	if (resw > 1024) resw = 640;
 	if (resh > 1024) resh = 350;
 	if (renderQuality > 2) renderQuality = 2;
 	if (monitorDisplay > 3) monitorDisplay = 0;
+	//COM PORT AND IRQ
+		//COM1 - 3F8h IRQ4
+		//COM2 - 2F8h IRQ3
+		//COM3 - 3E8h IRQ4
+		//COM4 - 2E8h IRQ3
+	switch (mousePort) {
+		case 1: 
+			mouse.port = 0x3F8;
+			mouse.irq = 4;
+			break;
+		case 2:
+		default:
+			mouse.port = 0x2F8;
+			mouse.irq = 3;
+			break;
+		case 3: 
+			mouse.port = 0x3E8;
+			mouse.irq = 4;
+			break;
+		case 4: 
+			mouse.port = 0x2E8;
+			mouse.irq = 3;
+			break;
+	}
 
+	return true;
 #endif
 }
 
+bool Config::loadFD0(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] loadFD0 %s\n", str);
+	diskDriveA = hostSystemInterface->openFile(str);
+	if (!diskDriveA) return false;
+	return true;
+}
 
+bool Config::loadFD1(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] loadFD1 %s\n", str);
+	diskDriveB = hostSystemInterface->openFile(str);
+	if (!diskDriveB) return false;
+	return true;	
+}
+
+bool Config::loadHD0(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] loadHD0 %s\n", str);
+	diskDriveC = hostSystemInterface->openFile(str);
+	if (!diskDriveC) return false;
+	return true;	
+}
+
+bool Config::loadHD1(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] loadHD1 %s\n", str);
+	diskDriveD = hostSystemInterface->openFile(str);
+	if (!diskDriveD) return false;
+	return true;	
+}
+
+bool Config::loadBiosRom(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] loadBiosRom %s\n", str);
+	biosFile = hostSystemInterface->openFile(str);
+	if (!biosFile) return false;
+	return true;	
+}
+
+bool Config::loadVideoRom(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] loadVideoRom %s\n", str);
+	videoRomFile = hostSystemInterface->openFile(str);
+	if (!videoRomFile) return false;
+	return true;	
+}
+
+bool Config::loadBootRom(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] loadBootRom %s\n", str);
+	romBasicFile = hostSystemInterface->openFile(str);
+	if (!romBasicFile) return false;
+	return true;	
+}
+
+bool Config::loadCharRom(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] loadCharRom %s\n", str);
+	asciiFile = hostSystemInterface->openFile(str);
+	if (!asciiFile) return false;
+	return true;	
+}
+
+bool Config::setBootDrive(const char* str) {
+	if ((str == nullptr) || (str[0] == char(0))) return false;
+	printf("[CONFIG] setBootDrive %s\n", str);
+	if (strcmpi(str, "fd0") == 0) bootDrive = 0;
+	else if (strcmpi(str, "fd1") == 0) bootDrive = 1;
+	else if (strcmpi(str, "hd0") == 0) bootDrive = 128;
+	else if (strcmpi(str, "hd1") == 0) bootDrive = 254;
+	else if (strcmpi(str, "rom") == 0) bootDrive = 255;
+	else bootDrive = atoi(str);
+	return true;	
+}

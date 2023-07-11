@@ -22,7 +22,7 @@
 */
 #pragma once
 
-#define BUILD_STRING "Faux86-remake v1.1"
+#define BUILD_STRING "Faux86-remake v1.2"
 
 #define DEBUG_CONFIG
 #define DEBUG_VM
@@ -103,7 +103,7 @@
 //#define VIDEO_FRAMEBUFFER_WIDTH 1024
 //#define VIDEO_FRAMEBUFFER_HEIGHT 1024
 #define VIDEO_FRAMEBUFFER_WIDTH 800
-#define VIDEO_FRAMEBUFFER_HEIGHT 600
+#define VIDEO_FRAMEBUFFER_HEIGHT 800
 
 #define RENDER_QUALITY_NEAREST	0
 #define RENDER_QUALITY_LINEAR		1
@@ -157,7 +157,16 @@ namespace Faux86
 	{
 		Config(HostSystemInterface* inHostInterface) : hostSystemInterface(inHostInterface) {}
 
-		void parseCommandLine(int argc, char *argv[]);
+		bool parseCommandLine(int argc, char *argv[]);
+		bool loadFD0(const char* str);
+		bool loadFD1(const char* str);
+		bool loadHD0(const char* str);
+		bool loadHD1(const char* str);
+		bool loadBiosRom(const char* str);
+		bool loadVideoRom(const char* str);
+		bool loadBootRom(const char* str);
+		bool loadCharRom(const char* str);
+		bool setBootDrive(const char* str);
 
 		HostSystemInterface* hostSystemInterface;
 
@@ -167,7 +176,7 @@ namespace Faux86
 		CpuType cpuType = CpuType::CpuV20;
 
 		DiskInterface* biosFile = nullptr;
-		DiskInterface* ideControllerFile = nullptr;
+		DiskInterface* ideRomFile = nullptr;
 		DiskInterface* romBasicFile = nullptr;
 		DiskInterface* videoRomFile = nullptr;
 		DiskInterface* asciiFile = nullptr;
@@ -184,10 +193,9 @@ namespace Faux86
 		//COM2 - 2F8h IRQ3
 		//COM3 - 3E8h IRQ4
 		//COM4 - 2E8h IRQ3
+		uint8_t mousePort = 2;
 		struct  
 		{
-			//uint16_t port = 0x3F8;
-			//uint8_t irq = 4;
 			uint16_t port = 0x2F8;
 			uint8_t irq = 3;			
 		} mouse;
@@ -197,6 +205,9 @@ namespace Faux86
 		{
 			uint16_t port = 0x220;
 			uint8_t irq = 7;
+			uint8_t dma = 1;
+			uint8_t model = 2; //Sound Blaster 2.0
+			//uint8_t model = 3; //Sound Blaster Pro
 		} blaster;
 
 		//ADLIB PORT
@@ -208,6 +219,7 @@ namespace Faux86
 		bool useDisneySoundSource = false;
 		bool useSoundBlaster = true;
 		bool useAdlib = true;
+		bool usePCSpeaker = true;
 
 		struct 
 		{
@@ -227,10 +239,10 @@ namespace Faux86
 		bool noSmooth = true; //true
 		bool noScale = true; //false;
 		bool enableAudio = true;
-		bool enableConsole = false;
+		bool enableConsole = true;
 		bool enableMenu = false;
 		bool singleThreaded = true; //false
-		uint8_t slowSystem = 0;
+		bool slowSystem = false;
 		bool enableDebugger = false;
 		
 		uint16_t resw = HOST_WINDOW_WIDTH;
@@ -239,10 +251,9 @@ namespace Faux86
 		uint8_t renderQuality = RENDER_QUALITY_BEST;
 		uint8_t monitorDisplay = MONITOR_DISPLAY_COLOR;
 		//uint32_t cpuSpeed = 0;
-		uint32_t cpuSpeed = 20; //20000000; //20Mhz
+		//uint32_t cpuSpeed = 20; //20000000; //20Mhz
+		uint32_t cpuSpeed = 20; //10000000; //10Mhz
 		uint32_t frameDelay = 20; //20ms per frame rendered (50fps)
 		//uint32_t frameDelay = 60;
-    //uint32_t frameDelay = 10;
-
 	};
 }

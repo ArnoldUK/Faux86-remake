@@ -71,23 +71,22 @@ bool Audio::isAudioBufferFilled()
 
 void Audio::tick() 
 {
-	int16_t sample;
+	int16_t sample = 0;
 	if (audbufptr >= usebuffersize) return;
 	if (vm.config.useAdlib) sample = vm.adlib.generateSample() >> 8;
 	if (vm.config.useDisneySoundSource) sample += vm.soundSource.generateSample();
 	if (vm.config.useSoundBlaster) sample += vm.blaster.generateSample();
-	if (vm.pcSpeaker.enabled) sample += (vm.pcSpeaker.generateSample() >> 1);
+	if (vm.config.usePCSpeaker) sample += (vm.pcSpeaker.generateSample() >> 1);
 	if (audbufptr < (int) sizeof(audbuf) ) audbuf[audbufptr++] = (uint8_t) ((uint16_t) sample+128);
 }
 
 void Audio::fillAudioBuffer(uint8_t *stream, int len)
 {
-	MemUtils::memcpy (stream, audbuf, len);
-	MemUtils::memmove (audbuf, &audbuf[len], usebuffersize - len);
+	MemUtils::memcpy(stream, audbuf, len);
+	MemUtils::memmove(audbuf, &audbuf[len], usebuffersize - len);
 
 	audbufptr -= len;
-	if (audbufptr < 0) 
-		audbufptr = 0;
+	if (audbufptr < 0) audbufptr = 0;
 }
 
 Audio::Audio(VM& inVM)

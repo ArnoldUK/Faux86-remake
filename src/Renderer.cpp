@@ -83,17 +83,12 @@ void Renderer::init(uint32_t _fbwidth, uint32_t _fbheight)
 
 void Renderer::markScreenModeChanged(uint32_t newWidth, uint32_t newHeight)
 {
-	log(Log, "[RENDERER] markScreenModeChanged %d x %d", newWidth, newHeight);
+	//log(Log, "[RENDERER] markScreenModeChanged %d x %d", newWidth, newHeight);
 	//refreshTextMode();
 	screenModeChanged = true;
 	nativeWidth = newWidth;
 	nativeHeight = newHeight;
-	if ((vm.config.resw == 0) && (vm.config.resh == 0)) {
-		vm.config.hostSystemInterface->resize(newWidth, newHeight);
-	} else {
-	//vm.config.resw = newWidth;
-	//vm.config.resh = newHeight;
-	}
+	vm.config.hostSystemInterface->resize(newWidth, newHeight);
 }
 
 
@@ -284,105 +279,6 @@ void Renderer::doubleBlit() {
 }
 */
 
-/*
-void Renderer::renderTextMode()
-{
-	//uint32_t glyphWidth = 640 / vm.video.cols;
-	//uint32_t glyphHeight = 400 / vm.video.rows;
-	uint32_t glyphWidth = 640 / vm.video.cols;
-	uint32_t glyphHeight = 400 / vm.video.rows;
-	uint32_t outX = 0, outY = 0;
-	uint8_t* fontData = vm.video.fontcga;
-	uint8_t* RAM = vm.memory.RAM;
-
-	for (uint32_t row = 0; row < vm.video.rows; row++)
-	{
-		for (uint32_t col = 0; col < vm.video.cols; col++)
-		{
-			bool isDirty = textModeDirtyFlag[row * vm.video.cols + col] != 0;
-
-			if (isDirty)
-			{
-				textModeDirtyFlag[row * vm.video.cols + col] = 0;
-
-				uint32_t vidptr = vm.video.vgapage + vm.video.videobase + row * vm.video.cols * 2 + col * 2;
-				uint8_t curchar = RAM[vidptr];
-
-				for (uint32_t j = 0; j < glyphHeight; j++)
-				{
-					for (uint32_t i = 0; i < glyphWidth; i++)
-					{
-						uint32_t glyphRow = j * 16 / glyphHeight;
-						uint32_t glyphCol = i * 8 / glyphWidth;
-						uint8_t glyphData = fontData[curchar * 128 + glyphRow * 8 + glyphCol];
-						uint8_t color;
-
-						if (vm.video.vidcolor)
-						{
-							if (!glyphData)
-								color = RAM[vidptr + 1] / 16; //high intensity background
-							else
-								color = RAM[vidptr + 1] & 15;
-						}
-						else
-						{
-							if ((RAM[vidptr + 1] & 0x70))
-							{
-								if (!glyphData)
-									color = 7;
-								else
-									color = 0;
-							}
-							else
-							{
-								if (!glyphData)
-									color = 0;
-								else
-									color = 7;
-							}
-						}
-						renderSurface->set(outX, outY, color);
-						outX++;
-					}
-					outX -= glyphWidth;
-					outY++;
-				}
-				outY -= glyphHeight;
-			}
-
-			outX += glyphWidth;
-		}
-		outX = 0;
-		outY += glyphHeight;
-	}
-
-	// Draw cursor
-	if (vm.video.cursorvisible && cursorX < vm.video.cols && cursorY < vm.video.rows) 
-	{
-		uint32_t curheight = 2;
-		uint32_t x1 = cursorX * glyphWidth;
-		uint32_t y1 = cursorY * 8 + 8 - curheight;
-		for (uint32_t y = y1 * 2; y <= y1 * 2 + curheight - 1; y++)
-		{
-			for (uint32_t x = x1; x <= x1 + glyphWidth - 1; x++)
-			{
-				uint8_t color = RAM[vm.video.videobase + cursorY * vm.video.cols * 2 + cursorX * 2 + 1] & 15;
-				renderSurface->set(x, y, color);
-			}
-		}
-	}
-}
-*/
-
-/*
-void Renderer::markTextDirty(uint32_t x, uint32_t y)
-{
-	if (x < MaxColumns && y < MaxRows)
-	{
-		textModeDirtyFlag[y * vm.video.cols + x] = 1;
-	}
-}
-*/
 
 RenderSurface* RenderSurface::create(uint32_t inWidth, uint32_t inHeight)
 {

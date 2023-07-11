@@ -67,22 +67,31 @@ public:
 	int update() override
 	{
 		int delay = 0;
-
+		
+		//THIS CODE NEEDS TO BE MORE ACCURATE
+		
 		if (!vm.config.cpuSpeed)	{
 			//vm.cpu.exec86(4700); //4.7Mhz
 			//vm.cpu.exec86(10000); //10Mhz
 			//vm.cpu.exec86(100000); //100Mhz
-			vm.cpu.exec86(10000); //100Mhz
+			vm.cpu.exec86(10000);
 		}	else {
 			//vm.cpu.exec86(vm.config.cpuSpeed / 100); //100 rpi
 			//vm.cpu.exec86(vm.config.cpuSpeed / 1000); //win32 (4700000 = 4.7Mhz)
-			vm.cpu.exec86(vm.config.cpuSpeed * 250); //1000 win32
-			while (!vm.audio.isAudioBufferFilled()) {
-				vm.timing.tick();
-				vm.audio.tick();
+			#ifdef _WIN32
+			vm.cpu.exec86(vm.config.cpuSpeed * 100); //10Mhz win32
+			#else
+			vm.cpu.exec86(vm.config.cpuSpeed * 1000); //10Mhz RPi
+			#endif
+			if (vm.config.enableAudio) {
+				while (!vm.audio.isAudioBufferFilled()) {
+					vm.timing.tick();
+					vm.audio.tick();
+				}
 			}
-			//delay = 10;
-			delay = 1; //1
+			#ifdef _WIN32
+			delay = 1;
+			#endif
 		}
 		return delay;
 	}
@@ -150,7 +159,7 @@ bool VM::init()
 
 	if (!config.asciiFile || !config.asciiFile->isValid())
 	{
-		log(LogFatal, "[VM] Failed to load Video ASCII file!");
+		log(LogFatal, "[VM] Failed to load Video ASCII Char file!");
 		return false;
 	}
 
@@ -160,7 +169,7 @@ bool VM::init()
 	//memory.loadBinary(0xA0000UL, config.asciiFile, 1);
 
 #ifdef DISK_CONTROLLER_ATA
-	if (!memory.loadBinary(0xD0000UL, config.ideControllerFile, 1))
+	if (!memory.loadBinary(0xD0000UL, config.ideRomFile, 1))
 	{
 		log(LogFatal, "[VM] Failed to load Disk Controller ROM file!");
 		return false;

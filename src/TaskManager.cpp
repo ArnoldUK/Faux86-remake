@@ -38,25 +38,18 @@ TaskManager::TaskManager(VM& inVM) : vm(inVM)
 
 void TaskManager::tick()
 {
-	if (vm.config.singleThreaded) 
-	{
-		for (int n = 0; n < numTasks; n++)
-		{
+	if (vm.config.singleThreaded) {
+		for (int n = 0; n < numTasks; n++) {
 			uint64_t currentTime = vm.timing.getTicks();
 
-			if (tasks[n].task && tasks[n].running && tasks[n].nextTickTime < currentTime)
-			{
+			if (tasks[n].task && tasks[n].running && tasks[n].nextTickTime < currentTime) {
 				int result = tasks[n].task->update();
-				if (result < 0)
-				{
-					// TODO: error?
-				}
-				else
-				{
-					//tasks[n].nextTickTime = vm.timing.getTicks() + result * vm.timing.getHostFreq() / 1000;
-					tasks[n].nextTickTime = currentTime + result * vm.timing.getHostFreq() / 1000;
-					//CScheduler::Get()->Yield();
-				}
+				//tasks[n].nextTickTime = vm.timing.getTicks() + result * vm.timing.getHostFreq() / 1000;
+				tasks[n].nextTickTime = currentTime + result * vm.timing.getHostFreq() / 1000;
+				#ifdef _WIN32
+				#else
+				CScheduler::Get()->Yield();
+				#endif
 			}
 		}
 	}

@@ -73,13 +73,13 @@ static const uint8_t vga_gfxpal[2][2][4] = {
 
 
 #define VGA_RAMBANK_SIZE					65536
-#define VGA_FRAMEBUFFER_WIDTH			1024
-#define VGA_FRAMEBUFFER_HEIGHT		1024
+#define VGA_FRAMEBUFFER_WIDTH			800 //1024
+#define VGA_FRAMEBUFFER_HEIGHT		800 //1024
 #define VGA_FRAMEBUFFER_STRIDE		VGA_FRAMEBUFFER_WIDTH * 4 //sizeof(uint32_t)
 #define VGA_FRAMEBUFFER_SIZE			VGA_FRAMEBUFFER_WIDTH * VGA_FRAMEBUFFER_HEIGHT
 
 //static uint32_t vga_framebuffer[1024][1024];
-static uint32_t vga_framebuffer[VGA_FRAMEBUFFER_WIDTH][VGA_FRAMEBUFFER_HEIGHT] = {0};
+uint32_t vga_framebuffer[VGA_FRAMEBUFFER_WIDTH][VGA_FRAMEBUFFER_HEIGHT] = {0};
 
 //4 banks of 64KB (It's actually 64K addresses on a 32-bit data bus on real VGA hardware)
 static uint8_t* vga_RAM[4] = {}; //4 planes
@@ -453,11 +453,6 @@ Video::~Video(void)
 
 uint32_t Video::vga_color(uint32_t c) {
 	//return c + 255;
-	
-	//if (c > 255) {
-	//	log(Log, "[VIDEO] vga_color = %lu", c);
-	//	return 0;
-	//}
 	//return rgb(paletteVGA.colours[c].r , paletteVGA.colours[c].g , paletteVGA.colours[c].b);
 	
 	return (vga_DAC.pal[c][2] |	(vga_DAC.pal[c][1] << 8) | (vga_DAC.pal[c][0] << 16));
@@ -476,9 +471,9 @@ uint8_t Video::vga_dorotate(uint8_t v) {
 uint32_t Video::rgb(uint32_t r, uint32_t g, uint32_t b) 
 {
 #ifdef __BIG_ENDIAN__
-	return ( (r<<24) | (g<<16) | (b<<8) );
+	return ( (r << 24) | (g << 16) | (b << 8) );
 #else
-	return (r | (g<<8) | (b<<16) );
+	return (r | (g << 8) | (b << 16) );
 #endif
 }
 
@@ -601,13 +596,14 @@ uint8_t Video::init(void)
 
 void Video::handleInterrupt()
 {
-	//#ifdef DEBUG_VIDEO
+	updatedscreen = true;
+	#ifdef DEBUG_VIDEO
 	log(Log, "[VIDEO] handleInterrupt");
-	//#endif
+	#endif
 }
 
 void Video::vga_drawCallback(void* dummy) {
-	if (!updatedscreen) return;
+	//if (!updatedscreen) return;
 	vga_doRender = 1;
 	vga_doBlit = 1;
 	vga_renderThread(0);
@@ -644,6 +640,7 @@ void Video::vga_renderThread(void* dummy) {
 		if (vga_doBlit == 1) {
 			vm.renderer.draw((uint32_t*)vga_framebuffer, (int)vga_w, (int)vga_h, VGA_FRAMEBUFFER_STRIDE);// * sizeof(uint32_t));
 			vga_doBlit = 0;
+			//updatedscreen = false;
 		}
 }
 
@@ -771,8 +768,8 @@ void Video::vga_update(uint32_t start_x, uint32_t start_y, uint32_t end_x, uint3
 					((uint8_t)(scy % 16) >= (vga_crtcd[VGA_REG_DATA_CURSOR_BEGIN] & 31)) &&
 					((uint8_t)(scy % 16) <= (vga_crtcd[VGA_REG_DATA_CURSOR_END] & 31)) &&
 					vga_cursor_blink_state && cursorenable) { //cursor should be displayed
-					//color32 = vga_attrd[attr & 0x0F] | (vga_attrd[0x14] << 4); //ORIGINAL
-					color32 = vga_attrd[attr & 0x0F] | ((vga_attrd[0x14] & 0xC) << 4); //UPDATED
+					color32 = vga_attrd[attr & 0x0F] | (vga_attrd[0x14] << 4); //ORIGINAL
+					//color32 = vga_attrd[attr & 0x0F] | ((vga_attrd[0x14] & 0xC) << 4); //UPDATED
 					if (vga_attrd[0x10] & 0x80) { //P5, P4 replace
 						color32 = (color32 & 0xCF) | ((vga_attrd[0x14] & 3) << 4);
 					}
@@ -984,9 +981,9 @@ void Video::vga_calcscreensize() {
 	//vga_updateScanlineTiming();
 	vm.renderer.markScreenModeChanged(vga_w, vga_h);
 	
-	//#ifdef DEBUG_VIDEO
+	#ifdef DEBUG_VIDEO
 	log(Log, "[VIDEO] vga_calcscreensize: %lu x %lu", vga_w, vga_h);
-	//#endif
+	#endif
 }
 
 void Video::vga_calcmemorymap() {
@@ -1270,8 +1267,8 @@ bool Video::portWriteHandler(uint16_t portnum, uint8_t value)
 			switch (vga_seqi) {
 			case 0x01:
 				vga_dots = (value & 0x01) ? 8 : 9;
-				vga_dbl = (value & 0x08) ? 1 : 0;
-				//vga_calcscreensize(); //MAYBE UNCOMMENT THIS
+				vga_dbl = (value & 0x08) ? 1 : 0; //HOW DOES THIS AFFECT TEXT MODE CURSOR ??
+				vga_calcscreensize(); //MAYBE COMMENT THIS ??
 				break;
 			case 0x02:
 				vga_enableplane = value & 0x0F;
@@ -1403,6 +1400,7 @@ bool Video::portReadHandler(uint16_t portnum, uint8_t& outValue)
 		}
 		break;
 	case 0x3DA:
+		//updatedscreen = true;
 		vga_attrflipflop = 0; //because VGA is weird
 		//outValue = vga_status1; //NEED TO FIX THE TIMING
 		outValue = port3da; //USE THIS FOR NOW

@@ -28,6 +28,9 @@ using namespace Faux86;
 
 int16_t PCSpeaker::generateSample() 
 {
+	//if (!vm->config->usePCSpeaker) return 0;
+	if (!enabled) return 0;
+	
 	int16_t speakervalue;
 
 	speakerfullstep = (uint64_t) ( (float) vm.config.audio.sampleRate / (float) vm.pit.chanfreq[2]);

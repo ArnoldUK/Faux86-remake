@@ -124,6 +124,8 @@ struct _opl3_chip {
     Bit32u writebuf_last;
     Bit64u writebuf_lasttime;
     opl3_writebuf writebuf[OPL_WRITEBUF_SIZE];
+		
+		Bit8u data4; //ADDED
 };
 
 void OPL3_Generate(opl3_chip *chip, Bit16s *buf);

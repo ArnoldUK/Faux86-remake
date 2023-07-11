@@ -305,11 +305,13 @@ void SoundBlaster::init()
 	MemUtils::memset(&mem, 0, 1024);
 	MemUtils::memset(&mixer, 0, 256);
 
-	dspmaj = 2; //emulate a Sound Blaster 2.0
-	//dspmaj = 3; //emulate a Sound Blaster Pro
+	//dspmaj = 2; //Sound Blaster 2.0
+	//dspmaj = 3; //Sound Blaster Pro
+	dspmaj = vm.config.blaster.model;
 	dspmin = 0;
 	sbirq = vm.config.blaster.irq;
-	sbdma = 1;
+	//sbdma = 1;
+	sbdma = vm.config.blaster.dma;
 
 	//mixer.reg[0x22] = mixer.reg[0x26] = mixer.reg[0x04] = (4 << 5) | (4 << 1);
 	mixer[0x22] = mixer[0x26] = mixer[0x04] = (4 << 5) | (4 << 1);
