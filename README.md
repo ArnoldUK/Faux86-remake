@@ -82,12 +82,13 @@ The emulator also supports the following command line parameters:
 - -hd0 filename    Specify a hard disk image file to use as hard drive 0.
 - -hd1 filename    Specify a hard disk image file to use as hard drive 1.
 - Disk image formats supported are .img and .raw
-- -boot #          Specify which BIOS drive ID boot device to use.
-- Examples: -boot 0 will boot from floppy 0 (A:).
-- -boot 1 will boot from floppy 1 (B:).
-- -boot 128 will boot from hard drive 0 (C:).
+- -boot #          Specify which disk boot device to use. Examples:
+- -boot fd0 will boot from floppy 0 (A:).
+- -boot fd1 will boot from floppy 1 (B:).
+- -boot hd0 will boot from hard drive 0 (C:).
+- -boot hd1 will boot from hard drive 1 (D:).		
 - -boot rom will boot to ROM BASIC if available.
-- Default boot device is Harddisk hd0, if it exists, or floppy fd0.
+- Default boot device is fd0 or hd0 if exists.
 - -biosrom file    Specify an alternate Machine BIOS ROM file image.
 - -videorom file   Specify an alternate Video ROM file image.
 - -bootrom file    Specify an alternate Boot ROM file image.
