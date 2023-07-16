@@ -7,6 +7,9 @@ A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 11-07-2023 Release build v1.2 for 32/64Bit Windows
 [Faux86-remake Release Build V1.2 Win32](https://github.com/ArnoldUK/Faux86-remake/releases)
 
+16-07-2023 Pre-Release build V1.0 for ARM RPi 1,2,3,4
+
+
 - Configuration file for emulation settings.
 - Command line parameters are still supported and override the configuration file.
 - Mouse COM port can be set to an alternative port.
@@ -74,72 +77,45 @@ The naming of disk images should be as follows but this is not a strict requirem
 
 # Operation Instructions
 
-## Usage with Windows
-A configuration file named faux86.cfg contains all the available settings for the emulator.
-The emulator also supports the following command line parameters:
-- -fd0 filename    Specify a floppy disk image file to use as floppy 0.
-- -fd1 filename    Specify a floppy disk image file to use as floppy 1.
-- -hd0 filename    Specify a hard disk image file to use as hard drive 0.
-- -hd1 filename    Specify a hard disk image file to use as hard drive 1.
-- Disk image formats supported are .img and .raw
-- -boot #          Specify which disk boot device to use. Examples:
-- -boot fd0 will boot from floppy 0 (A:).
-- -boot fd1 will boot from floppy 1 (B:).
-- -boot hd0 will boot from hard drive 0 (C:).
-- -boot hd1 will boot from hard drive 1 (D:).		
-- -boot rom will boot to ROM BASIC if available.
-- Default boot device is fd0 or hd0 if exists.
-- -biosrom file    Specify an alternate Machine BIOS ROM file image.
-- -videorom file   Specify an alternate Video ROM file image.
-- -bootrom file    Specify an alternate Boot ROM file image.
-- -charrom file    Specify an alternate ASCII Char ROM file image.
-- -net #           Enable ethernet emulation via winpcap. # is ID of your host network interface to bridge.
-- -net #           Enable ethernet emulation via libpcap. # is ID of your host network interface to bridge.
-- To get a list of possible interfaces, use -net list.
-- -nosound         Disable audio emulation and output.
-- -fullscreen      Start Faux86 in fullscreen mode.
-- -verbose         Verbose mode. Operation details will be written to stdout.
-- -speed           Frequency of the CPU in Mhz. Set to 0 for Maximum Speed.
-- Value between 1Mhz and 100Mhz. Default is 10 (10Mhz).	
-- -delay           Specify how many milliseconds to render each video frame.
-- Value between 1ms and 1000ms. Default is 20ms (50 FPS).
-- -slowsys         If your machine is very slow and have audio dropouts. Affects audio quality.
-- If you still have dropouts, then also decrease sample rate and/or increase latency.
-- -multithreaded # Enable multithread processing.
-- -resw #				  Set constant SDL window size width in pixels.
-- -resh #				  Set constant SDL window size height in pixels.
-- Default width and height is 0 and set automatically.
-- -render #				Set render scaling quality mode for SDL window renderer.
-- 0 = nearest (fastest low quality).
-- 1 = linear (quick good quality).
-- 2 = best (slow best quality) (default).
-- -monitor #				Set monitor display type to emulate.
-- 0 = Color VGA (default).
-- 1 = Amber Gas Plasma.
-- 2 = Green CRT Monochrome.
-- 3 = Blue LCD.
-- -mouseport #     Serial Mouse COM Port #.
-- 1 = COM1 IO:3F8H IRQ:4
-- 2 = COM2 IO:2F8H IRQ:3 (default).
-- 3 = COM3 IO:3E8H IRQ:4
-- 4 = COM4 IO:2E8H IRQ:3 
-- -snddisney    Enable Disney Sound Source emulation on LPT1.
-- -sndblaster   Enable SoundBlaster emulation (requires Adlib to be enabled).
-- -sndadlib     Enable Adlib emulation (required for SoundBlaster emulation).
-- -sndspeaker   Enable PC Speaker emulation.
-- -latency #       Change audio buffering and output latency. (default: 100 ms).
-- -samprate #      Change audio emulation sample rate. (default: 48000 Hz).
-- -console         Enable debug console on stdio during emulation.
-- -menu						Enable window menu for changing emulation settings.
+## Usage with Windows/Linux
+The Windows build supports starting the emulator with [command line parameters](PARAMS.md).
+If no command line parameters are supplied when running the emulator then a settings
+file named `faux86.cfg` is used for configuring and starting the emulator.
+
+Read the [SETTING.md](SETTING.md) documentation file for more details.
+
 
 ## Usage with Raspberry Pi
-Raspberry Pi models 1,2,3 and 4 are supported but models 3 and 4 may still need improvement.
-Faux86 is designed to be run 'bare metal' on a Raspberry Pi and directly on the hardware without any supporting OS.
-Running directly on RPi hardware means the emulator can boot to bios in less than 2 secs.
-By default Faux86 boots from the floppy image fd0.img which is mounted as Drive A: in the emulator.
-An additional floppy drive (fd1.img Drive B:) can also be used if included on the Sd-Card.
-The emulator also supports booting hard disk images (hd0.img Drive C:) (hd1.img Drive D:).
-USB keyboard and mouse should be plugged in before booting and must not be removed once detected.
+Raspberry Pi models 1,2,3 and 4 are supported but models 3 and 4 are still require some improvement.
+Faux86 is designed to run 'bare metal' on a Raspberry Pi without any supporting OS.
+Running 'bare metal' or directly on hardware means the emulator can boot to bios in less than 2 secs.
+
+The zip archive contains all the kernels and disk images to boot the emulator directly from a supported
+Raspberry Pi model. Copy all the files from within the zip archive to a FAT32 formatted SD-Card and insert
+the card into your RPi. The RPi is now ready to boot the emulator from the SD-Card.
+A USB keyboard and mouse should be plugged in before booting the emulator (hot plugging is unsupported).
+
+By default Faux86 boots from a floppy image name `fd0.img` which is mounted as Drive A:.
+An additional floppy drive `fd1.img` Drive B: can also be used if included on the Sd-Card.
+The emulator also supports booting hard disk images `hd0.img` Drive C: and `hd1.img` Drive D:.
+
+NOTE:
+Emulation performance and full hardware emulation capabilities depends on the Raspberry Pi model.
+Currently all RPi models are capable of running the emulator with the same performance of an
+XT 8088 Clone with a 12Mhz V20 CPU and basic speaker sound emulation.
+
+Raspberry Pi Models 1 and 2 cannot provide the processing power to fully emulate the Adlib
+and Soundblaster sound cards. It is recommended to disable Adlib and Soundblaster emulation or
+reduce the samplerate and increase the video rendering time from within the settings file.
+
+## Emulator Settings File
+The emulator is configured with a settings file named `faux86.cfg` located within the same folder
+as the binary or kernel image. For RPi builds the settings file is name `faux86-#.cfg` where #
+is the model number of your RPI. This allows RPi builds to use custom settings for each kernel on the
+same SD-Card.
+
+Read the [SETTING.md](SETTING.md) documentation file for more details.
+
 
 # Building and Compiling Sources
 There is currently not a quick and easy way to expalin the build process, but if you are familiar

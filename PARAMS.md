@@ -1,0 +1,56 @@
+Windows/Linux builds supports the following command line parameters:
+
+- -fd0 filename    Specify a floppy disk image file to use as floppy 0.
+- -fd1 filename    Specify a floppy disk image file to use as floppy 1.
+- -hd0 filename    Specify a hard disk image file to use as hard drive 0.
+- -hd1 filename    Specify a hard disk image file to use as hard drive 1.
+- Disk image formats supported are .img and .raw
+- -boot #          Specify which disk boot device to use. Examples:
+- -boot fd0        Boot from floppy 0 (A:).
+- -boot fd1        Boot from floppy 1 (B:).
+- -boot hd0        Boot from hard drive 0 (C:).
+- -boot hd1        Boot from hard drive 1 (D:).		
+- -boot rom        Boot ROM BASIC if available.
+- Default boot device is fd0 or hd0 if exists.
+- -biosrom file    Specify an alternate Machine BIOS ROM file image.
+- -videorom file   Specify an alternate Video ROM file image.
+- -bootrom file    Specify an alternate Boot ROM file image.
+- -charrom file    Specify an alternate ASCII Char ROM file image.
+- -net #           Enable ethernet emulation via winpcap. # is ID of your host network interface to bridge.
+- -net #           Enable ethernet emulation via libpcap. # is ID of your host network interface to bridge.
+- To get a list of possible interfaces, use -net list.
+- -nosound         Disable audio emulation and output.
+- -fullscreen      Start Faux86 in fullscreen mode.
+- -verbose         Enable/Disable logging output. Log details will be written to stdout.
+- -speed           Set Frequency of the emulated CPU in Mhz. Set to 0 for Maximum Speed.
+- Value between 1Mhz and 100Mhz. Default is 10 (10Mhz).	
+- -delay           Specify how many milliseconds to render each video frame.
+- Value between 1ms and 1000ms. Default is 20ms (50 FPS).
+- -slowsys         If your machine is very slow and have audio dropouts. Affects audio quality.
+- If you still have dropouts, then also decrease sample rate and/or increase latency.
+- -multithreaded # Enable multithread processing.
+- -resw #	   Set constant render window resolution width in pixels.
+- -resh #	   Set constant render window resolution height in pixels.
+- Default width and height is 0 and set automatically.
+- -render #	   Set render scaling quality mode for SDL window renderer.
+- 0 = nearest (fastest low quality).
+- 1 = linear (quick good quality).
+- 2 = best (slow best quality) (default).
+- -monitor #       Set monitor display type to emulate.
+- 0 = Color VGA (default).
+- 1 = Amber Gas Plasma.
+- 2 = Green CRT Monochrome.
+- 3 = Blue LCD.
+- -mouseport #     Serial Mouse COM Port #.
+- 1 = COM1 IO:3F8H IRQ:4
+- 2 = COM2 IO:2F8H IRQ:3 (default).
+- 3 = COM3 IO:3E8H IRQ:4
+- 4 = COM4 IO:2E8H IRQ:3 
+- -snddisney    Enable Disney Sound Source emulation on LPT1.
+- -sndblaster   Enable SoundBlaster emulation (requires Adlib to be enabled).
+- -sndadlib     Enable Adlib emulation (required for SoundBlaster emulation).
+- -sndspeaker   Enable PC Speaker emulation.
+- -latency #    Set audio buffering and output latency. (default: 100 ms).
+- -samprate #   Set audio emulation sample rate. (default: 48000 Hz).
+- -console      Enable debug console on stdio during emulation.
+- -menu		Enable window menu for changing emulation settings.

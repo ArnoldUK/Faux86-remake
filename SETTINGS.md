@@ -1,0 +1,176 @@
+# Faux86 Emulator Configuration
+The emulator is configured with settings from a file named `faux86.cfg` located within the same folder
+as the binary or kernel image. The settings can be set and optimized for your own personal tastes.
+Setting an incorrect value could cause the emulator to run very slowly, fail to boot or even crash.
+
+** OVERCLOCKING READ **
+Overclocking your RPi for improved performance is NOT recommended and can cause the emulator to
+become unstable and crash. I have tested the emulator by overclocking a RPi-1 and experienced
+frequent crashing with only a slight overclock of 50Mhz. The emulation timing is critical for the
+emulator to run correctly and remain stable.
+
+For ARM RPi builds a custom settings file can be used for each model which is performance optimized for
+that particular RPi model. The following settings file will be used for each build:
+
+- faux86.cfg      For Windows/Linux binary builds.
+- faux86-1.cfg    For RPi Model 1 Kernel
+- faux86-2.cfg    For RPi Model 2 Kernel7
+- faux86-3.cfg    For RPi Model 3 kernel7l
+- faux86-4.cfg    For RPi Model 4 kernel7l
+
+## Configuration Settings File
+
+# Any line with starting with # will be ignored in the settings file.
+# Some settings use 1 = Enable/On and 0 = Disable/Off
+
+# The system main BIOS Rom file
+biosrom=pcxtbios.bin
+
+# The default boot disk (fd0, fd1, hd0, hd1, rom)
+# fd0 = Boot from floppy 0 (A:).
+# fd1 = Boot from floppy 1 (B:).
+# hd0 = Boot from hard drive 0 (C:).
+# hd1 = Boot from hard drive 1 (D:).		
+# rom = Boot ROM BASIC if available.
+boot=hd0
+
+# The system BOOT Rom file (defaults to ROM Basic)
+bootrom=rombasic.bin
+
+# The video ASCII character Rom file.
+charrom=asciivga.dat
+
+# Show/Hide console output on stdout (Windows/Linux builds only)
+console=1
+
+# Specify how many milliseconds to render each video frame.
+# Value between 1ms and 1000ms. Default is 20ms (50 FPS).
+delay=20
+
+# Set maximum Frame Buffer height for rendering.
+# Default is set for standard VGA modes. Do not change this if unsure.
+fbheight=800
+
+# Set maximum Frame Buffer width for rendering.
+# Default is set for standard VGA modes. Do not change this if unsure.
+fbwidth=800
+
+# Floppy disk image file to use as Drive A:
+fd0=fd0.img
+
+# Floppy disk image file to use as Drive B:
+fd1=fd1.img
+
+# Run emulator in fullscreen mode (Windows/Linux builds only)
+fullscreen=0
+
+# Hard disk image file to use as Drive C:
+hd0=hd0.img
+
+# Hard disk image file to use as Drive D:
+hd1=hd1.img
+
+# Change audio buffering and output latency. (default is 100ms).
+# Set this higher to fix stuttering or audio dropouts.
+latency=200
+
+# Show/Hide window menu for changing settings. (Windows/Linux builds only)
+menu=1
+
+# Set monitor display type to emulate. (Experimental and not perfect).
+# 0 = Color VGA (default).
+# 1 = Amber Gas Plasma.
+# 2 = Green CRT Monochrome.
+# 3 = Blue LCD.
+monitor=0
+
+# Serial UART Mouse COM Port. (default is COM2)
+# 1 = COM1 IO:3F8H IRQ:4
+# 2 = COM2 IO:2F8H IRQ:3
+# 3 = COM3 IO:3E8H IRQ:4
+# 4 = COM4 IO:2E8H IRQ:3
+mouseport=2
+
+# Enable/Disable multithreading support. (Windows/Linux builds only)
+multithreaded=0
+
+# Network ID for Networking. (Experimental may not work)
+netid=0
+
+# Enable/Disable all sound emulation including speaker.
+# Disabling sound emulation can boost emulation speed by upto 50%.
+nosound=0
+
+# Set render scaling quality mode for SDL window. (Windows/Linux builds only)
+# 0 = nearest (fastest low quality).
+# 1 = linear (quick good quality).
+# 2 = best (slow best quality) (default).
+render=1
+
+# Set constant window resolution height and width in pixels.
+# Default is set for the standard EGA/VGA boot mode.
+# Set both values to 0 for automatic window resolution.
+resh=350
+resw=640
+
+# Set sound emulation sample rate. (default: 48000 Hz).
+# Using lower sample rate can boost emulation speed by upto 25%
+# Supported rates are 48000, 44100, 32000, 22050
+samprate=48000
+
+# Enable/Disable if running on a slow system or have frequent audio dropouts.
+slowsys=1
+
+# Enable/Disable Adlib sound emulation.
+# Disabling Adlib emulation can boost emulation speed by upto 25%.
+sndadlib=1
+
+# Enable/Disable Soundblaster sound emulation. Requires Adlib if Enabled.
+# Disabling Soundblaster emulation can boost emulation speed by upto 25%.
+sndblaster=1
+
+# Enable/Disable Disney Sound Source sound emulation.
+# Disabling Disney Sound emulation can boost emulation speed by upto 25%.
+snddisney=0
+
+# Enable/Disable Speaker beep sound emulation.
+sndspeaker=1
+
+# Set Frequency of the emulated CPU in units of Mhz. Set to 0 for Maximum Speed.
+# Value between 1Mhz and 100Mhz. Default is 10 (10Mhz).
+# Set to 0 for maximum emulation speed.
+speed=8
+
+# Enable/Disable logging output. Log details will be written to stdout.
+verbose=1
+
+# The video emulation BIOS Rom file.
+videorom=videorom.bin
+
+
+# Credits
+Faux86-remake was originally based on the Fake86 emulator by Mike Chambers and James Howard.
+Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
+
+The Raspberry Pi build uses RSTA2's Circle SDK to interface directly with the Raspberry Pi hardware.
+This build would not of been possible without the support from RSTA2 and the Circle SDK. 
+For more details about the Raspberry Pi Circle SDK visit [RSTA2 Circle SDK](https://github.com/rsta2/circle)
+
+## Copyright
+Based on Fake86 Copyright (C)2010-2013 Mike Chambers.
+Faux86 Copyright (C)2018 James Howard.
+Faux86-remake (c)2023 Curtis aka ArnoldUK.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
