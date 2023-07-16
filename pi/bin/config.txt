@@ -1,0 +1,140 @@
+# FAUX86 RPi Config File
+
+# Composite Test Mode in Seconds
+#test_mode=2
+
+# Disable rainbow splash screen
+# Fixes CTRL-ALT-DEL Black Screen
+disable_splash=1
+
+# Enable a Boot Delay in Seconds
+# Fixes boot issues
+# bootcode_delay=1
+
+# Skip RPi LCD Detection
+ignore_lcd=1
+
+# Fix No Picture HDMI for a default "safe" mode
+# Comment this line if using Composite Video Out
+# hdmi_safe=1
+
+# Ignore HDMI Hot Plug Signal
+# Uncomment for Composite Only Video
+# hdmi_ignore_hotplug=1
+
+# Force HDMI display if not detected and only composite is being output
+# Fixes issues with monitors using DVI mode
+#hdmi_force_hotplug=1
+#hdmi_force_edid_audio=1
+#hdmi_drive=2
+
+# Fixes interference on display from long cables
+config_hdmi_boost=7
+
+# Force a specific HDMI mode (this will force VGA)
+# hdmi_group (0=AUTODETECT, 1=CEA-TV, 2=DMT-MONITOR)
+hdmi_group=0
+hdmi_mode=4
+hdmi_drive=2
+
+# 640x480 VGA 4:3
+#hdmi_mode=1
+
+# 1280x720p@60 Hz 16:9
+#hdmi_mode=4
+
+# 1920x1080i@60 Hz 16:9
+# hdmi_mode=5
+
+# Standard 480i 4:3
+# hdmi_mode=6
+
+# 720x576p @50 Hz 4:3
+# hdmi_mode=17
+
+# 720x576p @50 Hz 16:9
+# hdmi_mode=18
+
+# 720x576i @50 Hz 4:3
+# hdmi_mode=21
+
+# 720x576i @50 Hz 16:9
+#hdmi_mode=22
+
+# HDMI Aspect Ratio
+#HDMI_ASPECT_4_3=1  
+#HDMI_ASPECT_14_9=2  
+#HDMI_ASPECT_16_9=3  
+#HDMI_ASPECT_5_4=4  
+#HDMI_ASPECT_16_10=5
+
+# Fix display with black border of unused pixels visible
+#disable_overscan=1
+
+# Force aspect ratio to 4:3
+# Composite Video Out Standard Mode (NTSC=0 PAL=2)
+# Composite Video Out Progressive Mode (NTSC=16 PAL=18)
+# Aspect Ratio (4:3=1 14:9=2 16:9=3)
+# Overscan Scale Fixes Screen Not Centered Issue
+# Disable Colour Burst for Crisp B/W Picture
+#sdtv_disable_colourburst=1
+#sdtv_mode=0x32
+#sdtv_mode=0x20
+sdtv_mode=2
+sdtv_aspect=1
+#sdtv_aspect=3
+overscan_scale=1
+
+# PWM Audio Mode
+audio_pwm_mode=2
+
+# Disable 1.0LSB Dither to Reduce Sound HISS
+disable_audio_dither=1
+
+# Advanced Do Not Change!
+#gpu_mem_256=160
+#gpu_mem_512=316
+#cma_lwm=16
+#cma_hwm=32
+#gpu_mem=64
+
+# Overclock Settings (hold SHIFT at bootup to disable)
+# Default None
+#arm_freq=700
+#gpu_freq=250
+#core_freq=250
+#sdram_freq=400
+#over_voltage=0
+
+# Low
+#arm_freq=800
+#core_freq=300
+#sdram_freq=400
+#over_voltage=0
+
+# Medium
+#arm_freq=900
+#core_freq=333
+#sdram_freq=400
+#over_voltage=2
+
+# High!!
+#arm_freq=900
+#core_freq=300
+#sdram_freq=450
+#over_voltage=6
+#temp_limit=80
+
+#init_uart_clock=16000000
+enable_uart=1
+
+# kernel scaling parameter
+# SCALERLIB_KERNELS_TYPES_SINC=1,
+# SCALERLIB_KERNELS_TYPES_SINC_BLACKMAN=2,
+# SCALERLIB_KERNELS_TYPES_SINC_NO_SIDE_LOBES=3,
+# SCALERLIB_KERNELS_TYPES_SINC_HALF_FIRST_SIDE_LOBE=4,
+# SCALERLIB_KERNELS_TYPES_SINC_HAMMING=5,
+# SCALERLIB_KERNELS_TYPES_SINC_HAMMING_3PI=6, (default)
+# SCALERLIB_KERNELS_TYPES_SINC_HAMMING_2_5PI=7,
+# SCALERLIB_KERNELS_TYPES_NEAREST_NEIGHBOUR=8
+# scaling_kernel=8

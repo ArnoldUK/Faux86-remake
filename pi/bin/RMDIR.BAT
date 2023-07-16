@@ -1,0 +1,1 @@
+RMDIR "System Volume Information" /s /q
