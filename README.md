@@ -8,6 +8,7 @@ A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 [Faux86-remake Release Build V1.2 Win32](https://github.com/ArnoldUK/Faux86-remake/releases)
 
 16-07-2023 Pre-Release build V1.0 for ARM RPi 1,2,3,4
+[Faux86-remake Pre-Release Build V1.0 ARM-RPi](https://github.com/ArnoldUK/Faux86-remake/releases)
 
 
 - Configuration file for emulation settings.
@@ -82,7 +83,7 @@ The Windows build supports starting the emulator with [command line parameters](
 If no command line parameters are supplied when running the emulator then a settings
 file named `faux86.cfg` is used for configuring and starting the emulator.
 
-Read the [SETTING.md](SETTING.md) documentation file for more details.
+Read the [SETTINGS.md](SETTINGS.md) documentation file for more details.
 
 
 ## Usage with Raspberry Pi
@@ -114,7 +115,7 @@ as the binary or kernel image. For RPi builds the settings file is name `faux86-
 is the model number of your RPI. This allows RPi builds to use custom settings for each kernel on the
 same SD-Card.
 
-Read the [SETTING.md](SETTING.md) documentation file for more details.
+Read the [SETTINGS.md](SETTINGS.md) documentation file for more details.
 
 
 # Building and Compiling Sources
