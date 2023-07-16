@@ -20,8 +20,8 @@ that particular RPi model. The following settings file will be used for each bui
 
 ## Configuration Settings File
 
-# Any line with starting with # will be ignored in the settings file.
-# Some settings use 1 = Enable/On and 0 = Disable/Off
+\# Any line with starting with # will be ignored in the settings file.
+\# Some settings use 1 = Enable/On and 0 = Disable/Off
 
 # The system main BIOS Rom file
 biosrom=pcxtbios.bin
