@@ -69,6 +69,7 @@ public:
 		int delay = 0;
 		
 		//THIS CODE NEEDS TO BE MORE ACCURATE
+		//vm.timing.tick();
 		
 		if (!vm.config.cpuSpeed)	{
 			//vm.cpu.exec86(4700); //4.7Mhz
@@ -91,6 +92,8 @@ public:
 			}
 			#ifdef _WIN32
 			delay = 1;
+			#else
+			//delay = 0;	
 			#endif
 		}
 		return delay;
@@ -141,9 +144,11 @@ bool VM::init()
 	renderer.init(config.framebuffer.width, config.framebuffer.height);
 	audio.init();
 
-	adlib.init();
-	soundSource.init();
-	blaster.init();
+	if (config.usePCSpeaker) pcSpeaker.init();
+	if (config.useAdlib) adlib.init();
+	if (config.useSoundBlaster) blaster.init();	
+	if (config.useDisneySoundSource) soundSource.init();
+	
 	dma.init();
 
 	uartcom1.init(config.mouse.port, config.mouse.irq, nullptr, nullptr, nullptr, nullptr);

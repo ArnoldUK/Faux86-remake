@@ -768,8 +768,8 @@ void Video::vga_update(uint32_t start_x, uint32_t start_y, uint32_t end_x, uint3
 					((uint8_t)(scy % 16) >= (vga_crtcd[VGA_REG_DATA_CURSOR_BEGIN] & 31)) &&
 					((uint8_t)(scy % 16) <= (vga_crtcd[VGA_REG_DATA_CURSOR_END] & 31)) &&
 					vga_cursor_blink_state && cursorenable) { //cursor should be displayed
-					color32 = vga_attrd[attr & 0x0F] | (vga_attrd[0x14] << 4); //ORIGINAL
-					//color32 = vga_attrd[attr & 0x0F] | ((vga_attrd[0x14] & 0xC) << 4); //UPDATED
+					//color32 = vga_attrd[attr & 0x0F] | (vga_attrd[0x14] << 4); //ORIGINAL
+					color32 = vga_attrd[attr & 0x0F] | ((vga_attrd[0x14] & 0xC) << 4); //UPDATED
 					if (vga_attrd[0x10] & 0x80) { //P5, P4 replace
 						color32 = (color32 & 0xCF) | ((vga_attrd[0x14] & 3) << 4);
 					}
@@ -1268,7 +1268,7 @@ bool Video::portWriteHandler(uint16_t portnum, uint8_t value)
 			case 0x01:
 				vga_dots = (value & 0x01) ? 8 : 9;
 				vga_dbl = (value & 0x08) ? 1 : 0; //HOW DOES THIS AFFECT TEXT MODE CURSOR ??
-				vga_calcscreensize(); //MAYBE COMMENT THIS ??
+				//vga_calcscreensize(); //MAYBE COMMENT THIS ??
 				break;
 			case 0x02:
 				vga_enableplane = value & 0x0F;

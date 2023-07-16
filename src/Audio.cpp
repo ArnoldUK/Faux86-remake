@@ -77,6 +77,7 @@ void Audio::tick()
 	if (vm.config.useDisneySoundSource) sample += vm.soundSource.generateSample();
 	if (vm.config.useSoundBlaster) sample += vm.blaster.generateSample();
 	if (vm.config.usePCSpeaker) sample += (vm.pcSpeaker.generateSample() >> 1);
+	//if (vm.config.usePCSpeaker) sample += (vm.pcSpeaker.getSample());
 	if (audbufptr < (int) sizeof(audbuf) ) audbuf[audbufptr++] = (uint8_t) ((uint16_t) sample+128);
 }
 

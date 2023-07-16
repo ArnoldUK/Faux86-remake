@@ -28,9 +28,10 @@ namespace Faux86
 {
 	enum LogChannel
 	{
+		Log,
+		LogError,
 		LogVerbose,
 		LogFatal,
-		Log,
 		LogRaw,
 		LogDebugger
 	};

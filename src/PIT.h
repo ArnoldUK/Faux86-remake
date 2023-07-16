@@ -25,6 +25,11 @@
 #include "Types.h"
 #include "Ports.h"
 
+#define PIT_MODE_LATCHCOUNT	0
+#define PIT_MODE_LOBYTE	1
+#define PIT_MODE_HIBYTE	2
+#define PIT_MODE_TOGGLE	3
+
 namespace Faux86
 {
 	class VM;
@@ -35,14 +40,24 @@ namespace Faux86
 	public:
 		PIT(VM& inVM);
 
-		uint16_t chandata[3] = {0};
-		uint8_t accessmode[3] = {0};
-		uint8_t bytetoggle[3] = {0};
-		uint32_t effectivedata[3] = {0};
-		float chanfreq[3] = {0};
-		uint8_t active[3] = {0};
-		uint16_t counter[3] = {0};
+		uint16_t chandata[3];
+		uint8_t accessmode[3];
+		uint8_t bytetoggle[3];
+		uint32_t effectivedata[3];
+		float chanfreq[3];
+		uint8_t active[3];
+		uint16_t counter[3];
+		
+		//ADDED
+		int32_t reload[3];
+		uint8_t mode[3] = {0};
+		uint8_t dataflipflop[3];
+		uint8_t bcd[3];
+		uint8_t rlmode[3];
+		uint16_t latch[3];
+		uint8_t out[3];
 
+		//void tick();
 		virtual bool portWriteHandler(uint16_t portnum, uint8_t value) override;
 		virtual bool portReadHandler(uint16_t portnum, uint8_t& outValue) override;
 

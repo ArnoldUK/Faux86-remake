@@ -46,12 +46,15 @@ void TimingScheduler::init()
 	scanlinetiming = getHostFreq() / 31500; //0.317ms 317 31.74
 	ssourceticks = getHostFreq() / 8000; //0.125ms 1250 125
 	adlibticks = getHostFreq() / vm.config.audio.sampleRate; //0.208ms 48000; //20
+	speakerticks = getHostFreq() / vm.config.audio.sampleRate;
 	//mouseticks = getHostFreq() / (115200 / 9); //0.078ms
 	//mouseticks = getHostFreq() / (115200 / 6); //0.043ms
 	mouseticks = getHostFreq() / (115200 / 20); //1.73ms
 	if (vm.config.enableAudio) sampleticks = getHostFreq() / vm.config.audio.sampleRate;
 	else sampleticks = -1;
-	i8253tickgap = getHostFreq() / 119318; //0.0083ms 83 8
+	
+	//i8253tickgap = getHostFreq() / 119318; //0.0083ms 83 8
+	i8253tickgap = getHostFreq() / 1193182; //0.0083ms 83 8
 	
 	//drawticks = getHostFreq() / 50; //20ms 200000 20000
 	//drawticks = getHostFreq() / 30; //33ms
@@ -68,6 +71,7 @@ void TimingScheduler::tick()
 	uint8_t i8253chan;
 
 	curtick = getTicks();
+	
 	
 	if (curtick >= (lastscanlinetick + scanlinetiming) ) {
 	//if (curtick >= (lastscanlinetick + vm.video.vga_dispinterval) ) {
@@ -90,8 +94,26 @@ void TimingScheduler::tick()
 		}
 		//pit0counter++;
 		//vm.video.vga_updateScanlineTiming();
-		//lastscanlinetick = curtick;
 		lastscanlinetick = curtick - (curtick - (lastscanlinetick + scanlinetiming) );
+	}
+	
+	
+	if (vm.pit.active[0]) { //timer interrupt channel on i8253
+		if (curtick >= (lasttick + tickgap) ) {
+			lasttick = curtick;
+			vm.pic.doirq(0);
+		}
+	}
+
+	if (curtick >= (lasti8253tick + i8253tickgap) ) {
+		for (i8253chan = 0; i8253chan < 3; i8253chan++) {
+			if (vm.pit.active[i8253chan]) {
+				if (vm.pit.counter[i8253chan] < 10) vm.pit.counter[i8253chan] = vm.pit.chandata[i8253chan];
+				vm.pit.counter[i8253chan] -= 10; //10
+				//vm.pit.tick();
+			}
+		}
+		lasti8253tick = curtick;
 	}
 		
 	/*	
@@ -112,68 +134,65 @@ void TimingScheduler::tick()
 	}
 	*/
 
+	if (curtick >= (lastmousetick + mouseticks) ) {
+		//if (vm.config.useMouse) vm.mouse.rxpoll(0);
+		vm.mouse.rxpoll(0);
+		lastmousetick = curtick - (curtick - (lastmousetick + mouseticks) );
+	}
+	
+	if (vm.config.enableAudio) {
+		/*
+		if (vm.config.usePCSpeaker) {
+		if (curtick >= (lastspeakertick + speakerticks) ) {
+				vm.pit.tick();
+				vm.pcSpeaker.tick();
+				lastspeakertick = curtick - (curtick - (lastspeakertick + speakerticks) );
+			}
+		}
+		*/
+		
+		if (vm.config.useDisneySoundSource) {
+		if (curtick >= (lastssourcetick + ssourceticks) ) {
+				vm.soundSource.tick();
+				lastssourcetick = curtick - (curtick - (lastssourcetick + ssourceticks) );
+			}
+		}
+
+		if (vm.config.useSoundBlaster) {
+		if (vm.blaster.samplerate > 0) {
+			if (curtick >= (lastblastertick + vm.blaster.sampleticks) ) {
+				vm.blaster.tick();
+				lastblastertick = curtick - (curtick - (lastblastertick + vm.blaster.sampleticks) );
+			}
+			}
+		}
+		
+		if (vm.config.useAdlib) {
+		if (curtick >= (lastadlibtick + adlibticks) ) {
+				vm.adlib.tick();
+				lastadlibtick = curtick - (curtick - (lastadlibtick + adlibticks) );
+			}
+		}
+
+		if (curtick >= (lastsampletick + sampleticks) ) {
+			vm.audio.tick();
+			if (vm.config.slowSystem) {
+				for (int i = 0; i < 4; i++)	vm.audio.tick();
+				}
+			lastsampletick = curtick - (curtick - (lastsampletick + sampleticks) );
+		}
+	}
+	
 	if (curtick >= (lastvgacursortick + vgacursorticks)) {
 		//log(Log,"[TIMING] VGA Cursor Ticks %llu %llu", lastvgacursortick, getElapsedMS(lastvgacursortick));
 		vm.video.vga_blinkCallback(0);
-		lastvgacursortick = curtick - (curtick - (lastvgacursortick + vgacursorticks) );
+		lastvgacursortick = curtick - (curtick - (lastvgacursortick + vgacursorticks));
 	}
 
 	if (curtick >= (lastdrawtick + drawticks)) {
 		//log(Log,"[TIMING] VGA Draw Ticks %llu %llu", lastdrawtick, getElapsedMS(lastdrawtick));
 		vm.video.vga_drawCallback(0);
 		lastdrawtick = curtick - (curtick - (lastdrawtick + drawticks) );
-	}
-	
-	if (curtick >= (lastmousetick + mouseticks) ) {
-		//if (vm.config.useMouse) vm.mouse.rxpoll(0);
-		vm.mouse.rxpoll(0);
-		lastmousetick = curtick - (curtick - (lastmousetick + mouseticks) );
-	}
-
-	if (vm.pit.active[0]) { //timer interrupt channel on i8253
-		if (curtick >= (lasttick + tickgap) ) {
-			lasttick = curtick;
-			vm.pic.doirq(0);
-		}
-	}
-
-	if (curtick >= (lasti8253tick + i8253tickgap) ) {
-		for (i8253chan=0; i8253chan<3; i8253chan++) {
-			if (vm.pit.active[i8253chan]) {
-				if (vm.pit.counter[i8253chan] < 10) vm.pit.counter[i8253chan] = vm.pit.chandata[i8253chan];
-				vm.pit.counter[i8253chan] -= 10; //10
-			}
-		}
-		lasti8253tick = curtick;
-	}
-	
-	if (vm.config.enableAudio) {
-		if (curtick >= (lastssourcetick + ssourceticks) ) {
-				if (vm.config.useDisneySoundSource)	vm.soundSource.tick();
-				lastssourcetick = curtick - (curtick - (lastssourcetick + ssourceticks) );
-			}
-
-		if (vm.blaster.samplerate > 0) {
-				if (curtick >= (lastblastertick + vm.blaster.sampleticks) ) {
-						if (vm.config.useSoundBlaster) vm.blaster.tick();
-						lastblastertick = curtick - (curtick - (lastblastertick + vm.blaster.sampleticks) );
-					}
-			}
-			
-		if (curtick >= (lastadlibtick + adlibticks) ) {
-				if (vm.config.useAdlib) vm.adlib.tick();
-				lastadlibtick = curtick - (curtick - (lastadlibtick + adlibticks) );
-			}
-
-		if (curtick >= (lastsampletick + sampleticks) ) {
-			vm.audio.tick();
-			if (vm.config.slowSystem) {
-					vm.audio.tick();
-					vm.audio.tick();
-					vm.audio.tick();
-				}
-			lastsampletick = curtick - (curtick - (lastsampletick + sampleticks) );
-		}
 	}
 }
 

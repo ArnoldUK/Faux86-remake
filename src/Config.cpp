@@ -21,6 +21,10 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#ifndef _WIN32
+#include <circle/util.h>
+#endif
+
 #include "Config.h"
 #include "DriveManager.h"
 #include "VM.h"
@@ -31,14 +35,11 @@ using namespace Faux86;
 #define PATH_DATAFILES ""
 #endif
 
-#ifndef _WIN32
-#define strcmpi strcasecmp
-#else
-#define strcmpi _strcmpi
-#endif
-
 #ifdef _WIN32
 #define COMMAND_LINE_PARSING
+#define strcmpi _strcmpi
+#else
+#define strcmpi strcasecmp
 #endif
 
 #ifdef COMMAND_LINE_PARSING
@@ -372,7 +373,7 @@ bool Config::parseCommandLine(int argc, char *argv[])
 
 bool Config::loadFD0(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] loadFD0 %s\n", str);
+	log(Log, "[CONFIG] loadFD0 %s\n", str);
 	diskDriveA = hostSystemInterface->openFile(str);
 	if (!diskDriveA) return false;
 	return true;
@@ -380,7 +381,7 @@ bool Config::loadFD0(const char* str) {
 
 bool Config::loadFD1(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] loadFD1 %s\n", str);
+	log(Log, "[CONFIG] loadFD1 %s\n", str);
 	diskDriveB = hostSystemInterface->openFile(str);
 	if (!diskDriveB) return false;
 	return true;	
@@ -388,7 +389,7 @@ bool Config::loadFD1(const char* str) {
 
 bool Config::loadHD0(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] loadHD0 %s\n", str);
+	log(Log, "[CONFIG] loadHD0 %s\n", str);
 	diskDriveC = hostSystemInterface->openFile(str);
 	if (!diskDriveC) return false;
 	return true;	
@@ -396,7 +397,7 @@ bool Config::loadHD0(const char* str) {
 
 bool Config::loadHD1(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] loadHD1 %s\n", str);
+	log(Log, "[CONFIG] loadHD1 %s\n", str);
 	diskDriveD = hostSystemInterface->openFile(str);
 	if (!diskDriveD) return false;
 	return true;	
@@ -404,7 +405,7 @@ bool Config::loadHD1(const char* str) {
 
 bool Config::loadBiosRom(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] loadBiosRom %s\n", str);
+	log(Log, "[CONFIG] loadBiosRom %s\n", str);
 	biosFile = hostSystemInterface->openFile(str);
 	if (!biosFile) return false;
 	return true;	
@@ -412,7 +413,7 @@ bool Config::loadBiosRom(const char* str) {
 
 bool Config::loadVideoRom(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] loadVideoRom %s\n", str);
+	log(Log, "[CONFIG] loadVideoRom %s\n", str);
 	videoRomFile = hostSystemInterface->openFile(str);
 	if (!videoRomFile) return false;
 	return true;	
@@ -420,7 +421,7 @@ bool Config::loadVideoRom(const char* str) {
 
 bool Config::loadBootRom(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] loadBootRom %s\n", str);
+	log(Log, "[CONFIG] loadBootRom %s\n", str);
 	romBasicFile = hostSystemInterface->openFile(str);
 	if (!romBasicFile) return false;
 	return true;	
@@ -428,7 +429,7 @@ bool Config::loadBootRom(const char* str) {
 
 bool Config::loadCharRom(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] loadCharRom %s\n", str);
+	log(Log, "[CONFIG] loadCharRom %s\n", str);
 	asciiFile = hostSystemInterface->openFile(str);
 	if (!asciiFile) return false;
 	return true;	
@@ -436,7 +437,7 @@ bool Config::loadCharRom(const char* str) {
 
 bool Config::setBootDrive(const char* str) {
 	if ((str == nullptr) || (str[0] == char(0))) return false;
-	printf("[CONFIG] setBootDrive %s\n", str);
+	log(Log, "[CONFIG] setBootDrive %s\n", str);
 	if (strcmpi(str, "fd0") == 0) bootDrive = 0;
 	else if (strcmpi(str, "fd1") == 0) bootDrive = 1;
 	else if (strcmpi(str, "hd0") == 0) bootDrive = 128;

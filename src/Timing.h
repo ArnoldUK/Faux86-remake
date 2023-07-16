@@ -46,8 +46,9 @@ namespace Faux86
 		uint64_t tickgap;
 
 	private:
-		uint64_t lasttick = 0, curtick = 0, i8253tickgap, lasti8253tick, scanlinetiming, lastscanlinetick, curscanline = 0;
-		uint64_t lastsampletick, ssourceticks, lastssourcetick, adlibticks, lastadlibtick, lastblastertick;
+		uint64_t lasttick, curtick, i8253tickgap, lasti8253tick, scanlinetiming, lastscanlinetick, curscanline = 0;
+		uint64_t lastsampletick, ssourceticks, lastssourcetick, adlibticks, lastadlibtick, lastblastertick = 0;
+		uint64_t speakerticks, lastspeakertick = 0;
 		uint64_t mouseticks, lastmousetick;
 		uint64_t drawticks, lastdrawtick;
 		uint64_t vgacursorticks, lastvgacursortick;

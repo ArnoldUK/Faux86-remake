@@ -22,8 +22,17 @@
 */
 #pragma once
 
+//#include <stdint.h>
+
 #include "Types.h"
 #include "Audio.h"
+
+#define PC_SPEAKER_GATE_DIRECT	0
+#define PC_SPEAKER_GATE_TIMER2	1
+#define PC_SPEAKER_USE_DIRECT		0
+#define PC_SPEAKER_USE_TIMER2		1
+
+#define PC_SPEAKER_MOVEMENT			800
 
 namespace Faux86
 {
@@ -36,13 +45,25 @@ namespace Faux86
 
 		int16_t generateSample() override;
 
+		void tick();
+		void setGateState(uint8_t gate, uint8_t value);
+		void selectGate(uint8_t value);
+		int16_t getSample();
+		void init();
+
 		bool enabled = false;
 
 	private:
 		VM& vm;
 
-		uint64_t speakerfullstep, speakerhalfstep, speakercurstep = 0;
+		uint64_t speakerfullstep = 0;
+		uint64_t speakerhalfstep = 0;
+		uint64_t speakercurstep = 0;
 		int16_t speakerpos = 0;
+		
+		uint8_t speakergateselect = 0;
+		uint8_t speakergate[2] = {0};
+		int16_t speakeramplitude = 0;
 	};
 }
 
