@@ -13,10 +13,10 @@ For ARM RPi builds a custom settings file can be used for each model which is pe
 that particular RPi model. The following settings file will be used for each build:
 
 - faux86.cfg      For Windows/Linux binary builds.
-- faux86-1.cfg    For RPi Model 1 Kernel
-- faux86-2.cfg    For RPi Model 2 Kernel7
-- faux86-3.cfg    For RPi Model 3 kernel7l
-- faux86-4.cfg    For RPi Model 4 kernel7l
+- faux86-1.cfg    For RPi Model 1 Kernel.img
+- faux86-2.cfg    For RPi Model 2 Kernel7.img
+- faux86-3.cfg    For RPi Model 3 kernel8-32.img
+- faux86-4.cfg    For RPi Model 4 kernel7l.img
 
 ## Configuration Settings File
 ```
