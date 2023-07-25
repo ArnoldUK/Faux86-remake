@@ -15,25 +15,23 @@ python3-pyserial module) installed. You may also need the terminal program
 "putty".
 
 3. Add the following lines to the file Config.mk in the Circle root directory:
-
-	SERIALPORT = /dev/ttyUSB0	(device of your serial USB adapter)
-	FLASHBAUD = 115200		(baud rate for loading the application)
-	USERBAUD = 115200		(baud rate used by the application)
-
-By increasing FLASHBAUD you can speed-up to loading process very much. It
-depends on your serial adapter, which baud rates are possible. Common values are
-460800, 921600 or higher.
+```
+SERIALPORT = /dev/ttyUSB0	(device of your serial USB adapter)
+FLASHBAUD = 115200		(baud rate for loading the application)
+USERBAUD = 115200		(baud rate used by the application)
+```
+By increasing FLASHBAUD you can speed-up to loading process very much.
+It depends on your serial adapter, which baud rates are possible.
+Common values are 460800, 921600 or higher.
 
 USERBAUD is the baud rate, used by the application itself, if it communicates
 using the serial interface.
 
 4. The Circle project libraries used in your application have to be build
-manually using "./makeall" as described in the main README.md file.
+manually using `./makeall` as described in the main README.md file.
 
 5. You have to prepare a SD card, which starts your Raspberry Pi in bootloader
-mode. Go to the boot/ subdirectory and enter:
-
-	make all
+mode. Go to the boot/ subdirectory and enter: `make all`
 
 After completion copy the files from boot/ to the SD card (copy the file
 "config.txt" only for AArch64 operation), which must have a FAT partition.
@@ -44,28 +42,29 @@ machine and power it on.
 
 6. The bootloader starts when you go to the subdirectory of your application (or
 sample program) in a shell and enter:
-
-	make flash (creates kernel.hex file and sends over the serial port)
-	make cat (dumps serial output to the console window)
-
+```
+make flash (creates kernel.hex file and sends over the serial port)
+make cat (dumps serial output to the console window)
+```
 7. If your application uses the serial interface itself, you can start the
 terminal program "putty" directly from the shell. You have to enter "make
 monitor" like you have done for "flash" before and putty should open with the
 right communication parameters.
 
 8. To start another development cycle, power off and on the Raspberry Pi, and
-after rebuilding do again "make flash".
+after rebuilding do again `make flash`.
 
 Connect to bootloader over serial connection
 --------------------------------------------
 You can connect the Raspberry Pi to a PC using a USB-Serial cable.
 Console connection serial parameters:
+```
     Speed (baud rate): 115200
     Bits: 8
     Parity: None
     Stop Bits: 1
     Flow Control: None
-
+```
 NOTE FOR RASPBERRY PI 3:
 The Raspberry pi 3 may require the option "enable_uart=1" in /boot/config.txt
 
@@ -74,39 +73,41 @@ Setup the COM port with the serial parameters above. Use the correct COM port as
 to your USB-Serial cable in device manager.
 
 Recieve data from COM port:
-type \\.\COM4 >> "data.txt"
+`type \\.\COM4 >> "data.txt"`
 
-Generate .hex file from kernel.elf
-arm-none-eabi-objcopy kernel.elf -O ihex kernel.hex
+Generate .hex file from kernel.elf:
+`arm-none-eabi-objcopy kernel.elf -O ihex kernel.hex`
 
+Upload .hex file to RPi over serial port:
+```
 mode COM4 /STATUS
 mode COM4: BAUD=115200 PARITY=n DATA=8
 rem set /p x="magicstring" <nul >\\.\COM4
 set /p x="R" <nul >\\.\COM4
 copy /A kernel.hex COM4
 echo g > \\.\COM4
+```
 
 Linux users can use terminal for communicating over the serial connection.
 
-Built-in (standard) Serial Ports: /dev/ttyS0, /dev/ttyS1
-USB Serial Ports: /dev/ttyUSB0, /dev/ttyUSB1
-Some USB Serial Adapters may appear as: /dev/ttyACM0
+Built-in (standard) Serial Ports: `/dev/ttyS0, /dev/ttyS1`
+USB Serial Ports: `/dev/ttyUSB0, /dev/ttyUSB1`
+Some USB Serial Adapters may appear as: `/dev/ttyACM0`
 
 1. Check the tty USB device is available:
-# ls -l /dev/ttyUSB0
+`# ls -l /dev/ttyUSB0`
 
 2. Check the user is a member of the "dialout" group or add the user to the group if not.
-# id
-# sudo usermod -a -G dialout username
+`# id`
+`# sudo usermod -a -G dialout username`
 
 3. Choose the method to upload the kernel.hex firmware.
 
 Super Easy Way Using GNU Screen (use CTRL+A then k to exit):
-# screen /dev/ttyUSB0 115200
+`# screen /dev/ttyUSB0 115200`
 
 Super Easy Way Using Minicom (use CTRL+A then x to exit):
-# minicom -b 115200 -o -D Port_Name
-
+`# minicom -b 115200 -o -D Port_Name`
 
 Using the New New Flash Tool "Flashy"
 -------------------------------------
