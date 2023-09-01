@@ -1,6 +1,6 @@
 # Faux86-remake
-This is an improved and updated version of Faux86 XT PC Emulator.
-A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
+A portable, open-source 8086/8088 Emulator for Win32 and bare metal ARM Raspberry Pi.
+Faux86-remake is based on the Fake86 and XTulator 8086/8088 emulators by Mike Chambers and James Howard. Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
 
 ## Current Status
 
@@ -141,8 +141,7 @@ also required for the Raspberry Pi build to be successful. THe Circle SDK requir
 set for the correct Raspberry model being targetted. The makefile is pre-configured for Raspberry Pi 1.
 
 # Credits
-Faux86-remake was originally based on the Fake86 emulator by Mike Chambers and James Howard.
-Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
+Faux86-remake was originally based on the Fake86 and XTulator 8086/8088 emulators by Mike Chambers and James Howard. Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
 
 The Raspberry Pi build uses RSTA2's Circle SDK to interface directly with the Raspberry Pi hardware.
 This build would not of been possible without the support from RSTA2 and the Circle SDK. 
