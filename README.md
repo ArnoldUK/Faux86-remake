@@ -35,7 +35,7 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Many bug fixes.
 
 ## Emulator Features
-- 8086, V20, 80186 and 286 instruction set.
+- 8086/8088, V20, 80186 and limited 286 instruction set.
 - Configurable CPU speeds from 5Mhz upto 100Mhz.
 - Custom Hardware BIOS's supported.
 - Supports bootable disk images in .img and .raw file format.
