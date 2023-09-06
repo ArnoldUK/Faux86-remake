@@ -81,6 +81,8 @@ public:
 			//vm.cpu.exec86(vm.config.cpuSpeed / 1000); //win32 (4700000 = 4.7Mhz)
 			#ifdef _WIN32
 			vm.cpu.exec86(vm.config.cpuSpeed * 100); //10Mhz win32
+			#elif defined(ARDUINO)
+			vm.cpu.exec86(vm.config.cpuSpeed * 100); //10Mhz
 			#else
 			vm.cpu.exec86(vm.config.cpuSpeed * 1000); //10Mhz RPi
 			#endif

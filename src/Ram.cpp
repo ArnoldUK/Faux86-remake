@@ -23,6 +23,9 @@
 
 #ifdef _WIN32
 #include <memory.h>
+#elif defined(ARDUINO)
+#include <stdio.h>
+#include <string.h>
 #else
 #include <circle/new.h>
 #include <circle/util.h>

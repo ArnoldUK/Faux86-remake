@@ -41,7 +41,11 @@ typedef uint32_t size_t;
 #define assert(x)
 #endif
 
-#ifndef _WIN32
+#ifdef _WIN32
+
+#elif defined(ARDUINO)
+
+#else
 typedef unsigned int size_t;
 #endif
 

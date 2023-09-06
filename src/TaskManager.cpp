@@ -23,6 +23,10 @@
 #ifdef _WIN32
 #include <Windows.h>
 #include <process.h>
+#elif defined(ARDUINO)
+#if defined(ESP32)
+#include "esp32-hal.h"
+#endif
 #else
 #include <circle/sched/scheduler.h>
 #endif
@@ -47,6 +51,11 @@ void TaskManager::tick()
 				//tasks[n].nextTickTime = vm.timing.getTicks() + result * vm.timing.getHostFreq() / 1000;
 				tasks[n].nextTickTime = currentTime + result * vm.timing.getHostFreq() / 1000;
 				#ifdef _WIN32
+
+				#elif defined(ARDUINO)
+				#if defined(ESP32)
+				delay(0);
+				#endif
 				#else
 				CScheduler::Get()->Yield();
 				#endif

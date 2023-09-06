@@ -21,7 +21,11 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef _WIN32
+#ifdef _WIN32
+
+#elif defined(ARDUINO)
+#include <strings.h>
+#else
 #include <circle/util.h>
 #endif
 
