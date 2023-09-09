@@ -46,6 +46,8 @@ static unsigned uTimeStart, uTimeEnd = 0;
 static unsigned uBlitCalls = 0;
 static unsigned uCpuCalls = 0;
 
+static bool menuActivated = false;
+
 static unsigned GetMillis(void) {
 	unsigned uticks = CTimer::Get()->GetClockTicks();
 	if (uticks) return (uticks / 1000);
@@ -223,8 +225,6 @@ void CircleFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride
 	TScreenColor sColor;
 	//uint32_t vidptr;
 	
-	//memcpy(pScreenBuffer, pixels, 256000);
-	
 	//uint8_t cRed = randomNumber() % 31;
 	//uint8_t cGreen = randomNumber() % 31;
 	//uint8_t cBlue = randomNumber() % 31;
@@ -250,6 +250,14 @@ void CircleFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride
 	return;
 	*/
 	
+	if (menuActivated) {
+		for(unsigned i = 100; i < 100 + 200; i++)	{
+			for(unsigned j = 100; j < 100 + 200; j++) {
+				pScreenBuffer[i * 200 + j] = RED_COLOR;
+			}
+		}
+		return;
+	}
 	//uint32_t _pixel;
 	//unsigned int red, green, blue;
 	//int x, y;
@@ -258,16 +266,11 @@ void CircleFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride
 			//vidptr = y * 640 + x;
 			//sColor = pixels[y+x]; //RGB32toRGB16(pixels[y][x]);
 			//sColor = COLOR16(cRed, cGreen, cBlue);
+			//sColor = RGB32toRGB16(vga_framebuffer[y][x]);
+			//sColor = vga_framebuffer[y][x];
 			sColor = RGB32toRGB16(vga_framebuffer[y][x]);
 			//sColor = TScreenColor(vga_framebuffer[y][x]);
 			pScreenBuffer[x + (y * sw)] = sColor;
-			/*
-			_pixel = vga_framebuffer[y][x];
-			red = (_pixel & 0x00FF0000) >> 16;
-			green = (_pixel & 0x0000FF00) >> 8;
-			blue =  _pixel & 0x000000FF;
-			pScreenBuffer[x + (y * sw)] = TScreenColor( (red >> 3 << 11) + (green >> 2 << 5) + (blue >> 3) );
-			*/
 			//screen->SetPizel(x, y, sColor);
 			//p2DGraphics->DrawPixel(x, y, sColor);
 		}
@@ -350,13 +353,28 @@ CircleHostInterface::CircleHostInterface(CDeviceNameService& deviceNameService, 
 	
 	if(keyboard) {
 		keyboard->RegisterKeyStatusHandlerRaw(keyStatusHandlerRaw, TRUE);
-	}
+		keyboard->RegisterRemovedHandler(keyRemovedHandler);
+		log(Log, "[CircleHostInterface] USB Keyboard device detected and registered");
+	} else log(Log, "[CircleHostInterface] USB Keyboard device not detected");
 	
-	CMouseDevice* mouse = (CMouseDevice*)deviceNameService.GetDevice("mouse1", FALSE);
+	mouse = (CMouseDevice*)deviceNameService.GetDevice("mouse1", FALSE);
 	
-	if(mouse)	{
-		mouse->RegisterStatusHandler(mouseStatusHandler);
-	}
+	if (mouse)	{
+		mouse->RegisterEventHandler(mouseEventHandler);
+		//mouse->RegisterStatusHandler(mouseStatusHandler);
+		mouse->RegisterRemovedHandler(mouseRemovedHandler);
+		log(Log, "[CircleHostInterface] USB Mouse detected and registered");
+		log(Log, "[CircleHostInterface] USB Mouse has %d buttons",	mouse->GetButtonCount());
+		log(Log, "[CircleHostInterface] USB Mouse %s wheel", mouse->HasWheel() ? "with" : "no");
+		if (!mouse->Setup(screen->GetWidth(), screen->GetHeight())) {
+			log(Log, "[CircleHostInterface] USB Mouse failed to setup screen coordinates");
+		}
+		m_MouseX = screen->GetWidth() / 2;
+		m_MouseY = screen->GetHeight() / 2;
+
+		mouse->SetCursor(m_MouseX, m_MouseY);
+		mouse->ShowCursor(FALSE);
+	} else log(Log, "[CircleHostInterface] USB Mouse device not detected");
 }
 
 void CircleHostInterface::init(VM* inVM)
@@ -373,11 +391,21 @@ void CircleHostInterface::resize(uint32_t desiredWidth, uint32_t desiredHeight)
 	screen->Resize(desiredWidth, desiredHeight);
 	vm->config.resw = desiredWidth;
 	vm->config.resh = desiredHeight;
+	//if (mouse) mouse->Setup(desiredWidth, desiredHeight);
 }
 
 //void CircleHostInterface::tick(VM& vm)
 void CircleHostInterface::tick()
 {
+	//if (keyboard) {
+	//	keyboard->UpdateLEDs();
+	//}
+	
+	if (mouse) {
+		if (menuActivated) mouse->UpdateCursor();
+	}
+	
+	/*
 	while(inputBufferSize > 0)
 	{
 		//CScheduler::Get()->Yield();
@@ -414,19 +442,52 @@ void CircleHostInterface::tick()
 		}
 		
 		inputBufferPos++;
-		inputBufferSize --;
+		inputBufferSize--;
 		if(inputBufferPos >= MaxInputBufferSize) {
 			inputBufferPos = 0;
 		}
 	}
+	*/
+	
 }
 
 void CircleHostInterface::queueEvent(InputEvent& inEvent)
 {
+	/*
 	if(inputBufferSize < MaxInputBufferSize) {
 		int writePos = (inputBufferPos + inputBufferSize) % MaxInputBufferSize;
 		inputBuffer[writePos] = inEvent;
-		instance->inputBufferSize ++;
+		instance->inputBufferSize++;
+	}
+	*/
+	InputEvent& event = inEvent;
+	
+	switch(event.eventType)	{
+		case EventType::KeyPress:
+		{
+			vm->input.handleKeyDown(event.scancode);
+		}
+		break;
+		case EventType::KeyRelease:
+		{
+			vm->input.handleKeyUp(event.scancode);
+		}
+		break;
+		case EventType::MousePress:
+		{
+			vm->mouse.handleButtonDown(event.mouseButton);
+		}
+		break;
+		case EventType::MouseRelease:
+		{
+			vm->mouse.handleButtonUp(event.mouseButton);
+		}
+		break;
+		case EventType::MouseMove:
+		{
+			vm->mouse.handleMove(event.mouseMotionX, event.mouseMotionY);
+		}
+		break;
 	}
 }
 
@@ -440,40 +501,116 @@ void CircleHostInterface::queueEvent(EventType eventType, u16 scancode)
 	}
 }
 
+void CircleHostInterface::mouseEventHandler(TMouseEvent Event, unsigned nButtons, unsigned nPosX, unsigned nPosY, int nWheelMove)
+{
+	InputEvent newEvent;
+	
+	switch (Event) {
+	case MouseEventMouseMove:
+		//if (nButtons & (MOUSE_BUTTON_LEFT | MOUSE_BUTTON_RIGHT)) {
+			//DrawLine (m_nPosX, m_nPosY, nPosX, nPosY, nButtons & MOUSE_BUTTON_LEFT ? NORMAL_COLOR : m_Color);
+		//}
+		newEvent.eventType = EventType::MouseMove;
+		if ((nPosX != instance->m_MouseX) || (nPosY != instance->m_MouseY)) {
+			//instance->m_MouseX = nPosX;
+			//instance->m_MouseY = nPosY;
+			/*
+			if (nPosX > instance->m_MouseX) newEvent.mouseMotionX = 1
+			if (nPosX < instance->m_MouseX) newEvent.mouseMotionX = -1;
+			if (nPosY > instance->m_MouseY) newEvent.mouseMotionY = 1;
+			if (nPosY < instance->m_MouseY) newEvent.mouseMotionY = -1;
+			if (nPosX == instance->m_MouseX) newEvent.mouseMotionX = 0;
+			if (nPosY == instance->m_MouseY) newEvent.mouseMotionY = 0;
+			*/
+			newEvent.mouseMotionX = nPosX - instance->m_MouseX;
+			newEvent.mouseMotionY = nPosY - instance->m_MouseY;
+			if (newEvent.mouseMotionX > MOUSE_DISPLACEMENT_MAX)	newEvent.mouseMotionX = MOUSE_DISPLACEMENT_MAX;
+			if (newEvent.mouseMotionX < MOUSE_DISPLACEMENT_MIN) newEvent.mouseMotionX = MOUSE_DISPLACEMENT_MIN;
+			if (newEvent.mouseMotionY > MOUSE_DISPLACEMENT_MAX) newEvent.mouseMotionY = MOUSE_DISPLACEMENT_MAX;
+			if (newEvent.mouseMotionY < MOUSE_DISPLACEMENT_MIN) newEvent.mouseMotionY = MOUSE_DISPLACEMENT_MIN;
+			//newEvent.mouseMotionX = nPosX;
+			//newEvent.mouseMotionY = nPosY;
+		} else {
+			newEvent.mouseMotionX = 0;
+			newEvent.mouseMotionY = 0;
+		}
+		instance->queueEvent(newEvent);
+		break;
+
+	case MouseEventMouseDown:
+		newEvent.eventType = EventType::MousePress;
+		if (nButtons & MOUSE_BUTTON_LEFT)	newEvent.mouseButton = SerialMouse::ButtonType::Left;
+		if (nButtons & MOUSE_BUTTON_RIGHT)	newEvent.mouseButton = SerialMouse::ButtonType::Right;
+		if (nButtons & MOUSE_BUTTON_MIDDLE)	newEvent.mouseButton = SerialMouse::ButtonType::Middle;
+		instance->queueEvent(newEvent);
+		break;
+		
+	case MouseEventMouseUp:
+		newEvent.eventType = EventType::MouseRelease;
+		if (nButtons & MOUSE_BUTTON_LEFT)	newEvent.mouseButton = SerialMouse::ButtonType::Left;
+		if (nButtons & MOUSE_BUTTON_RIGHT)	newEvent.mouseButton = SerialMouse::ButtonType::Right;
+		if (nButtons & MOUSE_BUTTON_MIDDLE)	newEvent.mouseButton = SerialMouse::ButtonType::Middle;
+		instance->queueEvent(newEvent);
+		break;
+
+	case MouseEventMouseWheel:
+		break;
+
+	default:
+		break;
+	}
+	
+	instance->lastMouseButtons = nButtons;
+	instance->m_MouseX = nPosX;
+	instance->m_MouseY = nPosY;
+}
+
 void CircleHostInterface::mouseStatusHandler (unsigned nButtons, int nDisplacementX, int nDisplacementY, int nWheelMove)
 {
 	InputEvent newEvent;
 	
 	// Mouse presses
-	if((nButtons & MOUSE_BUTTON_LEFT) && !(instance->lastMouseButtons & MOUSE_BUTTON_LEFT))
+	if ((nButtons & MOUSE_BUTTON_LEFT) && !(instance->lastMouseButtons & MOUSE_BUTTON_LEFT))
 	{
 		newEvent.eventType = EventType::MousePress;
 		newEvent.mouseButton = SerialMouse::ButtonType::Left;
 		instance->queueEvent(newEvent);
 	}
-	if((nButtons & MOUSE_BUTTON_RIGHT) && !(instance->lastMouseButtons & MOUSE_BUTTON_RIGHT))
+	if ((nButtons & MOUSE_BUTTON_RIGHT) && !(instance->lastMouseButtons & MOUSE_BUTTON_RIGHT))
 	{
 		newEvent.eventType = EventType::MousePress;
 		newEvent.mouseButton = SerialMouse::ButtonType::Right;
+		instance->queueEvent(newEvent);
+	}
+	if ((nButtons & MOUSE_BUTTON_MIDDLE) && !(instance->lastMouseButtons & MOUSE_BUTTON_MIDDLE))
+	{
+		newEvent.eventType = EventType::MousePress;
+		newEvent.mouseButton = SerialMouse::ButtonType::Middle;
 		instance->queueEvent(newEvent);
 	}
 	
 	// Mouse releases
-	if(!(nButtons & MOUSE_BUTTON_LEFT) && (instance->lastMouseButtons & MOUSE_BUTTON_LEFT))
+	if (!(nButtons & MOUSE_BUTTON_LEFT) && (instance->lastMouseButtons & MOUSE_BUTTON_LEFT))
 	{
 		newEvent.eventType = EventType::MouseRelease;
 		newEvent.mouseButton = SerialMouse::ButtonType::Left;
 		instance->queueEvent(newEvent);
 	}
-	if(!(nButtons & MOUSE_BUTTON_RIGHT) && (instance->lastMouseButtons & MOUSE_BUTTON_RIGHT))
+	if (!(nButtons & MOUSE_BUTTON_RIGHT) && (instance->lastMouseButtons & MOUSE_BUTTON_RIGHT))
 	{
 		newEvent.eventType = EventType::MouseRelease;
 		newEvent.mouseButton = SerialMouse::ButtonType::Right;
 		instance->queueEvent(newEvent);
 	}
+	if (!(nButtons & MOUSE_BUTTON_MIDDLE) && (instance->lastMouseButtons & MOUSE_BUTTON_MIDDLE))
+	{
+		newEvent.eventType = EventType::MouseRelease;
+		newEvent.mouseButton = SerialMouse::ButtonType::Middle;
+		instance->queueEvent(newEvent);
+	}
 
 	// Motion events	
-	if(nDisplacementX != 0 || nDisplacementY != 0)
+	if ((nDisplacementX != 0) || (nDisplacementY != 0))
 	{
 		newEvent.eventType = EventType::MouseMove;
 		newEvent.mouseMotionX = (s8) nDisplacementX;
@@ -484,9 +621,52 @@ void CircleHostInterface::mouseStatusHandler (unsigned nButtons, int nDisplaceme
 	instance->lastMouseButtons = nButtons;
 }
 
-void CircleHostInterface::keyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6])
+/*
+void DrawRect(unsigned nX, unsigned nY, unsigned nWidth, unsigned nHeight, TScreenColor Color)
 {
-	for(int n = 0; n < 8; n++) {
+	if(nX + nWidth > m_nWidth || nY + nHeight > m_nHeight) {
+		return;
+	}
+	
+	for(unsigned i = nY; i < nY + nHeight; i++) {
+		for(unsigned j = nX; j < nX + nWidth; j++) {
+			m_Buffer[i * m_nWidth + j] = Color;
+		}
+	}
+}
+*/
+
+void MenuAction()
+{
+	
+}
+
+void MenuOpen()
+{
+	
+}
+
+void CircleHostInterface::keyStatusHandlerRaw(unsigned char ucModifiers, const unsigned char RawKeys[6])
+{
+	/*
+	if (ucModifiers & LCTRL) {
+		menuActivated = !menuActivated;
+		//instance->vm->running = !menuActivated;
+		if (instance->mouse) instance->mouse->ShowCursor(menuActivated);
+	}
+	
+	if (ucModifiers & ALT) {
+		//menuActivated = !menuActivated;
+		instance->vm->config.useAdlib = !instance->vm->config.useAdlib;
+	}
+	
+	if (menuActivated) {
+		MenuOpen();
+		return;
+	}
+	*/
+	
+	for (int n = 0; n < 8; n++) {
 		int mask = 1 << n;
 		bool wasPressed = (instance->lastModifiers & mask) != 0;
 		bool isPressed = (ucModifiers & mask) != 0;
@@ -497,7 +677,58 @@ void CircleHostInterface::keyStatusHandlerRaw (unsigned char ucModifiers, const 
 			instance->queueEvent(EventType::KeyRelease, modifier2xtMapping[n]);
 		}
 	}
-		
+	
+	instance->lastModifiers = ucModifiers;
+	
+	for(int n = 0; n < 6; n++) {
+		if (instance->lastRawKeys[n] != 0) {
+			instance->queueEvent(EventType::KeyRelease, usb2xtMapping[instance->lastRawKeys[n]]);
+		}
+	}
+	
+	for(int n = 0; n < 6; n++) {
+		if (RawKeys[n] != 0) {
+			instance->queueEvent(EventType::KeyPress, usb2xtMapping[RawKeys[n]]);
+		}
+	}
+	
+	for(int n = 0; n < 6; n++) {
+		instance->lastRawKeys[n] = RawKeys[n];
+	}
+	
+		/*
+	for(int n = 0; n < 6; n++) {
+		if(RawKeys[n] != 0) {
+			if (instance->lastRawKeys[n] != RawKeys[n]) {
+				instance->queueEvent(EventType::KeyPress, usb2xtMapping[RawKeys[n]]);
+				}
+			} else {
+			if (instance->lastRawKeys[n] != 0) {
+				instance->queueEvent(EventType::KeyRelease, usb2xtMapping[instance->lastRawKeys[n]]);
+			}
+		}
+	}
+	*/
+	
+	/*
+	for(int n = 0; n < 6; n++) {
+		if(instance->lastRawKeys[n] != 0)	{
+			for(int i = 0; i < 6; i++) {
+				if(instance->lastRawKeys[n] == RawKeys[i]) {
+					instance->queueEvent(EventType::KeyRelease, usb2xtMapping[instance->lastRawKeys[n]]);
+					instance->lastRawKeys[n] = 0;
+				}
+			}
+		} else {
+			if (RawKeys[n] != 0) {
+				instance->lastRawKeys[n] = RawKeys[n];
+				instance->queueEvent(EventType::KeyPress, usb2xtMapping[RawKeys[n]]);
+			}
+		}
+	}
+	*/
+	
+	/*
 	for(int n = 0; n < 6; n++) {
 		if(instance->lastRawKeys[n] != 0)	{
 			bool inNewBuffer = false;
@@ -509,7 +740,10 @@ void CircleHostInterface::keyStatusHandlerRaw (unsigned char ucModifiers, const 
 				}
 			}
 			
-			if(!inNewBuffer && instance->inputBufferSize < MaxInputBufferSize) {
+			//if(!inNewBuffer && instance->inputBufferSize < MaxInputBufferSize) {
+			//	instance->queueEvent(EventType::KeyRelease, usb2xtMapping[instance->lastRawKeys[n]]);
+			//}
+			if(!inNewBuffer) {
 				instance->queueEvent(EventType::KeyRelease, usb2xtMapping[instance->lastRawKeys[n]]);
 			}
 		}
@@ -526,7 +760,10 @@ void CircleHostInterface::keyStatusHandlerRaw (unsigned char ucModifiers, const 
 				}
 			}
 			
-			if(!inLastBuffer && instance->inputBufferSize < MaxInputBufferSize)	{
+			//if(!inLastBuffer && instance->inputBufferSize < MaxInputBufferSize)	{
+			//	instance->queueEvent(EventType::KeyPress, usb2xtMapping[RawKeys[n]]);
+			//}
+			if(!inLastBuffer)	{
 				instance->queueEvent(EventType::KeyPress, usb2xtMapping[RawKeys[n]]);
 			}
 		}
@@ -535,6 +772,21 @@ void CircleHostInterface::keyStatusHandlerRaw (unsigned char ucModifiers, const 
 	for(int n = 0; n < 6; n++) {
 		instance->lastRawKeys[n] = RawKeys[n];
 	}
+	*/
+}
 
-	instance->lastModifiers = ucModifiers;
+void CircleHostInterface::keyRemovedHandler(CDevice *pDevice, void *pContext)
+{
+	//assert(instance != 0);
+	//CLogger::Get()->Write(FromKernel, LogDebug, "CircleHostInterface::keyRemovedHandler");
+
+	instance->keyboard = 0;
+}
+
+void CircleHostInterface::mouseRemovedHandler(CDevice *pDevice, void *pContext)
+{
+	//assert(instance != 0);
+	//CLogger::Get()->Write(FromKernel, LogDebug, "CircleHostInterface::mouseRemovedHandler");
+
+	instance->mouse = 0;
 }

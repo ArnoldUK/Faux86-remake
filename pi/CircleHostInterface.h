@@ -24,7 +24,10 @@
 #include "Renderer.h"
 #include "SerialMouse.h"
 
+#include <circle/input/mouse.h>
+
 class CUSBKeyboardDevice;
+class CMouseDevice;
 class CDeviceNameService;
 class CInterruptSystem;
 class C2DGraphics;
@@ -111,8 +114,10 @@ namespace Faux86
 				u16 scancode;
 				SerialMouse::ButtonType mouseButton;
 				struct {
-					s8 mouseMotionX;
-					s8 mouseMotionY;
+					//s8 mouseMotionX;
+					//s8 mouseMotionY;
+					int mouseMotionX;
+					int mouseMotionY;
 				};
 			};
 		};
@@ -120,8 +125,11 @@ namespace Faux86
 		void queueEvent(InputEvent& inEvent);
 		void queueEvent(EventType eventType, u16 scancode);
 		
-		static void mouseStatusHandler (unsigned nButtons, int nDisplacementX, int nDisplacementY, int nWheelMove);
-		static void keyStatusHandlerRaw (unsigned char ucModifiers, const unsigned char RawKeys[6]);
+		static void mouseEventHandler(TMouseEvent Event, unsigned nButtons, unsigned nPosX, unsigned nPosY, int nWheelMove);
+		static void mouseStatusHandler(unsigned nButtons, int nDisplacementX, int nDisplacementY, int nWheelMove);
+		static void keyStatusHandlerRaw(unsigned char ucModifiers, const unsigned char RawKeys[6]);
+		static void keyRemovedHandler(CDevice *pDevice, void *pContext);
+		static void mouseRemovedHandler(CDevice *pDevice, void *pContext);
 
 		CircleFrameBufferInterface frameBuffer;
 		CircleAudioInterface audio;
@@ -131,7 +139,8 @@ namespace Faux86
 		
 		CScreenDevice* screen;
 		C2DGraphics* p2DGraphics;
-		CUSBKeyboardDevice* keyboard; 
+		CUSBKeyboardDevice* keyboard;
+		CMouseDevice* mouse;
 		
 		static constexpr int MaxInputBufferSize = 16;
     //static constexpr int MaxInputBufferSize = 8;
@@ -142,5 +151,7 @@ namespace Faux86
 		int inputBufferPos = 0;
 		int inputBufferSize = 0;
 		unsigned lastMouseButtons = 0;
+		unsigned m_MouseX = 0;
+		unsigned m_MouseY = 0;
 	};
 }

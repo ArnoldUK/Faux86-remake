@@ -21,7 +21,7 @@ FORCE=0
 #USE_USB_SOF_INTR=1
 
 DEFINE += -DNO_SDHOST
-DEFINE += -DNO_BUSY_WAIT
+#DEFINE += -DNO_BUSY_WAIT
 DEFINE += -DNO_REALTIME
 DEFINE += -DNO_USB_SOF_INTR
 #DEFINE += -DNO_SD_HIGH_SPEED
@@ -36,7 +36,9 @@ DEFINE += -DNO_USB_SOF_INTR
 
 # Screen Display Color Depth
 # 8bit 16bit or 32bit
-# DEFINE += -DDEPTH=16
+# DEFINE += -DDEPTH=32
+DEFINE += -DDEPTH=16
+
 
 # Maximum 2MB (Default) 4MB 8MB 16MB 32MB Kernel Heap Size
 # Recompile Circle after changing size 

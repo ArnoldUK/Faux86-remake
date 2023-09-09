@@ -1,5 +1,9 @@
 #
-# Makefile
+# Makefile Usage:
+# make clean
+# make hex
+# make flash
+# screen -L -Logfile serial.log /dev/ttyUSB0 115200
 #
 
 CIRCLEHOME = ../../circle

@@ -266,16 +266,21 @@ boolean CKernel::Initialize(void)
 		vmConfig->cpuSpeed = 8;
 		*/
 		
-		vmConfig->singleThreaded = true;
+		
 		
 		#ifdef RASPPI1
 		//RPI 1 Optimized with Sound
-		//vmConfig->slowSystem = 1;
-		//vmConfig->cpuSpeed = 8;
-		//vmConfig->frameDelay = 130;
-		//vmConfig->audio.sampleRate = 22050; //32000;
-		//vmConfig->audio.latency = 120;
-		//vmConfig->useAdlib = 0;
+		/*
+		vmConfig->slowSystem = true;
+		vmConfig->cpuSpeed = 8;
+		vmConfig->singleThreaded = true;
+		vmConfig->enableAudio = true;
+		vmConfig->useAdlib = true;
+		vmConfig->audio.sampleRate = 22050; //32000;
+		vmConfig->audio.latency = 160;
+		vmConfig->frameDelay = 120;
+		vmConfig->monitorDisplay = 0;
+		*/
 		#endif
 		
 		#ifdef RASPPI2
@@ -385,8 +390,8 @@ TShutdownMode CKernel::Run(void)
 		}
 		*/
 		
-		m_Scheduler.Yield();
-		//m_Timer.MsDelay(0);
+		//m_Scheduler.Yield();
+		//m_Timer.MsDelay(1);
 	}
 	
 	return ShutdownHalt;
