@@ -322,6 +322,7 @@ void SDLFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride) {
 	//SDL_SetTextureAlphaMod(screenTexture, 200);
   //SDL_SetTextureBlendMode(screenTexture, SDL_BLENDMODE_ADD); //SDL_BLENDMODE_BLEND
   
+  /*
   if (colorEmulation) {
   	uint8_t r, g, b;
 	  //uint8_t c;
@@ -342,7 +343,10 @@ void SDLFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride) {
 				SDL_SetTextureColorMod(screenTexture, 0, 40, 255); //Blue channel only
 				break;
 		}
-	} else SDL_SetTextureColorMod(screenTexture, 255, 255, 255);
+	} else { 
+		//SDL_SetTextureColorMod(screenTexture, 255, 255, 255);
+	}
+	*/
 	
 	//SDL_SetTextureAlphaMod(screenTexture, 127);
 	//SDL_SetRenderDrawColor(appRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
