@@ -2,6 +2,10 @@
 This is an improved and updated version of Faux86 XT PC Emulator.
 A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 
+Faux86-remake is based on the Fake86 and [XTulator](https://github.com/mikechambers84/XTulator) 8086/8088 emulators
+originally developed by Mike Chambers and James Howard.
+Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
+
 ## Current Status
 
 09-09-2023 Release build v1.21 for 32/64Bit Windows
