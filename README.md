@@ -1,25 +1,22 @@
 # Faux86-remake
-A portable, open-source 8086/8088 Emulator for Win32 and bare metal ARM Raspberry Pi.
-
-Faux86-remake is based on the Fake86 and [XTulator](https://github.com/mikechambers84/XTulator) 8086/8088 emulators by Mike Chambers and James Howard. Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
+This is an improved and updated version of Faux86 XT PC Emulator.
+A portable, open-source 8086 Emulator for Win32 and bare metal ARM Raspberry Pi.
 
 ## Current Status
 
-11-07-2023 Release build v1.2 for 32/64Bit Windows
-[Faux86-remake Release Build V1.2 Win32](https://github.com/ArnoldUK/Faux86-remake/releases)
+09-09-2023 Release build v1.21 for 32/64Bit Windows
+[Faux86-remake Release Build V1.21 Win32](https://github.com/ArnoldUK/Faux86-remake/releases/latest)
 
-16-07-2023 Pre-Release build V1.0 for ARM RPi 1,2,3,4
-[Faux86-remake Pre-Release Build V1.0 ARM-RPi](https://github.com/ArnoldUK/Faux86-remake/releases)
+09-09-2023 Release build V1.1 for ARM RPi 1,2,3,4
+[Faux86-remake Release Build V1.1 ARM-RPi](https://github.com/ArnoldUK/Faux86-remake/releases/latest)
 
-
-- Configuration file for emulation settings.
-- Command line parameters are still supported and override the configuration file.
-- Mouse COM port can be set to an alternative port.
-- Options to enable or disable Sound Cards supported.
+- Text cursor fixed and updated with new block cursor.
+- Support for monitor display emulation in Win32 and RPi releases.
+- Improved mouse and keyboard control.
 - More accurate emulation speed. 
-- More video rendering improvements.
+- Video rendering improvements.
+- Fixed RPi boot config.txt
 - Some minor fixes.
-- Text cursor bug is not fixed in this release.
 
 # Release Notes
 Faux86-remake is still work in progress but fixes many issues and adds more features including:
@@ -35,7 +32,7 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Many bug fixes.
 
 ## Emulator Features
-- 8086/8088, V20, 80186 and limited 286 instruction set.
+- 8086, V20, 80186 and 286 instruction set.
 - Configurable CPU speeds from 5Mhz upto 100Mhz.
 - Custom Hardware BIOS's supported.
 - Supports bootable disk images in .img and .raw file format.
@@ -142,7 +139,8 @@ also required for the Raspberry Pi build to be successful. THe Circle SDK requir
 set for the correct Raspberry model being targetted. The makefile is pre-configured for Raspberry Pi 1.
 
 # Credits
-Faux86-remake was originally based on the Fake86 and XTulator 8086/8088 emulators by Mike Chambers and James Howard. Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
+Faux86-remake was originally based on the Fake86 emulator by Mike Chambers and James Howard.
+Most of the code has been updated and re-written in C++ but the core CPU emulation remains mostly the same.
 
 The Raspberry Pi build uses RSTA2's Circle SDK to interface directly with the Raspberry Pi hardware.
 This build would not of been possible without the support from RSTA2 and the Circle SDK. 
