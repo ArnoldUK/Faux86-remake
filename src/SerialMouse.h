@@ -37,7 +37,8 @@ namespace Faux86
 		enum class ButtonType
 		{
 			Left,
-			Right
+			Right,
+			Middle
 		};
 
 		SerialMouse(VM& inVM);

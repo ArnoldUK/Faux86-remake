@@ -48,10 +48,14 @@ void TaskManager::tick()
 				tasks[n].nextTickTime = currentTime + result * vm.timing.getHostFreq() / 1000;
 				#ifdef _WIN32
 				#else
-				CScheduler::Get()->Yield();
+				//CScheduler::Get()->Yield();
 				#endif
 			}
 		}
+		#ifdef _WIN32
+		#else
+		CScheduler::Get()->Yield();
+		#endif
 	}
 }
 

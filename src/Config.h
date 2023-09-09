@@ -22,7 +22,7 @@
 */
 #pragma once
 
-#define BUILD_STRING "Faux86-remake v1.2"
+#define BUILD_STRING "Faux86-remake v1.21"
 
 #define DEBUG_CONFIG
 #define DEBUG_VM

@@ -454,8 +454,21 @@ Video::~Video(void)
 uint32_t Video::vga_color(uint32_t c) {
 	//return c + 255;
 	//return rgb(paletteVGA.colours[c].r , paletteVGA.colours[c].g , paletteVGA.colours[c].b);
-	
-	return (vga_DAC.pal[c][2] |	(vga_DAC.pal[c][1] << 8) | (vga_DAC.pal[c][0] << 16));
+	if (vm.config.monitorDisplay) {
+		switch (vm.config.monitorDisplay) {
+	  	case MONITOR_DISPLAY_AMBER:
+				return (vga_DAC.pal[c][0] << 16) | 8; //Red channel only
+				break;
+			case MONITOR_DISPLAY_GREEN:
+				return (vga_DAC.pal[c][1] << 8) | 10; //Green channel only
+				break;
+			case MONITOR_DISPLAY_BLUE:
+				return vga_DAC.pal[c][2] | 20; //Blue channel only
+				break;
+		}
+	} else {
+		return (vga_DAC.pal[c][2] |	(vga_DAC.pal[c][1] << 8) | (vga_DAC.pal[c][0] << 16));
+	}
 		
 	/*
 	return (uint32_t)vga_DAC.pal[c][2] |
@@ -745,6 +758,7 @@ void Video::vga_update(uint32_t start_x, uint32_t start_y, uint32_t end_x, uint3
 		dup9 = 1; //TODO: fix this hack
 		cursor_x = cursorloc % hchars;
 		cursor_y = cursorloc / hchars;
+		//cursor_y = (cursorloc / hchars) + 1;
 		for (scy = start_y; scy <= end_y; scy++) {
 			uint32_t maxscan = ((vga_crtcd[0x09] & 0x1F) + 1);
 			y = scy / maxscan;
@@ -765,8 +779,10 @@ void Video::vga_update(uint32_t start_x, uint32_t start_y, uint32_t end_x, uint3
 				fontdata = (fontdata >> ((vga_dots - 1) - charcolumn)) & 1;
 				
 				if ((y == cursor_y) && (x == cursor_x) &&
-					((uint8_t)(scy % 16) >= (vga_crtcd[VGA_REG_DATA_CURSOR_BEGIN] & 31)) &&
-					((uint8_t)(scy % 16) <= (vga_crtcd[VGA_REG_DATA_CURSOR_END] & 31)) &&
+					//((uint8_t)(scy % 16) >= (vga_crtcd[VGA_REG_DATA_CURSOR_BEGIN] & 31)) &&
+					//((uint8_t)(scy % 16) <= (vga_crtcd[VGA_REG_DATA_CURSOR_END] & 31)) &&
+					((uint8_t)(scy % 16) >= (vga_crtcd[VGA_REG_DATA_CURSOR_BEGIN + 2])) &&
+					((uint8_t)(scy % 16) <= (vga_crtcd[VGA_REG_DATA_CURSOR_END - 2])) &&
 					vga_cursor_blink_state && cursorenable) { //cursor should be displayed
 					//color32 = vga_attrd[attr & 0x0F] | (vga_attrd[0x14] << 4); //ORIGINAL
 					color32 = vga_attrd[attr & 0x0F] | ((vga_attrd[0x14] & 0xC) << 4); //UPDATED
@@ -962,7 +978,7 @@ void Video::vga_calcscreensize() {
 	log(Log, "[VGA] vga_calcscreensize: %lu x %lu", vga_w, vga_h);
 	return;
 	*/
-	
+
 
 	//UPDATED CODE
 	// Miscellaneous Output Register

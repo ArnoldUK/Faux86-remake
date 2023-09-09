@@ -49,7 +49,8 @@ void TimingScheduler::init()
 	speakerticks = getHostFreq() / vm.config.audio.sampleRate;
 	//mouseticks = getHostFreq() / (115200 / 9); //0.078ms
 	//mouseticks = getHostFreq() / (115200 / 6); //0.043ms
-	mouseticks = getHostFreq() / (115200 / 20); //1.73ms
+	//mouseticks = getHostFreq() / (115200 / 20); //1.73ms
+	mouseticks = getHostFreq() / (115200 / 10);
 	if (vm.config.enableAudio) sampleticks = getHostFreq() / vm.config.audio.sampleRate;
 	else sampleticks = -1;
 	
@@ -71,7 +72,6 @@ void TimingScheduler::tick()
 	uint8_t i8253chan;
 
 	curtick = getTicks();
-	
 	
 	if (curtick >= (lastscanlinetick + scanlinetiming) ) {
 	//if (curtick >= (lastscanlinetick + vm.video.vga_dispinterval) ) {
@@ -177,7 +177,9 @@ void TimingScheduler::tick()
 		if (curtick >= (lastsampletick + sampleticks) ) {
 			vm.audio.tick();
 			if (vm.config.slowSystem) {
-				for (int i = 0; i < 4; i++)	vm.audio.tick();
+				vm.audio.tick();
+				vm.audio.tick();
+				//vm.audio.tick();
 				}
 			lastsampletick = curtick - (curtick - (lastsampletick + sampleticks) );
 		}

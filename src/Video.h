@@ -37,6 +37,9 @@
 #define VGA_MODE_GRAPHICS_2BPP				3
 #define VGA_MODE_GRAPHICS_1BPP				4
 
+#define RGB565(r,g,b) (((r)>>3)<<11 | ((g)>>2)<<5 | (b)>>3)
+#define ARGB(a,r,g,b) ((uint32_t)((uint8_t)(a)<<24 | (uint8_t)(r)<<16 | (uint8_t)(g)<<8 | (uint8_t)(b)))
+
 typedef rgb_t PALETTE[256];
 
 typedef struct {
