@@ -3,6 +3,7 @@
 [pi4]
 kernel=kernel7l.img
 
+[all]
 # Composite Test Mode in Seconds
 #test_mode=2
 
@@ -37,7 +38,7 @@ config_hdmi_boost=7
 # Force a specific HDMI mode (this will force VGA)
 # hdmi_group (0=AUTODETECT, 1=CEA-TV, 2=DMT-MONITOR)
 # COMMENT THE LINES BELOW IF NO DISPLAY ON YOUR VIDEO
-#hdmi_group=0
+hdmi_group=0
 #hdmi_mode=4
 #hdmi_drive=2
 
