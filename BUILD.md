@@ -27,6 +27,13 @@ apt update && apt install -y make gcc-arm-linux-gnueabihf gcc-arm-none-eabi
 - Edit Faux86-remake/pi/Config.mk (Set RPi Model 1-4 RASPPI=3)
 - Copy Faux86-remake/pi/Config.mk to Circle SDK root folder
 
+## Edit Circle SDK Config Rules
+- Edit Circle SDK `Rules.mk` file and change lines to match as below:
+```
+-include $(CIRCLEHOME)/Config.mk
+#-include $(CIRCLEHOME)/Config2.mk	# is not overwritten by "configure"
+```
+
 ## Compile and Build Circle SDK
 ```
 cd /git/circle/ && ./configure -f -r 3 && ./makeall
