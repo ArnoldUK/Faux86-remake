@@ -1,7 +1,7 @@
 # Faux86 Emulator ARM RPi Build
 The Faux86-remake source code can be compiled using standard linux and arm build tools.
-For compiling and targeting ARM RPi builds the Circle SDK from the develop branch is required.
-The instructions below for cloning and compiling the ARM RPi build were provided by moononournation
+For compiling and targeting ARM RPi builds the [Circle SDK](https://github.com/rsta2/circle/tree/develop) from the develop branch is required.
+The instructions below for cloning and compiling the ARM RPi build were provided by @moononournation
 
 For ARM RPi builds a custom settings file can be used for each model which is performance optimized for
 that particular RPi model. The following settings file will be used for each build:
