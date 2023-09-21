@@ -104,16 +104,19 @@ By default Faux86 boots from a floppy image name `fd0.img` which is mounted as D
 An additional floppy drive `fd1.img` Drive B: can also be used if included on the Sd-Card.
 The emulator also supports booting hard disk images `hd0.img` Drive C: and `hd1.img` Drive D:.
 
-IMPORTANT NOTE PLEASE READ:
-It is recommended to only use a small standard (4Gb or less) SD-Card and not a SDHC or high speed card.
-If the emulator fails to boot then try a smaller FAT16 formatted card.
+### IMPORTANT NOTES PLEASE READ:
 Emulation performance and full hardware emulation capabilities depends on the Raspberry Pi model.
 Currently all RPi models are capable of running the emulator with the same performance of an
-XT 8088 Clone with a 12Mhz V20 CPU and basic speaker sound emulation.
+XT 8088 Clone with a 12Mhz V20 CPU and basic speaker and OPL2 sound emulation.
+
+It is recommended to only use a small standard (4Gb or less) SD-Card and not a SDHC or high speed card.
+If the emulator fails to boot then using a smaller FAT16 formatted card provides more performance.
 
 Raspberry Pi Models 1 and 2 cannot provide the processing power to fully emulate the Adlib
-and Soundblaster sound cards. It is recommended to disable Adlib and Soundblaster emulation or
-reduce the samplerate and increase the video rendering time from within the settings file.
+and Soundblaster sound cards. It is recommended to either disable Adlib and Soundblaster emulation
+or reduce the samplerate and use only OPL2 emulation in settings file.
+Increase the video rendering time from within the settings file will also boost emulation performance
+but frame rates will be much lower.
 
 ## Emulator Settings File
 The emulator is configured with a settings file named `faux86.cfg` located within the same folder
