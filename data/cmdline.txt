@@ -1,1 +1,1 @@
-width=640 height=350 logdev=ttyS1 loglevel=4 keymap=UK usbpowerdelay=1500 usbspeed=high usbboost=false sounddev=sndvchiq soundopt=0 fast=true socmaxtemp=60 disable_gamma
+width=640 height=350 logdev=ttyS1 loglevel=4 keymap=UK usbpowerdelay=1500 usbspeed=high usbboost=false sounddev=sndvchiq soundopt=0 fast=false socmaxtemp=60 disable_gamma
