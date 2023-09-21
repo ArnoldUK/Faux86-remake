@@ -9,7 +9,7 @@ Most of the code has been updated and re-written in C++ but the core CPU emulati
 ## Current Status
 
 21-09-2023 Release build v1.22 for 32/64Bit Windows
-[Faux86-remake Release Build V1.22 Win32](https://github.com/ArnoldUK/Faux86-remake/releases/tag/v1.22)
+[Faux86-remake Release Build V1.22 Win32](https://github.com/ArnoldUK/Faux86-remake/releases/tag/v1.22-Win32)
 
 21-09-2023 Release build V1.22 for ARM RPi 1,2,3,4
 [Faux86-remake Release Build V1.22 ARM-RPi](https://github.com/ArnoldUK/Faux86-remake/releases/tag/v1.22-RPi)
