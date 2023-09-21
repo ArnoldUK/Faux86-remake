@@ -21,6 +21,8 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
+
+#include "Config.h"
 #include "Types.h"
 
 //#define MOUSE_BUFFER_LEN		16

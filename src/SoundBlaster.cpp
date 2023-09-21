@@ -23,8 +23,8 @@
 /* Functions to emulate a Creative Labs Sound Blaster Pro. */
 
 #include "VM.h"
-#include "SoundBlaster.h"
 #include "MemUtils.h"
+#include "SoundBlaster.h"
 
 using namespace Faux86;
 

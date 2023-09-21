@@ -1,6 +1,8 @@
-#include "Debugger.h"
+
+
 #include "MemUtils.h"
 #include "VM.h"
+#include "Debugger.h"
 
 using namespace Faux86;
 

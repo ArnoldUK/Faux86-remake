@@ -21,7 +21,6 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "Config.h"
 #include "VM.h"
 #include "Audio.h"
 #include "MemUtils.h"
@@ -34,33 +33,39 @@ struct wav_hdr_s wav_hdr;
 FILE *wav_file = NULL;
 */
 
-void Audio::createOutputWAV(char *filename) 
+Audio::Audio(VM& inVM)
+	: vm(inVM)
 {
+	log(Log,"[AUDIO] Constructed");
+}
+
+Audio::~Audio() 
+{
+	vm.config.hostSystemInterface->getAudio().shutdown();
 	// TODO
 	/*
-	log(Log, "Creating %s for audio logging... ", filename);
-	wav_file = fopen (filename, "wb");
-	if (wav_file == NULL) {
-			log (Log, "failed!\n");
-			return;
-		}
-	log(Log, "OK!\n");
-
-	wav_hdr.AudioFormat = 1; //PCM
-	wav_hdr.bitsPerSample = 8;
-	wav_hdr.blockAlign = 1;
-	wav_hdr.ChunkSize = sizeof (wav_hdr) - 4;
-	memcpy (&wav_hdr.WAVE[0], "WAVE", 4);
-	memcpy (&wav_hdr.fmt[0], "fmt ", 4);
-	wav_hdr.NumOfChan = 1;
-	wav_hdr.bytesPerSec = sampleRate * (uint32_t) (wav_hdr.bitsPerSample >> 3) * (uint32_t) wav_hdr.NumOfChan;
-	memcpy (&wav_hdr.RIFF[0], "RIFF", 4);
-	wav_hdr.Subchunk1Size = 16;
-	wav_hdr.SamplesPerSec = sampleRate;
-	memcpy (&wav_hdr.Subchunk2ID[0], "data", 4);
-	wav_hdr.Subchunk2Size = 0;
-	//fwrite((void *)&wav_hdr, 1, sizeof(wav_hdr), wav_file);
+	SDL_PauseAudio (1);
+	if (wav_file == NULL) return;
+	wav_hdr.ChunkSize = wav_hdr.Subchunk2Size + sizeof(wav_hdr) - 8;
+	fseek(wav_file, 0, SEEK_SET);
+	fwrite((void *)&wav_hdr, 1, sizeof(wav_hdr), wav_file);
+	fclose (wav_file);
 	*/
+}
+
+void Audio::init()
+{
+	log(Log,"[AUDIO] Initialized");
+	sampleRate = vm.config.audio.sampleRate;
+	latency = vm.config.audio.latency;
+
+	audbufptr = usebuffersize = (sampleRate / 1000) * latency;
+	doublesamplecount = (uint32_t) ( (double) sampleRate * (double) 0.01);
+
+	MemUtils::memset (audbuf, 128, sizeof (audbuf) );
+	audbufptr = usebuffersize;
+
+	vm.config.hostSystemInterface->getAudio().init(vm);
 }
 
 bool Audio::isAudioBufferFilled() 
@@ -90,38 +95,31 @@ void Audio::fillAudioBuffer(uint8_t *stream, int len)
 	if (audbufptr < 0) audbufptr = 0;
 }
 
-Audio::Audio(VM& inVM)
-	: vm(inVM)
+//TODO
+/*
+void Audio::createOutputWAV(char *filename) 
 {
-	log(Log,"[AUDIO] Constructed");
+	log(Log, "Creating %s for audio logging... ", filename);
+	wav_file = fopen (filename, "wb");
+	if (wav_file == NULL) {
+			log (Log, "failed!\n");
+			return;
+		}
+	log(Log, "OK!\n");
+
+	wav_hdr.AudioFormat = 1; //PCM
+	wav_hdr.bitsPerSample = 8;
+	wav_hdr.blockAlign = 1;
+	wav_hdr.ChunkSize = sizeof (wav_hdr) - 4;
+	memcpy (&wav_hdr.WAVE[0], "WAVE", 4);
+	memcpy (&wav_hdr.fmt[0], "fmt ", 4);
+	wav_hdr.NumOfChan = 1;
+	wav_hdr.bytesPerSec = sampleRate * (uint32_t) (wav_hdr.bitsPerSample >> 3) * (uint32_t) wav_hdr.NumOfChan;
+	memcpy (&wav_hdr.RIFF[0], "RIFF", 4);
+	wav_hdr.Subchunk1Size = 16;
+	wav_hdr.SamplesPerSec = sampleRate;
+	memcpy (&wav_hdr.Subchunk2ID[0], "data", 4);
+	wav_hdr.Subchunk2Size = 0;
+	//fwrite((void *)&wav_hdr, 1, sizeof(wav_hdr), wav_file);
 }
-
-void Audio::init()
-{
-	log(Log,"[AUDIO] Initialized");
-	sampleRate = vm.config.audio.sampleRate;
-	latency = vm.config.audio.latency;
-
-	audbufptr = usebuffersize = (sampleRate / 1000) * latency;
-	doublesamplecount = (uint32_t) ( (double) sampleRate * (double) 0.01);
-
-	MemUtils::memset (audbuf, 128, sizeof (audbuf) );
-	audbufptr = usebuffersize;
-
-	vm.config.hostSystemInterface->getAudio().init(vm);
-}
-
-Audio::~Audio() 
-{
-	vm.config.hostSystemInterface->getAudio().shutdown();
-	// TODO
-	/*
-	SDL_PauseAudio (1);
-
-	if (wav_file == NULL) return;
-	wav_hdr.ChunkSize = wav_hdr.Subchunk2Size + sizeof(wav_hdr) - 8;
-	fseek(wav_file, 0, SEEK_SET);
-	fwrite((void *)&wav_hdr, 1, sizeof(wav_hdr), wav_file);
-	fclose (wav_file);
-	*/
-}
+*/

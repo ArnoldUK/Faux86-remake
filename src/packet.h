@@ -22,6 +22,7 @@
 */
 #pragma once
 
+#include "Config.h"
 #include "Types.h"
 
 extern void sendpkt(uint8_t *src, uint16_t len);

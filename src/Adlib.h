@@ -25,7 +25,12 @@
 #include "Types.h"
 #include "Audio.h"
 #include "Ports.h"
-#include "opl3.h"
+
+//#ifdef USE_NUKED_OPL
+	#include "opl3.h"
+//#else
+	#include "opl.h"
+//#endif
 
 namespace Faux86
 {
@@ -47,11 +52,18 @@ namespace Faux86
 
 		virtual bool portWriteHandler(uint16_t portnum, uint8_t value) override;
 		virtual bool portReadHandler(uint16_t portnum, uint8_t& outValue) override;
+		
+		bool useOPL3;
 
 	private:
 		VM& vm;
 
+		//#ifdef USE_NUKED_OPL
 		opl3_chip opl3;
+		//#else
+		//opl3_chip opl3;
+		//#endif
+		
 		uint8_t targetRegister = 0;
 		uint8_t timerRegister = 0;
 	};

@@ -21,9 +21,10 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "VM.h"
+
 #include "DriveManager.h"
 #include "Debugger.h"
+#include "VM.h"
 
 using namespace Faux86;
 
@@ -67,46 +68,50 @@ public:
 	int update() override
 	{
 		int delay = 0;
+		//uint32_t execloops;
+		//uint16_t timing_interval;
 		
 		//THIS CODE NEEDS TO BE MORE ACCURATE
-
+		
 		if (!vm.config.cpuSpeed)	{
-			//vm.cpu.exec86(4700); //4.7Mhz
-			//vm.cpu.exec86(10000); //10Mhz
-			//vm.cpu.exec86(100000); //100Mhz
-			vm.cpu.exec86(10000);
+			//vm.cpu.exec86(4700, vm.config.cpuTiming); //4.7Mhz
+			//vm.cpu.exec86(10000, vm.config.cpuTiming); //10Mhz
+			vm.cpu.exec86(100000, vm.config.cpuTiming); //100Mhz
 		}	else {
 			//vm.cpu.exec86(vm.config.cpuSpeed / 100); //100 rpi
 			//vm.cpu.exec86(vm.config.cpuSpeed / 1000); //win32 (4700000 = 4.7Mhz)
 			#ifdef _WIN32
-			//vm.cpu.exec86(vm.config.cpuSpeed * 100); //10Mhz win32
-			vm.cpu.exec86(vm.config.cpuSpeed); //10Mhz win32
+			vm.cpu.exec86(vm.config.cpuSpeed * 100, vm.config.cpuTiming); //10Mhz win32
+			#elif defined(ARDUINO)
+			vm.cpu.exec86(vm.config.cpuSpeed * 100, vm.config.cpuTiming); //10Mhz
 			#else
-			vm.cpu.exec86(vm.config.cpuSpeed * 1000); //10Mhz RPi
+			vm.cpu.exec86(vm.config.cpuSpeed * 100, vm.config.cpuTiming); //10Mhz RPi
 			#endif
 			
-			/*
 			if (vm.config.enableAudio) {
+				vm.audio.tick();
+				if (vm.config.slowSystem) {
+					vm.audio.tick();
+					vm.audio.tick();
+				}
+				/*
 				while (!vm.audio.isAudioBufferFilled()) {
-					vm.timing.tick();
+					vm.timing.tick(vm.config.slowSystem);
 					vm.audio.tick();
 					if (vm.config.slowSystem) {
 						vm.audio.tick();
 						vm.audio.tick();
-						//vm.audio.tick();
-						//vm.audio.tick();
-						}
+					}
 				}
+				*/
 			}
-			*/
 			
 			#ifdef _WIN32
-			//delay = 1;
+			delay = 1;
 			#else
 			//delay = 0;	
 			#endif
 		}
-		//vm.timing.tick();
 		return delay;
 	}
 };
@@ -126,6 +131,7 @@ VM::VM(Config& inConfig)
 	, ports(*this)
 	, pic(*this)
 	, pit(*this)
+	, ppi(*this)
 	, dma(*this)
 	, drives(*this)
 	, video(*this)
@@ -183,6 +189,7 @@ bool VM::init()
 	memory.loadBinary((uint32_t)(DEFAULT_RAM_SIZE - biosSize), config.biosFile, 1, MemArea_BIOS);
 
 	//memory.loadBinary(0xA0000UL, config.asciiFile, 1);
+	//memory.loadBinary(0xA0000UL, config.asciiFile, MemArea_VGABIOS);
 
 #ifdef DISK_CONTROLLER_ATA
 	if (!memory.loadBinary(0xD0000UL, config.ideRomFile, 1))

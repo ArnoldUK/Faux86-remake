@@ -23,10 +23,11 @@
 
 #include "VM.h"
 #include "SerialMouse.h"
-#include "ports.h"
-#include "cpu.h"
-#include "SerialMouse.h"
-#include "video.h"
+#include "Ports.h"
+#include "CPU.h"
+#include "Video.h"
+
+//#define DEBUG_INPUT
 
 using namespace Faux86;
 
@@ -56,10 +57,12 @@ void InputManager::handleKeyDown(uint16_t scancode)
 	log(Log,"[INPUTMANAGER::handleKeyDown] scancode:%u extended:%u", scancode, extended);
 	#endif
 	
-	if (extended)
-	{
-		queueData(extended);
-	}
+	//Not sure of this extended code 244 but causes
+	//repeated arrow keys so disabled for now
+	//if (extended)
+	//{
+	//	queueData(extended);
+	//}
 
 	queueData((uint8_t)scancode);
 }
@@ -72,10 +75,12 @@ void InputManager::handleKeyUp(uint16_t scancode)
 	log(Log,"[INPUTMANAGER::handleKeyUp] scancode:%u extended:%u", scancode, extended);
 	#endif
 	
-	if (extended)
-	{
-		queueData(extended);
-	}
+	//Not sure of this extended code 224 but causes
+	//repeated arrow keys so disabled for now
+	//if (extended)
+	//{
+	//	queueData(extended);
+	//}
 
 	queueData((uint8_t)(scancode) | 0x80);
 }

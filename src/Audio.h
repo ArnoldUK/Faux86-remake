@@ -22,6 +22,7 @@
 */
 
 #pragma once
+
 #include "Types.h"
 
 namespace Faux86
@@ -49,7 +50,7 @@ namespace Faux86
 		int32_t sampleRate;
 
 	private:
-		void createOutputWAV(char *filename);
+		//void createOutputWAV(char *filename);
 
 		int32_t latency = 0;
 		int8_t audbuf[96000];

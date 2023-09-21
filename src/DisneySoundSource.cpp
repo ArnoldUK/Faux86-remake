@@ -22,8 +22,8 @@
 */
 
 #include "VM.h"
-#include "DisneySoundSource.h"
 #include "MemUtils.h"
+#include "DisneySoundSource.h"
 
 using namespace Faux86;
 

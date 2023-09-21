@@ -22,9 +22,9 @@
 */
 
 #include "VM.h"
-#include "Renderer.h"
 #include "Profiler.h"
 #include "MemUtils.h"
+#include "Renderer.h"
 
 //#include <circle/sched/scheduler.h>
 
@@ -116,7 +116,11 @@ void Renderer::markScreenModeChanged(uint32_t newWidth, uint32_t newHeight)
 	13: 40x25 320x200 8-Bit 256 color GRAPHICS 8x8 (MCGA,VGA)
 */
 
+#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+void Renderer::draw(uint16_t* pixels, int w, int h, int stride) {
+#else
 void Renderer::draw(uint32_t* pixels, int w, int h, int stride) {
+#endif
 	fb->blit(pixels, w, h, stride);
 }
 

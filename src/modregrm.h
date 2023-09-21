@@ -20,6 +20,10 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
+#ifndef _modregrm_h
+#define _modregrm_h
+
 #include "Config.h"
 
 #ifdef CPU_ADDR_MODE_CACHE
@@ -149,3 +153,5 @@ uint64_t cached_access_count = 0, uncached_access_count = 0;
 	} \
 }
 #endif
+
+#endif //_modregrm_h

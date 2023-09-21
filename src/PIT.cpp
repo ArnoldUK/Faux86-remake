@@ -27,14 +27,17 @@
 */
 
 #include "VM.h"
-#include "PIT.h"
 #include "PCSpeaker.h"
+#include "PIT.h"
 
 using namespace Faux86;
 
-/*
+
 void PIT::tick() {
-	//debug_debug("[I8253] i8253_tickCallback");
+	//log(Log,"[PIT::I8253] tick");
+	//The PIT timing needs working on return for now and handle in Timining.cpp
+	return;
+	
 	uint8_t i;
 
 	for (i = 0; i < 3; i++) {
@@ -51,7 +54,7 @@ void PIT::tick() {
 			if (counter[i] <= 0) {
 				counter[i] = 0;
 				out[i] = 1;
-				//if (i == 0) vm.pic.doirq(0);
+				if (i == 0) vm.pic.doirq(0);
 			}
 			break;
 		case 2: //rate generator
@@ -60,22 +63,22 @@ void PIT::tick() {
 			//	timing_calls = 0;
 			//	debug_debug("[I8253] i8253_tickCallback %u mode=%u counter=%lu", i, i8253->mode[i], i8253->counter[i]);
 			//}
-			counter[i] -= 50;//25;
+			counter[i] -= 25;//25;
 			if (counter[i] <= 0) {
 				out[i] ^= 1;
 				//if (out[i] == 0) {
-					//if (i == 0) vm.pic.doirq(0);
+					if (i == 0) vm.pic.doirq(0);
 				//}
 				counter[i] += reload[i];
 			}
 			break;
 		case 3: //square wave generator
 			//if (i == 0) vm.pic.doirq(0);
-			counter[i] -= 75;//50;
+			counter[i] -= 50;//50;
 			if (counter[i] <= 0) {
 				out[i] ^= 1;
 				if (out[i] == 0) {
-					//if (i == 0) vm.pic.doirq(0);
+					if (i == 0) vm.pic.doirq(0);
 				}
 				if (i == 2) vm.pcSpeaker.setGateState(PC_SPEAKER_GATE_TIMER2, (reload[i] < 50) ? 0 : out[i]);
 				counter[i] += reload[i];
@@ -90,8 +93,9 @@ void PIT::tick() {
 	}
 	}
 }
-*/
 
+
+//PREVIOUS CODE WORKS!!
 bool PIT::portWriteHandler(uint16_t portnum, uint8_t value)
 {
 	uint8_t curbyte = 0;
@@ -113,12 +117,11 @@ bool PIT::portWriteHandler(uint16_t portnum, uint8_t value)
 			{   //high byte
 				chandata[portnum] = (chandata[portnum] & 0x00FF) | ( (uint16_t) value << 8);
 			}
-			if (chandata[portnum] == 0) 
-				effectivedata[portnum] = 65536;
-			else 
-				effectivedata[portnum] = chandata[portnum];
+			if (chandata[portnum] == 0) effectivedata[portnum] = 65536;
+			else effectivedata[portnum] = chandata[portnum];
 			active[portnum] = 1;
 			vm.timing.tickgap = (uint64_t) ( (float) vm.timing.getHostFreq() / (float) ( (float) 1193182 / (float) effectivedata[0]) );
+			//vm.timing.i8253tickgap = (uint64_t) ( (float) vm.timing.getHostFreq() / (float) ( (float) 1193182 / (float) effectivedata[0]) );
 			if (accessmode[portnum] == Mode::Toggle) 
 				bytetoggle[portnum] = (~bytetoggle[portnum]) & 1;
 			chanfreq[portnum] = (float) ( (uint32_t) ( ( (float) 1193182.0 / (float) effectivedata[portnum]) * (float) 1000.0) ) / (float) 1000.0;
@@ -130,9 +133,9 @@ bool PIT::portWriteHandler(uint16_t portnum, uint8_t value)
 				bytetoggle[value>>6] = 0;
 			break;
 	}
-
 	return true;
 }
+
 
 /*
 bool PIT::portWriteHandler(uint16_t portnum, uint8_t value)
@@ -219,17 +222,13 @@ bool PIT::portWriteHandler(uint16_t portnum, uint8_t value)
 }
 */
 
+
+//PREVIOUS CODE WORKS!!
 bool PIT::portReadHandler(uint16_t portnum, uint8_t& outValue)
 {
 	outValue = 0;
 	uint8_t curbyte = 0;
 	portnum &= 3;
-	
-	//THIS CODE WAS ADDED
-	if (portnum == 3) {
-		outValue = 0xFF; //no read of control word possible
-		return true;
-	}
 	
 	switch (portnum) 
 	{
@@ -258,6 +257,7 @@ bool PIT::portReadHandler(uint16_t portnum, uint8_t& outValue)
 	}
 	return true;
 }
+
 
 /*
 bool PIT::portReadHandler(uint16_t portnum, uint8_t& outValue) {
@@ -307,6 +307,7 @@ PIT::PIT(VM& inVM)
 {
 	log(Log,"[PIT::I8253] Constructed");
 	//uint32_t utimer = timing_addTimer(i8253_tickCallback, (void*)(&i8253->cbdata), 48000, TIMING_ENABLED, "[i8253] tickCallback"); //79545.47
+
 	vm.ports.setPortRedirector(0x40, 0x43, this);
 }
 

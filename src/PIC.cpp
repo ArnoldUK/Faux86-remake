@@ -27,8 +27,8 @@
   of a PC, it's all we need.
 */
 
-#include "PIC.h"
 #include "VM.h"
+#include "PIC.h"
 
 using namespace Faux86;
 

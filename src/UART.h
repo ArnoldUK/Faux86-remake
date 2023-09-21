@@ -22,11 +22,14 @@
 
 #pragma once
 
+//#include <stdint.h>
+//#include "i8259.h"
+
+#include "Config.h"
 #include "Types.h"
 #include "Ports.h"
 
-//#include <stdint.h>
-//#include "i8259.h"
+
 
 #define UART_IRQ_MSR_ENABLE			0x08
 #define UART_IRQ_LSR_ENABLE			0x04

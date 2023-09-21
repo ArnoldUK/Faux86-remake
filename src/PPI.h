@@ -20,35 +20,46 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
+/*
+	Intel 8255 Programmable Peripheral Interface (PPI)
+	This is not complete.
+*/
+
 #pragma once
 
-#if 1
-#include <stdint.h>
-#include <assert.h>
-#else
-typedef unsigned char uint8_t;
-typedef unsigned short uint16_t;
-typedef unsigned int uint32_t;
-typedef unsigned long long uint64_t;
+#include "Config.h"
+#include "Types.h"
+#include "Ports.h"
 
-typedef signed char int8_t;
-typedef signed short int16_t;
-typedef signed int int32_t;
-typedef signed long long int64_t;
+//#include <stdint.h>
 
-typedef unsigned int uintptr_t;
-typedef uint32_t size_t;
-#define assert(x)
-#endif
 
-#ifdef _WIN32
+namespace Faux86
+{
+	class VM;
 
-#elif defined(ARDUINO)
+	// Intel 8255 Programmable Peripheral Interface (PPI)
+	class PPI : public PortInterface
+	{
+	public:
+		PPI(VM& inVM);
+		
+		uint8_t sw2;
+		uint8_t portA;
+		uint8_t portB;
+		uint8_t portC;
 
-#else
-typedef unsigned int size_t;
-#endif
+		//void tick();
+		virtual bool portWriteHandler(uint16_t portnum, uint8_t value) override;
+		virtual bool portReadHandler(uint16_t portnum, uint8_t& outValue) override;
+		void dramRefreshToggle(void);	
 
-typedef struct {
-    uint8_t r, g, b;
-} rgb_t;
+	private:
+
+		VM& vm;
+	};
+
+}
+
+

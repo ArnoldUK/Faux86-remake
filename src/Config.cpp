@@ -21,26 +21,19 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#ifndef _WIN32
+#ifdef _WIN32
+#include <strings.h>
+#elif defined(ARDUINO)
+#include <strings.h>
+#else
 #include <circle/util.h>
 #endif
 
 #include "Config.h"
 #include "DriveManager.h"
-#include "VM.h"
+//#include "VM.h"
 
 using namespace Faux86;
-
-#ifndef PATH_DATAFILES
-#define PATH_DATAFILES ""
-#endif
-
-#ifdef _WIN32
-#define COMMAND_LINE_PARSING
-#define strcmpi _strcmpi
-#else
-#define strcmpi strcasecmp
-#endif
 
 #ifdef COMMAND_LINE_PARSING
 #include <stdio.h>
@@ -99,9 +92,17 @@ void showhelp () {
 		"  -nosound         Disable all audio emulation and sound output.\n"
 		"  -fullscreen      Start Faux86 in fullscreen mode.\n"
 		"  -verbose         Verbose mode. Operation details will be written to stdout.\n"
-		"  -speed           Frequency of the CPU in Mhz. Set to 0 for Maximum Speed.\n"
-		"                   Value between 1Mhz and 50Mhz. Default is 10 (10Mhz).\n"		
-		"  -delay           Specify how many milliseconds to render each video frame.\n"
+		"  -cpu #           Set the CPU type and opcode emulation. Default is 2 for NEC V20 CPU.\n"	
+		"                   0 = 8086/8088 CPU_TYPE_8086.\n"
+		"                   1 = 80186 CPU_TYPE_186.\n"
+		"                   2 = NEC V20 CPU_TYPE_V20.\n"
+		"                   3 = 286 CPU_TYPE_286 LIMITED OPCODES.\n"
+		"                   4 = 386 CPU_TYPE_386 NOT SUPPORTED.\n"	
+		"  -speed #         Frequency of the CPU in Mhz. Set to 0 for Maximum Speed.\n"
+		"  -timing #        Set number CPU clock timing calls to update display,input,audio.\n"		
+		"                   Value should be either 1,3,7,15,31,63,127,255 depending on system.\n"
+		"                   Lower values make more CPU clock timing calls. Default is 15.\n"		
+		"  -delay #         Specify how many milliseconds to render each video frame.\n"
 		"                   Value between 1ms and 1000ms. Default is 20ms (50 FPS).\n"
 		"  -slowsys         If your machine is very slow and you have audio dropouts,\n"
 		"                   use this option to sacrifice audio quality to compensate.\n"
@@ -120,6 +121,10 @@ void showhelp () {
 		"                   1 = Amber Gas Plasma.\n"
 		"                   2 = Green CRT Monochrome.\n"
 		"                   3 = Blue LCD.\n"
+		"                   4 = Toshiba Blue LCD.\n"
+		"                   5 = Teal Terminal.\n"
+		"                   6 = Green Terminal.\n"
+		"                   7 = Amber Terminal.\n"								
 //		"  -smooth          Apply smoothing to screen rendering.\n"
 //		"  -noscale         Disable 2x scaling of low resolution video modes.\n"
 		"  -mouseport #     Serial Mouse COM Port #.\n"
@@ -130,7 +135,8 @@ void showhelp () {
 		"  -snddisney       Enable Disney Sound Source emulation on LPT1.\n"
 		"  -sndblaster      Enable SoundBlaster emulation (requires Adlib to be enabled).\n"
 		"  -sndadlib        Enable Adlib emulation (required for SoundBlaster emulation).\n"
-		"  -sndspeaker      Enable PC Speaker emulation.\n"		
+		"  -sndopl3         Enable OPL3 emulation (default OPL2 requires Adlib enabled.\n"	
+		"  -sndspeaker      Enable PC Speaker emulation.\n"
 		"  -latency #       Change audio buffering and output latency. (default: 100 ms)\n"
 		"  -samprate #      Change audio emulation sample rate. (default: 48000 Hz)\n"
 		"  -console         Enable debug console on stdio during emulation.\n"
@@ -153,13 +159,21 @@ void showhelp () {
 }
 #endif
 
+/*
+Config::Config(HostSystemInterface* inHostInterface)
+: hostSystemInterface(inHostInterface)
+{
+}
+*/
+
 bool Config::parseCommandLine(int argc, char *argv[]) 
 {
+	#ifdef COMMAND_LINE_PARSING
+	
 	#ifdef DEBUG_CONFIG
 	log(Log, "[CONFIG::parseCommandLine] argc %d", argc);
 	#endif
-				
-	#ifdef COMMAND_LINE_PARSING
+	
 	int i, abort = 0;
 	//const char* biosFilePath = PATH_DATAFILES "pcxtbios.bin";
 
@@ -232,6 +246,10 @@ bool Config::parseCommandLine(int argc, char *argv[])
 			i++;
 			useAdlib = true;
 		}
+		else if (strcmpi (argv[i], "-sndopl3") == 0) {
+			i++;
+			useOPL3 = true;
+		}
 		else if (strcmpi (argv[i], "-sndspeaker") == 0) {
 			i++;
 			usePCSpeaker = true;
@@ -284,9 +302,17 @@ bool Config::parseCommandLine(int argc, char *argv[])
 			i++;
 			monitorDisplay = (uint8_t) atoi (argv[i]);
 		}
+		else if (strcmpi (argv[i], "-cpu") == 0) {
+			i++;
+			cpuType = (uint8_t) atoi (argv[i]);
+		}
 		else if (strcmpi (argv[i], "-speed") == 0) {
 			i++;
 			cpuSpeed = (uint32_t) atol (argv[i]);
+		}
+		else if (strcmpi (argv[i], "-timing") == 0) {
+			i++;
+			cpuTiming = (uint32_t) atol (argv[i]);
 		}
 		else if (strcmpi (argv[i], "-debugger") == 0) {
 			enableDebugger = true;
@@ -333,15 +359,21 @@ bool Config::parseCommandLine(int argc, char *argv[])
 	}
 
 	// Clamp values
-	if (audio.sampleRate < 4000) audio.sampleRate = 4000;
-	else if (audio.sampleRate > 96000) audio.sampleRate = 96000;
-	if (audio.latency < 10)	audio.latency = 10;
-	else if (audio.latency > 1000) audio.latency = 1000;
+	if (audio.sampleRate < 22050) audio.sampleRate = AUDIO_DEFAULT_SAMPLE_RATE;
+	else if (audio.sampleRate > 48000) audio.sampleRate = AUDIO_DEFAULT_SAMPLE_RATE;
+	if (audio.latency < 32)	audio.latency = 32;
+	else if (audio.latency > 512) audio.latency = 512;
 	
-	if (resw > 1024) resw = 640;
-	if (resh > 1024) resh = 350;
-	if (renderQuality > 2) renderQuality = 2;
-	if (monitorDisplay > 3) monitorDisplay = 0;
+	if (cpuSpeed > 200) cpuSpeed = 200;
+	if (cpuTiming < 1) cpuTiming = TIMING_INTERVAL;
+	if (cpuTiming > 255) cpuTiming = TIMING_INTERVAL;
+	if (cpuType > CPU_TYPE_386) cpuType = CPU_TYPE_V20;
+	if (cpuType < CPU_TYPE_8086) cpuType = CPU_TYPE_V20;
+	
+	if (resw > 1024) resw = HOST_WINDOW_WIDTH;
+	if (resh > 1024) resh = HOST_WINDOW_HEIGHT;
+	if (renderQuality > 2) renderQuality = RENDER_QUALITY_LINEAR;
+	if (monitorDisplay > 7) monitorDisplay = 0;
 	//COM PORT AND IRQ
 		//COM1 - 3F8h IRQ4
 		//COM2 - 2F8h IRQ3
@@ -366,9 +398,8 @@ bool Config::parseCommandLine(int argc, char *argv[])
 			mouse.irq = 3;
 			break;
 	}
-
-	return true;
 #endif
+	return true;
 }
 
 bool Config::loadFD0(const char* str) {

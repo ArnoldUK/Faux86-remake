@@ -25,9 +25,10 @@
 #include "Config.h"
 #include "CPU.h"
 #include "RAM.h"
-#include "PIT.h"
 #include "Ports.h"
+#include "PIT.h"
 #include "PIC.h"
+#include "PPI.h"
 #include "DMA.h"
 #include "UART.h"
 #include "SerialMouse.h"
@@ -42,6 +43,10 @@
 #include "InputManager.h"
 #include "Timing.h"
 #include "TaskManager.h"
+
+#ifndef BUILD_STRING
+	#error BUILD_STRING not defined. Add #include "Config.h" to this unit.
+#endif
 
 namespace Faux86
 {
@@ -63,6 +68,7 @@ namespace Faux86
 		Ports ports;
 		PIC pic;
 		PIT pit;
+		PPI ppi;
 		DMA dma;
 		DriveManager drives;
 

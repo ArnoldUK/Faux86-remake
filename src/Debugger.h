@@ -1,7 +1,11 @@
+
+#ifndef _Debugger_h
+#define _Debugger_h
+
 #pragma once
 
-#include "Types.h"
 #include "Config.h"
+#include "Types.h"
 
 namespace Faux86
 {
@@ -62,3 +66,5 @@ namespace Faux86
 		uint32_t numExecutionBreakpoints = 0;
 	};
 }
+
+#endif //_Debugger_h

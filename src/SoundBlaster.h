@@ -22,6 +22,7 @@
 */
 #pragma once
 
+#include "Config.h"
 #include "Types.h"
 #include "Audio.h"
 #include "Ports.h"

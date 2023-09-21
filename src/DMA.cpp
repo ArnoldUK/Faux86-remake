@@ -28,8 +28,8 @@
 */
 
 #include "VM.h"
-#include "DMA.h"
 #include "MemUtils.h"
+#include "DMA.h"
 
 using namespace Faux86;
 
@@ -59,6 +59,7 @@ bool DMA::portWriteHandler(uint16_t addr, uint8_t value)
 	#ifdef DEBUG_DMA
 	log(Log,"[DMA] portWriteHandler (0x%X, %X)", addr, value);
 	#endif
+	//addr &= 0x0F; //ADDED
 	switch (addr) {
 		case 0x2: //channel 1 address register
 			if (flipflop == 1) channels[1].addr = (channels[1].addr & 0x00FF) | ( (uint32_t) value << 8);
@@ -113,11 +114,13 @@ bool DMA::portWriteHandler(uint16_t addr, uint8_t value)
 	return true;
 }
 
+
 bool DMA::portReadHandler(uint16_t addr, uint8_t& outValue)
 {
 	#ifdef DEBUG_DMA
 	log(Log,"[DMA] portReadHandler (0x%X)", addr);
 	#endif
+	//addr &= 0x0F; //ADDED
 	if (addr & 0x80) {
     // this is a DMA page register
   } else {
@@ -152,6 +155,11 @@ void DMA::init()
 	log(Log,"[DMA] Initialized");
 	MemUtils::memset (channels, 0, sizeof (Channel) * NumDMAChannels );
 
+	channels[0].masked = 1;
+	channels[1].masked = 1;
+	channels[2].masked = 1;
+	channels[3].masked = 1;
+	
 	vm.ports.setPortRedirector(0x00, 0x0F, this);
 	vm.ports.setPortRedirector(0x80, 0x8F, this);
 }

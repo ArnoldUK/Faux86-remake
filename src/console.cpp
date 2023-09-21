@@ -22,14 +22,16 @@
 */
 
 #include "Config.h"
+
 // TODO NOT IMPLEMENTED DO NOT USE!!
 #ifdef DEBUG_CONSOLE
 
-#include "VM.h"
 #include <SDL/SDL.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "VM.h"
 #include "CPU.h"
 #include "DriveManager.h"
 
@@ -139,3 +141,4 @@ void *runconsole (void *dummy) {
 }
 
 #endif //DEBUG_CONSOLE
+

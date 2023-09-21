@@ -22,6 +22,7 @@
 */
 #pragma once
 
+#include "Config.h"
 #include "Types.h"
 
 namespace Faux86

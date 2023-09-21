@@ -21,14 +21,17 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 #pragma once
-#include "Types.h"
-#include "TaskManager.h"
-#include "mutex.h"
-#include "Config.h"
 
 #ifdef _WIN32
 #include <assert.h>
 #endif
+
+#include "Config.h"
+#include "Types.h"
+#include "TaskManager.h"
+#include "mutex.h"
+
+#include "HostSystemInterface.h"
 
 //#define RENDER_NATIVE_WIDTH		640
 //#define RENDER_NATIVE_HEIGHT	400
@@ -74,7 +77,11 @@ namespace Faux86
 
 		void init(uint32_t _fbwidth, uint32_t _fbheight);
 		void markScreenModeChanged(uint32_t newWidth, uint32_t newHeight);
+		#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+		void draw(uint16_t* pixels, int w, int h, int stride);
+		#else
 		void draw(uint32_t* pixels, int w, int h, int stride);
+		#endif
 		void setCursorPosition(uint32_t x, uint32_t y);
 
 		RenderSurface* renderSurface = nullptr;

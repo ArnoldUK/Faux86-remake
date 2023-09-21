@@ -21,26 +21,60 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "Adlib.h"
 #include "VM.h"
 #include "MemUtils.h"
+#include "Adlib.h"
 
 using namespace Faux86;
-
 
 bool Adlib::portWriteHandler(uint16_t portnum, uint8_t value)
 {
 	if (portnum & 1) {
-		//OPL3_WriteReg(&opl3, targetRegister, value);
-		OPL3_WriteRegBuffered(&opl3, targetRegister, value);
 
+		//#ifdef USE_NUKED_OPL
+		if (useOPL3) {
+			if (vm.config.slowSystem) {
+				OPL3_WriteReg(&opl3, targetRegister, value);
+			} else {
+				OPL3_WriteRegBuffered(&opl3, targetRegister, value);
+			}
+		} else {
+			if (portnum == OPL_REGISTER_PORT)	{
+	  		adlib_write_index(portnum, value);
+	  	}
+			adlib_write(targetRegister, value);
+		}
 		if (targetRegister == 4) {
 			timerRegister = (value & 0x80) ? 0 : value;
 		}
 	}	else {
 		targetRegister = value;
 	}
-
+	
+	/*
+	#else
+	if (portnum == OPL_REGISTER_PORT)
+  {
+  	adlib_write(targetRegister, value);
+    targetRegister = value;
+  }
+  else if (portnum == OPL_REGISTER_PORT_OPL3)
+  {
+  	adlib_write(targetRegister, value);
+    targetRegister = value | 0x100;
+  }
+  else if (portnum == OPL_DATA_PORT)
+  {
+    adlib_write(targetRegister, value);
+    if (targetRegister == 4) {
+			timerRegister = (value & 0x80) ? 0 : value;
+		}
+  }
+  else {
+		targetRegister = value;
+	}
+	#endif
+	*/
 	return true;
 }
 
@@ -67,6 +101,14 @@ bool Adlib::portReadHandler(uint16_t portnum, uint8_t& outValue)
 	uint8_t status = timerRegister ? 0x80 : 0;
 	status += (timerRegister & 1) * 0x40 + (timerRegister & 2) * 0x10;
 	outValue = status;
+
+	//#ifndef USE_NUKED_OPL
+	//if (!useOPL3) {
+	//not sure about this call?
+	//adlib_reg_read(portnum);
+	//#endif
+	//}
+	
 	return true;
 }
 
@@ -88,7 +130,13 @@ bool Adlib::portReadHandler(uint16_t portnum, uint8_t& outValue) {
 int16_t Adlib::generateSample() 
 {
 	int16_t buffer[2];
-	OPL3_Generate(&opl3, buffer);
+
+	//#ifdef USE_NUKED_OPL
+	if (useOPL3) {
+		OPL3_Generate(&opl3, buffer);
+	} else {
+		adlib_getsample(buffer, 1);
+	}
 
 	// Currently force to mono
 	return buffer[0];
@@ -113,5 +161,12 @@ void Adlib::init()
 	//#endif
 	uint16_t baseport = vm.config.adlib.port;
 	vm.ports.setPortRedirector(baseport, baseport + 1, this);
-	OPL3_Reset(&opl3, vm.config.audio.sampleRate);
+	useOPL3 = vm.config.useOPL3;
+	
+	//#ifdef USE_NUKED_OPL
+	if (useOPL3) {
+		OPL3_Reset(&opl3, vm.config.audio.sampleRate);
+	} else {
+		adlib_init(vm.config.audio.sampleRate);
+	}
 }

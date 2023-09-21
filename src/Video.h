@@ -22,20 +22,37 @@
 */
 #pragma once
 
+#include "Config.h"
 #include "Types.h"
 #include "Ports.h"
 
-#define VGA_DAC_MODE_READ	0x00
-#define VGA_DAC_MODE_WRITE	0x03
+#ifndef VIDEO_FRAMEBUFFER_DEPTH
+	#error VIDEO_FRAMEBUFFER_DEPTH NOT SET
+#endif
 
-#define VGA_REG_DATA_CURSOR_BEGIN			0x0A
-#define VGA_REG_DATA_CURSOR_END				0x0B
+#define VGA_RAMBANK_SIZE					65536
+#define VGA_FRAMEBUFFER_WIDTH			800 //1024
+#define VGA_FRAMEBUFFER_HEIGHT		800 //1024
 
-#define VGA_MODE_TEXT									0
-#define VGA_MODE_GRAPHICS_8BPP				1
-#define VGA_MODE_GRAPHICS_4BPP				2
-#define VGA_MODE_GRAPHICS_2BPP				3
-#define VGA_MODE_GRAPHICS_1BPP				4
+#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+	#define VGA_FRAMEBUFFER_STRIDE	VGA_FRAMEBUFFER_WIDTH * 2 //sizeof(uint16_t)
+#else
+	#define VGA_FRAMEBUFFER_STRIDE	VGA_FRAMEBUFFER_WIDTH * 4 //sizeof(uint32_t)
+#endif
+
+#define VGA_FRAMEBUFFER_SIZE			VGA_FRAMEBUFFER_WIDTH * VGA_FRAMEBUFFER_HEIGHT
+
+#define VGA_DAC_MODE_READ						0x00
+#define VGA_DAC_MODE_WRITE					0x03
+
+#define VGA_REG_DATA_CURSOR_BEGIN		0x0A
+#define VGA_REG_DATA_CURSOR_END			0x0B
+
+#define VGA_MODE_TEXT								0
+#define VGA_MODE_GRAPHICS_8BPP			1
+#define VGA_MODE_GRAPHICS_4BPP			2
+#define VGA_MODE_GRAPHICS_2BPP			3
+#define VGA_MODE_GRAPHICS_1BPP			4
 
 #define RGB565(r,g,b) (((r)>>3)<<11 | ((g)>>2)<<5 | (b)>>3)
 #define ARGB(a,r,g,b) ((uint32_t)((uint8_t)(a)<<24 | (uint8_t)(r)<<16 | (uint8_t)(g)<<8 | (uint8_t)(b)))
@@ -143,9 +160,14 @@ namespace Faux86
 		volatile uint32_t vga_hblankTimer, vga_hblankEndTimer, vga_drawTimer;
 
 	private:
-		uint32_t vga_color(uint32_t c);
-		uint8_t vga_dorotate(uint8_t v);
+		#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+		uint16_t rgb(uint16_t r, uint16_t g, uint16_t b);
+		uint16_t vga_color(uint16_t c);
+		#else
 		uint32_t rgb(uint32_t r, uint32_t g, uint32_t b);
+		uint32_t vga_color(uint32_t c);
+		#endif
+		uint8_t vga_dorotate(uint8_t v);
 
 		VM& vm;
 

@@ -22,8 +22,14 @@
 */
 
 #pragma once
+
+#include "Config.h"
 #include "Types.h"
 #include "CPUMacros.h"
+
+#ifndef BUILD_STRING
+	#error BUILD_STRING not defined. Add #include "Config.h" to this unit.
+#endif
 
 namespace Faux86
 {
@@ -35,7 +41,7 @@ namespace Faux86
 		CPU(VM& inVM);
 
 		void reset86();
-		void exec86(uint32_t execloops);
+		void exec86(uint32_t execloops, uint16_t timing_interval);
 
 		union _bytewordregs_ 
 		{
@@ -50,6 +56,7 @@ namespace Faux86
 		uint8_t ethif = 0;
 		uint64_t totalexec = 0;
 		uint8_t didbootstrap = 0;
+		uint8_t cputype = CPU_TYPE_V20;
 		
 	private:
 		void getea(uint8_t rmval);
@@ -99,9 +106,8 @@ namespace Faux86
 		void op_sbb8();
 		void op_sbb16();
 
-
 		void intcall86(uint8_t intnum);
-
+		void opcode_illegal(uint8_t _opcode);
 
 		VM& vm;
 
@@ -113,7 +119,6 @@ namespace Faux86
 		uint32_t temp1 = 0, temp2 = 0, temp3 = 0, temp4 = 0, temp5 = 0, temp32 = 0, ea = 0;
 		int32_t	result = 0;
 		uint8_t didintr = 0;
-
 		uint8_t	debugmode = 0, showcsip = 0, mouseemu = 0;
 
 	};

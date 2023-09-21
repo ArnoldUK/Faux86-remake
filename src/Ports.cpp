@@ -26,9 +26,9 @@
    read/write callback functions across the port address range. */
 
 #include "VM.h"
+#include "CPU.h"
+#include "Audio.h"
 #include "Ports.h"
-#include "cpu.h"
-#include "audio.h"
 
 using namespace Faux86;
 
@@ -70,7 +70,7 @@ void Ports::outByte (uint16_t portnum, uint8_t value)
 			{
 				vm.pcSpeaker.enabled = false;
 			}
-			return;
+			break;
 	}
 
 	if (portHandlers[portnum] && portHandlers[portnum]->portWriteHandler(portnum, value))

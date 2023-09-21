@@ -22,8 +22,8 @@
 */
 
 #include "VM.h"
-#include "SerialMouse.h"
 #include "MemUtils.h"
+#include "SerialMouse.h"
 
 using namespace Faux86;
 
@@ -217,6 +217,9 @@ void SerialMouse::handleButtonDown(ButtonType button) {
 	case ButtonType::Right:
 		buttonState |= 1;
 		break;
+	case ButtonType::Middle:
+		//buttonState |= 3;
+		break;
 	}
 
 	triggerEvent(buttonState, 0, 0);
@@ -230,6 +233,9 @@ void SerialMouse::handleButtonUp(ButtonType button) {
 		break;
 	case ButtonType::Right:
 		buttonState &= ~1;
+		break;
+	case ButtonType::Middle:
+		//buttonState &= ~3;
 		break;
 	}
 

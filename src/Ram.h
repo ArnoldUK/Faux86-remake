@@ -22,6 +22,7 @@
 */
 #pragma once
 
+#include "Config.h"
 #include "Types.h"
 
 #define MEMORY_RANGE		0x100000

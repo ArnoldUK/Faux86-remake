@@ -20,9 +20,18 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+
+#ifndef _HostSystemInterface_h
+#define _HostSystemInterface_h
+
 #pragma once
 
+#include "Config.h"
 #include "Types.h"
+
+#ifndef BUILD_STRING
+	#error BUILD_STRING not defined. Add #include "Config.h" to this unit.
+#endif
 
 namespace Faux86
 {
@@ -55,7 +64,11 @@ namespace Faux86
 
 		//virtual void present() {}
 		
+		#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+		virtual void blit(uint16_t *pixels, int w, int h, int stride) = 0;
+		#else
 		virtual void blit(uint32_t *pixels, int w, int h, int stride) = 0;
+		#endif
 		
 		//virtual uint32_t getWidth() = 0;
 		//virtual uint32_t getHeight() = 0;
@@ -92,3 +105,5 @@ namespace Faux86
 		VM* vm;
 	};
 }
+
+#endif

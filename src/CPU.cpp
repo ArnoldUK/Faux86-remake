@@ -21,21 +21,19 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-#include "Config.h"
-#include "Types.h"
 #ifndef CPU_INSTRUCTION_FLOW_CACHE
 
 #include "VM.h"
-#include "CPU.h"
 #include "Ram.h"
 #include "Debugger.h"
 #include "modregrm.h"
+#include "CPU.h"
 
 using namespace Faux86;
 
-uint64_t curtimer, lasttimer, timerfreq;
+static uint64_t curtimer, lasttimer, timerfreq;
 
-uint8_t byteregtable[8] = { regal, regcl, regdl, regbl, regah, regch, regdh, regbh };
+static uint8_t byteregtable[8] = { regal, regcl, regdl, regbl, regah, regch, regdh, regbh };
 
 static const uint8_t parity[0x100] = {
 	1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
@@ -70,6 +68,7 @@ static const uint8_t parity[0x100] = {
 
 FUNC_INLINE void CPU::flag_szp8 (uint8_t value) 
 {
+	//zf = !value;
 	if (!value) {
 			zf = 1;
 		}
@@ -89,6 +88,7 @@ FUNC_INLINE void CPU::flag_szp8 (uint8_t value)
 
 FUNC_INLINE void CPU::flag_szp16 (uint16_t value) 
 {
+	//zf = !value;
 	if (!value) {
 			zf = 1;
 		}
@@ -124,7 +124,7 @@ FUNC_INLINE void CPU::flag_adc8 (uint8_t v1, uint8_t v2, uint8_t v3)
 {
 
 	/* v1 = destination operand, v2 = source operand, v3 = carry flag */
-	uint16_t	dst;
+	uint16_t dst;
 
 	dst = (uint16_t) v1 + (uint16_t) v2 + (uint16_t) v3;
 	flag_szp8 ( (uint8_t) dst);
@@ -152,8 +152,7 @@ FUNC_INLINE void CPU::flag_adc8 (uint8_t v1, uint8_t v2, uint8_t v3)
 
 FUNC_INLINE void CPU::flag_adc16 (uint16_t v1, uint16_t v2, uint16_t v3) 
 {
-
-	uint32_t	dst;
+	uint32_t dst;
 
 	dst = (uint32_t) v1 + (uint32_t) v2 + (uint32_t) v3;
 	flag_szp16 ( (uint16_t) dst);
@@ -182,7 +181,7 @@ FUNC_INLINE void CPU::flag_adc16 (uint16_t v1, uint16_t v2, uint16_t v3)
 FUNC_INLINE void CPU::flag_add8 (uint8_t v1, uint8_t v2) 
 {
 	/* v1 = destination operand, v2 = source operand */
-	uint16_t	dst;
+	uint16_t dst;
 
 	dst = (uint16_t) v1 + (uint16_t) v2;
 	flag_szp8 ( (uint8_t) dst);
@@ -211,7 +210,7 @@ FUNC_INLINE void CPU::flag_add8 (uint8_t v1, uint8_t v2)
 FUNC_INLINE void CPU::flag_add16 (uint16_t v1, uint16_t v2) 
 {
 	/* v1 = destination operand, v2 = source operand */
-	uint32_t	dst;
+	uint32_t dst;
 
 	dst = (uint32_t) v1 + (uint32_t) v2;
 	flag_szp16 ( (uint16_t) dst);
@@ -241,7 +240,7 @@ FUNC_INLINE void CPU::flag_sbb8 (uint8_t v1, uint8_t v2, uint8_t v3)
 {
 
 	/* v1 = destination operand, v2 = source operand, v3 = carry flag */
-	uint16_t	dst;
+	uint16_t dst;
 
 	v2 += v3;
 	dst = (uint16_t) v1 - (uint16_t) v2;
@@ -272,7 +271,7 @@ FUNC_INLINE void CPU::flag_sbb16 (uint16_t v1, uint16_t v2, uint16_t v3)
 {
 
 	/* v1 = destination operand, v2 = source operand, v3 = carry flag */
-	uint32_t	dst;
+	uint32_t dst;
 
 	v2 += v3;
 	dst = (uint32_t) v1 - (uint32_t) v2;
@@ -303,7 +302,7 @@ FUNC_INLINE void CPU::flag_sub8 (uint8_t v1, uint8_t v2)
 {
 
 	/* v1 = destination operand, v2 = source operand */
-	uint16_t	dst;
+	uint16_t dst;
 
 	dst = (uint16_t) v1 - (uint16_t) v2;
 	flag_szp8 ( (uint8_t) dst);
@@ -333,7 +332,7 @@ FUNC_INLINE void CPU::flag_sub16 (uint16_t v1, uint16_t v2)
 {
 
 	/* v1 = destination operand, v2 = source operand */
-	uint32_t	dst;
+	uint32_t dst;
 
 	dst = (uint32_t) v1 - (uint32_t) v2;
 	flag_szp16 ( (uint16_t) dst);
@@ -445,69 +444,69 @@ FUNC_INLINE void CPU::op_sbb16()
 
 FUNC_INLINE void CPU::getea (uint8_t rmval) 
 {
-	uint32_t	tempea;
+	uint32_t tempea;
 
 	tempea = 0;
 	switch (mode) {
-			case 0:
-				switch (rmval) {
-						case 0:
-							tempea = regs.wordregs[regbx] + regs.wordregs[regsi];
-							break;
-						case 1:
-							tempea = regs.wordregs[regbx] + regs.wordregs[regdi];
-							break;
-						case 2:
-							tempea = regs.wordregs[regbp] + regs.wordregs[regsi];
-							break;
-						case 3:
-							tempea = regs.wordregs[regbp] + regs.wordregs[regdi];
-							break;
-						case 4:
-							tempea = regs.wordregs[regsi];
-							break;
-						case 5:
-							tempea = regs.wordregs[regdi];
-							break;
-						case 6:
-							tempea = disp16;
-							break;
-						case 7:
-							tempea = regs.wordregs[regbx];
-							break;
-					}
-				break;
+		case 0:
+			switch (rmval) {
+					case 0:
+						tempea = regs.wordregs[regbx] + regs.wordregs[regsi];
+						break;
+					case 1:
+						tempea = regs.wordregs[regbx] + regs.wordregs[regdi];
+						break;
+					case 2:
+						tempea = regs.wordregs[regbp] + regs.wordregs[regsi];
+						break;
+					case 3:
+						tempea = regs.wordregs[regbp] + regs.wordregs[regdi];
+						break;
+					case 4:
+						tempea = regs.wordregs[regsi];
+						break;
+					case 5:
+						tempea = regs.wordregs[regdi];
+						break;
+					case 6:
+						tempea = disp16;
+						break;
+					case 7:
+						tempea = regs.wordregs[regbx];
+						break;
+				}
+			break;
 
-			case 1:
-			case 2:
-				switch (rmval) {
-						case 0:
-							tempea = regs.wordregs[regbx] + regs.wordregs[regsi] + disp16;
-							break;
-						case 1:
-							tempea = regs.wordregs[regbx] + regs.wordregs[regdi] + disp16;
-							break;
-						case 2:
-							tempea = regs.wordregs[regbp] + regs.wordregs[regsi] + disp16;
-							break;
-						case 3:
-							tempea = regs.wordregs[regbp] + regs.wordregs[regdi] + disp16;
-							break;
-						case 4:
-							tempea = regs.wordregs[regsi] + disp16;
-							break;
-						case 5:
-							tempea = regs.wordregs[regdi] + disp16;
-							break;
-						case 6:
-							tempea = regs.wordregs[regbp] + disp16;
-							break;
-						case 7:
-							tempea = regs.wordregs[regbx] + disp16;
-							break;
-					}
-				break;
-		}
+		case 1:
+		case 2:
+			switch (rmval) {
+					case 0:
+						tempea = regs.wordregs[regbx] + regs.wordregs[regsi] + disp16;
+						break;
+					case 1:
+						tempea = regs.wordregs[regbx] + regs.wordregs[regdi] + disp16;
+						break;
+					case 2:
+						tempea = regs.wordregs[regbp] + regs.wordregs[regsi] + disp16;
+						break;
+					case 3:
+						tempea = regs.wordregs[regbp] + regs.wordregs[regdi] + disp16;
+						break;
+					case 4:
+						tempea = regs.wordregs[regsi] + disp16;
+						break;
+					case 5:
+						tempea = regs.wordregs[regdi] + disp16;
+						break;
+					case 6:
+						tempea = regs.wordregs[regbp] + disp16;
+						break;
+					case 7:
+						tempea = regs.wordregs[regbx] + disp16;
+						break;
+				}
+			break;
+	}
 
 	ea = (tempea & 0xFFFF) + (useseg << 4);
 }
@@ -521,7 +520,7 @@ FUNC_INLINE void CPU::push (uint16_t pushval)
 
 FUNC_INLINE uint16_t CPU::pop() 
 {
-	uint16_t	tempval;
+	uint16_t tempval;
 	tempval = getmem16 (segregs[regss], regs.wordregs[regsp]);
 	regs.wordregs[regsp] = regs.wordregs[regsp] + 2;
 	//log(LogDebugger, "Pop %x", tempval);
@@ -590,17 +589,18 @@ FUNC_INLINE void CPU::writerm8 (uint8_t rmval, uint8_t value)
 
 FUNC_INLINE uint8_t CPU::op_grp2_8 (uint8_t cnt) 
 {
-
-	uint16_t	s;
-	uint16_t	shift;
-	uint16_t	oldcf;
-	uint16_t	msb;
+	uint16_t s;
+	uint16_t shift;
+	uint16_t oldcf;
+	uint16_t msb;
 
 	s = oper1b;
 	oldcf = cf;
-#ifdef CPU_LIMIT_SHIFT_COUNT
-	cnt &= 0x1F;
-#endif
+	//#ifdef CPU_LIMIT_SHIFT_COUNT
+	//	cnt &= 0x1F;
+	//#endif
+	if (cputype != CPU_TYPE_8086) { cnt &= 0x1F; }
+
 	switch (reg) {
 			case 0: /* ROL r/m8 */
 				for (shift = 1; shift <= cnt; shift++) {
@@ -719,17 +719,18 @@ FUNC_INLINE uint8_t CPU::op_grp2_8 (uint8_t cnt)
 
 FUNC_INLINE uint16_t CPU::op_grp2_16 (uint8_t cnt) 
 {
-
-	uint32_t	s;
-	uint32_t	shift;
-	uint32_t	oldcf;
-	uint32_t	msb;
+	uint32_t s;
+	uint32_t shift;
+	uint32_t oldcf;
+	uint32_t msb;
 
 	s = oper1;
 	oldcf = cf;
-#ifdef CPU_LIMIT_SHIFT_COUNT
-	cnt &= 0x1F;
-#endif
+	//#ifdef CPU_LIMIT_SHIFT_COUNT
+	//	cnt &= 0x1F;
+	//#endif
+
+	if (cputype != CPU_TYPE_8086) { cnt &= 0x1F; }
 	switch (reg) {
 			case 0: /* ROL r/m8 */
 				for (shift = 1; shift <= cnt; shift++) {
@@ -864,10 +865,10 @@ FUNC_INLINE void CPU::op_div8 (uint16_t valdiv, uint8_t divisor)
 FUNC_INLINE void CPU::op_idiv8 (uint16_t valdiv, uint8_t divisor) 
 {
 
-	uint16_t	s1;
-	uint16_t	s2;
-	uint16_t	d1;
-	uint16_t	d2;
+	uint16_t s1;
+	uint16_t s2;
+	uint16_t d1;
+	uint16_t d2;
 	int	sign;
 
 	if (divisor == 0) {
@@ -934,9 +935,10 @@ FUNC_INLINE void CPU::op_grp3_8()
 						cf = 0;
 						of = 0;
 					}
-#ifdef CPU_CLEAR_ZF_ON_MUL
-				zf = 0;
-#endif
+					//#ifdef CPU_CLEAR_ZF_ON_MUL
+					//	zf = 0;
+					//#endif
+				if (cputype == CPU_TYPE_8086) { zf = 0; }
 				break;
 
 			case 5: /* IMUL */
@@ -961,9 +963,10 @@ FUNC_INLINE void CPU::op_grp3_8()
 						cf = 0;
 						of = 0;
 					}
-#ifdef CPU_CLEAR_ZF_ON_MUL
-				zf = 0;
-#endif
+			//#ifdef CPU_CLEAR_ZF_ON_MUL
+			//	zf = 0;
+			//#endif
+			if (cputype == CPU_TYPE_8086) { zf = 0; }
 				break;
 
 			case 6: /* DIV */
@@ -994,11 +997,10 @@ FUNC_INLINE void CPU::op_div16 (uint32_t valdiv, uint16_t divisor)
 
 FUNC_INLINE void CPU::op_idiv16 (uint32_t valdiv, uint16_t divisor) 
 {
-
-	uint32_t	d1;
-	uint32_t	d2;
-	uint32_t	s1;
-	uint32_t	s2;
+	uint32_t d1;
+	uint32_t d2;
+	uint32_t s1;
+	uint32_t s2;
 	int	sign;
 
 	if (divisor == 0) {
@@ -1065,9 +1067,10 @@ FUNC_INLINE void CPU::op_grp3_16()
 						cf = 0;
 						of = 0;
 					}
-#ifdef CPU_CLEAR_ZF_ON_MUL
-				zf = 0;
-#endif
+			//#ifdef CPU_CLEAR_ZF_ON_MUL
+			//	zf = 0;
+			//#endif
+				if (cputype == CPU_TYPE_8086) { zf = 0; }
 				break;
 
 			case 5: /* IMUL */
@@ -1092,9 +1095,10 @@ FUNC_INLINE void CPU::op_grp3_16()
 						cf = 0;
 						of = 0;
 					}
-#ifdef CPU_CLEAR_ZF_ON_MUL
-				zf = 0;
-#endif
+			//#ifdef CPU_CLEAR_ZF_ON_MUL
+			//	zf = 0;
+			//#endif
+			if (cputype == CPU_TYPE_8086) { zf = 0; }
 				break;
 
 			case 6: /* DIV */
@@ -1233,7 +1237,6 @@ void CPU::intcall86 (uint8_t intnum)
 				log(Log, "[CPU::intcall86] Character generator");
 			}
 			
-			
 			if ((regs.byteregs[regah] == 0x13))
 			{
 				log(Log, "[CPU::intcall86] Write string");
@@ -1253,7 +1256,6 @@ void CPU::intcall86 (uint8_t intnum)
 				return;
 			}
 
-			
 			//IS THIS REQUIRED?
 			/*
 			if ( (regs.byteregs[regah]==0x00) || (regs.byteregs[regah]==0x10) ) {
@@ -1265,19 +1267,16 @@ void CPU::intcall86 (uint8_t intnum)
 				//return; ///DONT RETURN HERE
 			}
 			*/
-			
-			
-				
+
 			//the 0x0100 is a cheap hack to make it not do this if DOS EDIT/QBASIC
-			if ( (regs.byteregs[regah]==0x1A) && (lastint10ax!=0x0100) ) {
+			if ( (regs.byteregs[regah] == 0x1A) && (lastint10ax != 0x0100) ) {
 			//if (regs.byteregs[regah]==0x1A) {
-				log(Log, "[CPU] Whats This hack?");
+				log(Log, "[CPU] Whats this cheap hack?");
 				regs.byteregs[regal] = 0x1A;
-				regs.byteregs[regbl] = 0x8;
+				regs.byteregs[regbl] = 0x08;
 				return;
 			}
 			
-				
 			lastint10ax = regs.wordregs[regax];
 			if (regs.byteregs[regah]==0x1B) {
 				regs.byteregs[regal] = 0x1B;
@@ -1348,29 +1347,42 @@ extern struct netstruct {
 	uint16_t	pktlen;
 } net;
 #endif
-uint64_t	frametimer = 0, didwhen = 0, didticks = 0;
-uint32_t	makeupticks = 0;
-uint64_t	timerticks = 0, realticks = 0;
-uint64_t	lastcountertimer = 0, counterticks = 10000;
+
+uint64_t frametimer = 0, didwhen = 0, didticks = 0;
+uint32_t makeupticks = 0;
+uint64_t timerticks = 0, realticks = 0;
+uint64_t lastcountertimer = 0, counterticks = 10000;
 
 #ifdef USE_PREFETCH_QUEUE
 uint8_t prefetch[6];
 uint32_t prefetch_base = 0;
 #endif
 
-void CPU::exec86 (uint32_t execloops) 
+void CPU::exec86(uint32_t execloops, uint16_t timing_interval) 
 {
 	uint32_t loopcount;
 	uint8_t docontinue;
+	//uint16_t tickloops = 0;
 	static uint16_t firstip;
 	static uint16_t trap_toggle = 0;
+	
+	static uint8_t cpu_type = vm.config.cpuType;
+	
+	//log(Log, "[CPU] Execute %d", cpu_type);
 
 	counterticks = (uint64_t) ( (double) timerfreq / (double) 65536.0);
 
 	for (loopcount = 0; loopcount < execloops; loopcount++) {
 			//if (vm.debugger && vm.debugger->isDebugging) return;
 
-			if ((totalexec & TIMING_INTERVAL) == 0) vm.timing.tick();
+			//if ((totalexec & TIMING_INTERVAL) == 0) vm.timing.tick();
+			if ((totalexec & timing_interval) == 0) vm.timing.tick();
+		
+			//tickloops++;
+			//if (tickloops == timingloops) {
+			//	tickloops = 0;
+			//	vm.timing.tick();
+			//}
 
 			if (trap_toggle) intcall86(1);
 
@@ -1416,16 +1428,16 @@ void CPU::exec86 (uint32_t execloops)
 					ip = ip & 0xFFFF;
 					savecs = segregs[regcs];
 					saveip = ip;
-#ifdef USE_PREFETCH_QUEUE
+				#ifdef USE_PREFETCH_QUEUE
 					ea = segbase(savecs) + (uint32_t)saveip;
 					if ( (ea < prefetch_base) || (ea > (prefetch_base + 5)) ) {
 							memcpy (&prefetch[0], &RAM[ea], 6);
 							prefetch_base = ea;
 						}
 					opcode = prefetch[ea - prefetch_base];
-#else
+				#else
 					opcode = getmem8 (segregs[regcs], ip);
-#endif
+				#endif
 					StepIP (1);
 
 					switch (opcode) {
@@ -1466,6 +1478,14 @@ void CPU::exec86 (uint32_t execloops)
 				}
 
 			totalexec++;
+			
+			if (cpu_type == CPU_TYPE_8086) {
+				//log(Log, "[CPU] opcode %u cputype %u", opcode, cpu_type);
+				if ( (opcode >= 0x60) && (opcode <= 0x6F) ) {
+					opcode_illegal(opcode);
+					goto skipexecution;
+				}
+			}
 
 			switch (opcode) {
 					case 0x0:	/* 00 ADD Eb Gb */
@@ -1579,13 +1599,18 @@ void CPU::exec86 (uint32_t execloops)
 					case 0xE:	/* 0E PUSH segregs[regcs] */
 						push (segregs[regcs]);
 						break;
-
-#ifdef CPU_ALLOW_POP_CS //only the 8086/8088 does this.
+						
+				//#ifdef CPU_ALLOW_POP_CS //only the 8086/8088 does this.
 					case 0xF: //0F POP CS
-						segregs[regcs] = pop();
+						//segregs[regcs] = pop();
+						if (cpu_type == CPU_TYPE_8086) {
+							segregs[regcs] = pop();
+							break;
+						}
+						opcode_illegal(opcode);
 						break;
-#endif
-
+					//goto illegal_opcode;
+				//#endif
 					case 0x10:	/* 10 ADC Eb Gb */
 						modregrm();
 						oper1b = readrm8 (rm);
@@ -2132,11 +2157,16 @@ void CPU::exec86 (uint32_t execloops)
 						break;
 
 					case 0x54:	/* 54 PUSH eSP */
-#ifdef USE_286_STYLE_PUSH_SP
+					//#ifdef CPU_286_STYLE_PUSH_SP
+					//	push (regs.wordregs[regsp]);
+					//#else
+					//	push (regs.wordregs[regsp] - 2);
+					//#endif
+					if ((cpu_type == CPU_TYPE_286) || (cpu_type == CPU_TYPE_386)) {
 						push (regs.wordregs[regsp]);
-#else
+					} else {
 						push (regs.wordregs[regsp] - 2);
-#endif
+					}
 						break;
 
 					case 0x55:	/* 55 PUSH eBP */
@@ -2183,8 +2213,9 @@ void CPU::exec86 (uint32_t execloops)
 						regs.wordregs[regdi] = pop();
 						break;
 
-#ifndef CPU_8086
+				//#ifndef CPU_8086
 					case 0x60:	/* 60 PUSHA (80186+) */
+					//log(Log,"[CPU] opcode 0x60 %u", cputype);
 						oldsp = regs.wordregs[regsp];
 						push (regs.wordregs[regax]);
 						push (regs.wordregs[regcx]);
@@ -2392,7 +2423,7 @@ void CPU::exec86 (uint32_t execloops)
 
 						ip = firstip;
 						break;
-#endif
+					//#endif
 
 					case 0x70:	/* 70 JO Jb */
 						temp16 = signext (getmem8 (segregs[regcs], ip) );
@@ -2758,11 +2789,16 @@ void CPU::exec86 (uint32_t execloops)
 						break;
 
 					case 0x9C:	/* 9C PUSHF */
-#ifdef CPU_SET_HIGH_FLAGS
+				//#ifdef CPU_SET_HIGH_FLAGS
+				//		push (makeflagsword() | 0xF800);
+				//#else
+				//		push (makeflagsword() | 0x0800);
+				//#endif
+					if ((cpu_type != CPU_TYPE_286) || (cpu_type != CPU_TYPE_386)) {
 						push (makeflagsword() | 0xF800);
-#else
+					} else {
 						push (makeflagsword() | 0x0800);
-#endif
+					}
 						break;
 
 					case 0x9D:	/* 9D POPF */
@@ -3375,11 +3411,14 @@ void CPU::exec86 (uint32_t execloops)
 						break;
 
 					case 0xD6:	/* D6 XLAT on V20/V30, SALC on 8086/8088 */
-#ifndef CPU_NO_SALC
+				//#ifndef CPU_NO_SALC
+				//	regs.byteregs[regal] = cf ? 0xFF : 0x00;
+				//	break;
+				//#endif
+					if (cpu_type != CPU_TYPE_V20) {
 						regs.byteregs[regal] = cf ? 0xFF : 0x00;
 						break;
-#endif
-
+					}
 					case 0xD7:	/* D7 XLAT */
 						regs.byteregs[regal] = vm.memory.readByte(useseg * 16 + (regs.wordregs[regbx]) + regs.byteregs[regal]);
 						break;
@@ -3586,30 +3625,45 @@ void CPU::exec86 (uint32_t execloops)
 						oper1 = readrm16 (rm);
 						op_grp5();
 						break;
-
+						
 					default:
-						#ifdef CPU_ALLOW_ILLEGAL_OP_EXCEPTION
-						#ifdef DEBUG_CPU
-						log(Log,"[CPU] CPU_ALLOW_ILLEGAL_OP_EXCEPTION");
-						#endif
-						//trip invalid opcode exception (this occurs on the 80186+, 8086/8088 CPUs treat them as NOPs.
-						//technically they aren't exactly like NOPs in most cases, but for our pursoses, that's accurate enough.
-						intcall86 (6);
-						#endif
-						if (vm.config.verbose) {
-								log (LogVerbose, "Illegal opcode: %02X %02X /%X @ %04X:%04X", getmem8(savecs, saveip), getmem8(savecs, saveip+1), (getmem8(savecs, saveip+2) >> 3) & 7, savecs, saveip);
-							}
+						//__assume(false);
+						opcode_illegal(opcode);
 						break;
 				}
 
+//illegalopcode:
+//	opcode_illegal(opcode);
+	
 skipexecution:
 			if (!vm.running) return;
 		}
 }
-#endif
+
+void CPU::opcode_illegal(uint8_t _opcode) {
+	//log(Log,"[CPU] opcode_illegal %02X CPU_TYPE %u", _opcode, cputype);
+	//#ifdef CPU_ALLOW_ILLEGAL_OP_EXCEPTION
+	if (cputype != CPU_TYPE_8086) {
+		//#ifdef DEBUG_CPU
+		log(Log,"[CPU] CPU_ALLOW_ILLEGAL_OP_EXCEPTION OPCODE:%02X @ %02X %02X", _opcode, getmem8(savecs, saveip), getmem8(savecs, saveip+1));
+		//#endif
+		//trip invalid opcode exception (this occurs on the 80186+, 8086/8088 CPUs treat them as NOPs.
+		//technically they aren't exactly like NOPs in most cases, but for our pursoses, that's accurate enough.
+		intcall86(6);
+	//#endif
+	}
+	#ifdef DEBUG_CPU
+	if (vm.config.verbose) {
+		log(LogVerbose, "[CPU] Illegal opcode: %02X %02X /%X @ %04X:%04X", getmem8(savecs, saveip), getmem8(savecs, saveip+1), (getmem8(savecs, saveip+2) >> 3) & 7, savecs, saveip);
+	}
+	#endif
+}
+
+#endif //CPU_INSTRUCTION_FLOW_CACHE
 
 CPU::CPU(VM& inVM)
 	: vm(inVM)
 {
-	log(Log,"[CPU] Constructed");
+	cputype = vm.config.cpuType;
+	log(Log,"[CPU] Constructed CPU Type %d", cputype);
 }

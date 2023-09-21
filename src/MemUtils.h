@@ -24,6 +24,8 @@
 
 #ifdef _WIN32
 
+#elif defined(ARDUINO)
+
 #else
 #include <circle/new.h>
 #include <circle/alloc.h>

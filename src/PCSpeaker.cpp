@@ -42,8 +42,10 @@ int16_t PCSpeaker::generateSample()
 
 	speakerfullstep = (uint64_t) ( (float)vm.config.audio.sampleRate / (float)vm.pit.chanfreq[2] );
 	if (speakerfullstep < 2) speakerfullstep = 2;
-
+	
 	speakerhalfstep = speakerfullstep >> 1;
+	//if (speakercurstep < speakerhalfstep) speakervalue = 32;
+	//else speakervalue = -32;
 	if (speakercurstep < speakerhalfstep) speakervalue = 32;
 	else speakervalue = -32;
 
@@ -61,9 +63,7 @@ void PCSpeaker::selectGate(uint8_t value) {
 	speakergateselect = value;
 }
 
-void PCSpeaker::tick() {
-	//debug_debug("[pcspeaker] pcspeaker_callback");
-	
+void PCSpeaker::tick() {	
 	if (speakergateselect == PC_SPEAKER_USE_TIMER2) {
 		if (speakergate[PC_SPEAKER_GATE_TIMER2] && speakergate[PC_SPEAKER_GATE_DIRECT]) {
 			if (speakeramplitude < 15000) {
@@ -89,6 +89,7 @@ void PCSpeaker::tick() {
 			}
 		}
 	}
+	//log(Log,"[PCSPEAKER] speakeramplitude %lu",speakeramplitude);
 	if (speakeramplitude > 15000) speakeramplitude = 15000;
 	if (speakeramplitude < 0) speakeramplitude = 0;
 }
@@ -100,5 +101,7 @@ void PCSpeaker::init() {
 
 int16_t PCSpeaker::getSample() {
 	//return 0;
+	//return speakeramplitude / 3;
 	return speakeramplitude;
+	
 }

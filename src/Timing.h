@@ -22,6 +22,7 @@
 */
 #pragma once
 
+#include "Config.h"
 #include "Types.h"
 
 namespace Faux86
@@ -34,7 +35,7 @@ namespace Faux86
 		TimingScheduler(VM& inVM);
 		
 		void init();
-		void tick();
+		void tick(bool bSkipDraw = false);
 
 		uint64_t getHostFreq();
 		uint64_t getTicks();
@@ -44,15 +45,17 @@ namespace Faux86
 
 		uint64_t sampleticks;
 		uint64_t tickgap;
+		uint64_t i8253tickgap;
 
 	private:
-		uint64_t lasttick, curtick, i8253tickgap, lasti8253tick, scanlinetiming, lastscanlinetick, curscanline = 0;
+		uint64_t lasttick, curtick, lasti8253tick, scanlinetiming, lastscanlinetick, curscanline = 0;
 		uint64_t lastsampletick, ssourceticks, lastssourcetick, adlibticks, lastadlibtick, lastblastertick = 0;
 		uint64_t speakerticks, lastspeakertick = 0;
-		uint64_t mouseticks, lastmousetick;
-		uint64_t drawticks, lastdrawtick;
-		uint64_t vgacursorticks, lastvgacursortick;
-		uint64_t vgahblanktiming, vgahblankendtiming;
+		uint64_t mouseticks, lastmousetick = 0;
+		uint64_t drawticks, lastdrawtick = 0;
+		uint64_t dramticks, lastdramtick = 0;
+		uint64_t vgacursorticks, lastvgacursortick = 0;
+		uint64_t vgahblanktiming, vgahblankendtiming = 0;
 		//uint16_t pit0counter = 65535;
 
 		VM& vm;

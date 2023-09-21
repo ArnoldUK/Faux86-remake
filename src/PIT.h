@@ -22,6 +22,8 @@
 */
 
 #pragma once
+
+#include "Config.h"
 #include "Types.h"
 #include "Ports.h"
 
@@ -57,7 +59,7 @@ namespace Faux86
 		uint16_t latch[3];
 		uint8_t out[3];
 
-		//void tick();
+		void tick();
 		virtual bool portWriteHandler(uint16_t portnum, uint8_t value) override;
 		virtual bool portReadHandler(uint16_t portnum, uint8_t& outValue) override;
 
