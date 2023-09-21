@@ -24,10 +24,15 @@
 #include <stdio.h>
 #include <new>
 
+#include "../src/Config.h"
 #include "../src/VM.h"
 #include "../src/DriveManager.h"
 #include "SDLInterface.h"
 #include "settings.h"
+
+#ifndef BUILD_STRING
+	#error BUILD_STRING not defined. Add #include "Config.h" to this unit.
+#endif
 
 //#include "../data/asciivga.h"
 //#include "../data/pcxtbios.h"
@@ -72,15 +77,21 @@ int main(int argc, char *argv[])
 	vmConfig.singleThreaded = true;
 	//vmConfig.slowSystem = 0;
 	//vmConfig.frameDelay = 20; //20ms 50fps
+	//vmConfig.cpuType = CPU_TYPE_V20;
+	//vmConfig.cpuType = CPU_TYPE_8086;
+	//vmConfig.cpuSpeed = 12;
+	//vmConfig.cpuTiming = 15;
 	//vmConfig.audio.sampleRate = 48000; //44100
 	//vmConfig.audio.latency = 100;
+	//vmConfig.audio.latency = 100;
+	//vmConfig.useOPL3 = true;
 
 	//vmConfig.framebuffer.width = 800;
 	//vmConfig.framebuffer.height = 800;
 	//vmConfig.resw = 720;
 	//vmConfig.resh = 400;
-	//vmConfig.renderQuality = 0;
-	//vmConfig.monitorDisplay = 0;
+	//vmConfig.renderQuality = RENDER_QUALITY_LINEAR;
+	//vmConfig.monitorDisplay = MONITOR_DISPLAY_COLOR;
 	
 	if (!vmConfig.enableConsole) HideConsole();
 	
@@ -140,6 +151,8 @@ void LoadSettings(Faux86::Config &cfg) {
 	cfg.useFullScreen = settings.getBool("fullscreen");
 	cfg.verbose = settings.getBool("verbose");
 	cfg.cpuSpeed = settings.getInt("speed");
+	cfg.cpuType= settings.getInt("cpu");
+	cfg.cpuTiming = settings.getInt("timing");
 	cfg.frameDelay = settings.getInt("delay");
 	cfg.slowSystem = settings.getBool("slowsys");
 	cfg.singleThreaded = !settings.getBool("multithreaded");
@@ -152,6 +165,7 @@ void LoadSettings(Faux86::Config &cfg) {
 	cfg.useSoundBlaster = settings.getBool("sndblaster");
 	cfg.useAdlib = settings.getBool("sndadlib");
 	cfg.usePCSpeaker = settings.getBool("sndspeaker");
+	cfg.useOPL3 = settings.getBool("sndopl3");
 	cfg.audio.latency = settings.getInt("latency");
 	cfg.audio.sampleRate = settings.getInt("samprate");
 	cfg.enableConsole = settings.getBool("console");

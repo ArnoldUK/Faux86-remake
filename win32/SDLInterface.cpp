@@ -32,10 +32,11 @@
 #endif
 */
 
-#include "SDLInterface.h"
+
 #include "StdioDiskInterface.h"
 #include "../src/VM.h"
 #include "Keymap.h"
+#include "SDLInterface.h"
 
 extern void initmenus(HWND hwnd);
 
@@ -44,7 +45,12 @@ using namespace Faux86;
 //#define SDL_PIXEL_FORMAT	SDL_PIXELFORMAT_RGBA8888
 //#define SDL_PIXEL_FORMAT		SDL_PIXELFORMAT_RGB24
 //#define SDL_PIXEL_FORMAT		SDL_PIXELFORMAT_ARGB8888
-#define SDL_PIXEL_FORMAT		SDL_PIXELFORMAT_RGB888
+
+#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+	#define SDL_PIXEL_FORMAT		SDL_PIXELFORMAT_RGB565
+#else
+	#define SDL_PIXEL_FORMAT		SDL_PIXELFORMAT_RGB888
+#endif
 
 bool sdlconsole_ctrl = 0;
 bool sdlconsole_alt = 0;
@@ -192,7 +198,7 @@ void SDLFrameBufferInterface::resize(uint32_t desiredWidth, uint32_t desiredHeig
 	log(LogVerbose, "[SDL] FrameBufferInterface::resize %lu x %lu", desiredWidth, desiredHeight);
 	#endif
 	
-	if ( (fbwidth == desiredWidth) && (fbheight == desiredHeight) ) return;
+	//if ( (fbwidth == desiredWidth) && (fbheight == desiredHeight) ) return;
 	
 	fbwidth = desiredWidth;
 	fbheight = desiredHeight;
@@ -204,7 +210,12 @@ void SDLFrameBufferInterface::resize(uint32_t desiredWidth, uint32_t desiredHeig
 	screenTexture = nullptr;
 	screenPixels = nullptr;
 	
+	#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+	screenPixels = SDL_CreateRGBSurfaceWithFormat(0, desiredWidth, desiredHeight, 16, SDL_PIXEL_FORMAT);
+	#else
 	screenPixels = SDL_CreateRGBSurfaceWithFormat(0, desiredWidth, desiredHeight, 32, SDL_PIXEL_FORMAT);
+	#endif
+	
 	//appRenderer = SDL_GetRenderer(sdlWindow);
 	appRenderer = SDL_CreateRenderer(sdlWindow, -1, 0);
 	//appRenderer = SDL_CreateRenderer(sdlWindow, -1, SDL_RENDERER_SOFTWARE);
@@ -262,8 +273,12 @@ void SDLFrameBufferInterface::present()
 	SDL_RenderPresent(appRenderer);
 }
 */
-
-void SDLFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride) {
+#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+void SDLFrameBufferInterface::blit(uint16_t *pixels, int w, int h, int stride)
+#else
+void SDLFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride)
+#endif
+{
 	
 	//log(LogVerbose, "[SDL] FrameBufferInterface::blit %d x %d x %d", w, h, stride);
 
@@ -301,7 +316,12 @@ void SDLFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride) {
   //SDL_Surface* screenPixels = SDL_CreateRGBSurfaceWithFormat(0, w, h, 32, SDL_PIXEL_FORMAT);
   //SDL_FillRect(screenPixels, NULL, 0); //clear pixels to black background
 
+	#if defined(ARDUINO) || (VIDEO_FRAMEBUFFER_DEPTH == 16)
+	if (screenPixels == nullptr) screenPixels = SDL_CreateRGBSurfaceWithFormat(0, w, h, 16, SDL_PIXEL_FORMAT);
+	#else
 	if (screenPixels == nullptr) screenPixels = SDL_CreateRGBSurfaceWithFormat(0, w, h, 32, SDL_PIXEL_FORMAT);
+	#endif
+	
 	//SDL_FillRect(screenPixels, NULL, SDL_MapRGB(screenPixels->format, 0, 0, 100));
 	//SDL_SetColorKey(screenPixels, SDL_TRUE, SDL_MapRGB(screenPixels->format, 0, 0, 255));
 	
@@ -726,6 +746,7 @@ void SDLHostSystemInterface::tick()
 				SDL_SetRelativeMouseMode(SDL_FALSE);
 				SDL_ShowCursor(SDL_ENABLE);
 			}
+			
 
 			//SDL_Keymod modstates = SDL_GetModState();
 			//if (modstates && KMOD_LCTRL) {
@@ -795,6 +816,7 @@ void SDLHostSystemInterface::updatetitle() {
 
 void SDLHostSystemInterface::setcolormode(uint8_t _mode) {
 	frameBufferInterface.SetColorEmulation(_mode);
+	//frameBufferInterface.resize(scrWidth, scrHeight);
 }
 
 void SDLHostSystemInterface::sendkeydown(uint8_t scancode) {
@@ -811,12 +833,13 @@ void SDLHostSystemInterface::setrendermode(uint8_t _mode) {
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
 			break;
 		case RENDER_QUALITY_LINEAR:
+		default:
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 			break;
 		case RENDER_QUALITY_BEST:
-		default:
 			SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
 	}
+	frameBufferInterface.resize(scrWidth, scrHeight);
 }
 
 

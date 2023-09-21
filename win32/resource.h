@@ -2,6 +2,10 @@
 // Microsoft Visual C++ generated include file.
 // Used by fake86.rc
 //
+
+#ifndef FAUX86_RESOURCE_H
+#define FAUX86_RESOURCE_H
+
 #define IDR_MENU1                       101
 #define ID_MAIN                         40001
 #define ID_MAIN_EXIT                    40002
@@ -48,6 +52,10 @@
 #define ID_VIDEO_MONITOR_AMBER 					40043
 #define ID_VIDEO_MONITOR_GREEN 					40044
 #define ID_VIDEO_MONITOR_BLUE	 					40045
+#define ID_VIDEO_MONITOR_BLUE_TOSH			40046
+#define ID_VIDEO_MONITOR_TEAL_TERM			40047
+#define ID_VIDEO_MONITOR_GREEN_TERM			40048
+#define ID_VIDEO_MONITOR_AMBER_TERM			40049
 
 // Next default values for new objects
 // 
@@ -59,3 +67,5 @@
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
+
+#endif //FAUX86_RESOURCE_H

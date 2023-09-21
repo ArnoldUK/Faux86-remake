@@ -269,6 +269,22 @@ void MenuItemClick(WPARAM wParam) {
 			menu_settings.monitortype = 3;
 			monitorchange = 1;
 			break;
+		case ID_VIDEO_MONITOR_BLUE_TOSH:
+			menu_settings.monitortype = 4;
+			monitorchange = 1;
+			break;
+		case ID_VIDEO_MONITOR_TEAL_TERM:
+			menu_settings.monitortype = 5;
+			monitorchange = 1;
+			break;
+		case ID_VIDEO_MONITOR_GREEN_TERM:
+			menu_settings.monitortype = 6;
+			monitorchange = 1;
+			break;
+		case ID_VIDEO_MONITOR_AMBER_TERM:
+			menu_settings.monitortype = 7;
+			monitorchange = 1;
+			break;
 	}
 	if (screenchange) {
 		SetScreenSize(menu_settings.scrwidth, menu_settings.scrheight);

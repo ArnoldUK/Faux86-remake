@@ -22,9 +22,10 @@
 */
 #pragma once
 
-#include "../src/DriveManager.h"
-
 #include <stdio.h>
+
+#include "../src/Config.h"
+#include "../src/DriveManager.h"
 
 #define fopen_s(fp, fmt, mode) *(fp)=fopen( (fmt), (mode))
  

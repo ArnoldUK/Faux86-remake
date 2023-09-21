@@ -1,5 +1,6 @@
-#ifndef _INCLUDE_SETTINGS_H_
-#define _INCLUDE_SETTINGS_H_
+
+#ifndef _SETTINGS_H_
+#define _SETTINGS_H_
 
 //UNCOMMENT TO USE UNSORTED MAP FILE
 //#define USE_UNORDERED_MAP 1
@@ -39,19 +40,22 @@ static std::map<std::string, std::string> defaultconfig = {
 	{ "nosound", "0" },
 	{ "fullscreen", "0" },
 	{ "verbose", "1" },
+	{ "cpu", "CPU_TYPE_V20" },
 	{ "speed", "20" },
+	{ "timing", "31" },
 	{ "delay", "20" },
 	{ "slowsys", "0" },
 	{ "multithreaded", "0" },
 	{ "resw", "640" },
 	{ "resh", "350" },
-	{ "render", "1" },
-	{ "monitor", "0" },
+	{ "render", "RENDER_QUALITY_LINEAR" },
+	{ "monitor", "MONITOR_DISPLAY_COLOR" },
 	{ "mouseport", "2" },
 	{ "snddisney", "0" },
 	{ "sndblaster", "1" },
 	{ "sndadlib", "1" },
 	{ "sndspeaker", "1" },
+	{ "sndopl3", "1" },
 	{ "latency", "100" },
 	{ "samprate", "48000" },
 	{ "console", "1" },
@@ -113,4 +117,4 @@ private:
 	string							m_header;
 };
 
-#endif //_INCLUDE_SETTINGS_H_
+#endif //_SETTINGS_H_

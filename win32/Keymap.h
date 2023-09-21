@@ -1,3 +1,7 @@
+
+#ifndef _Keymap_H_
+#define _Keymap_H_
+
 uint16_t modifier2xtMapping[] = {
 	0x1d,		// ModifierKeyLeftCtrl
 	0x2a,		// ModifierKeyLeftShift
@@ -268,3 +272,5 @@ uint16_t usb2xtMapping[] = {
 	0x0,		// USB fe	(none)
 	0x0,		// USB ff	(none)
 };
+
+#endif
