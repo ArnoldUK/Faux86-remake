@@ -29,11 +29,13 @@ OBJS	=  kernel.o main.o settings.o CircleHostInterface.o PWMSound.o VCHIQSound.o
 	  $(SRCDIR)/DriveManager.o \
 	  $(SRCDIR)/InputManager.o \
 	  $(SRCDIR)/MemUtils.o \
+		$(SRCDIR)/opl.o \
 	  $(SRCDIR)/opl3.o \
 	  $(SRCDIR)/PCSpeaker.o \
 	  $(SRCDIR)/PIC.o \
 	  $(SRCDIR)/PIT.o \
 	  $(SRCDIR)/Ports.o \
+		$(SRCDIR)/PPI.o \
 	  $(SRCDIR)/Ram.o \
 	  $(SRCDIR)/Renderer.o \
 	  $(SRCDIR)/SerialMouse.o \

@@ -1,8 +1,8 @@
 
 #include <circle/logger.h>
 
-#include "settings.h"
 #include "CircleHostInterface.h"
+#include "settings.h"
 
 using namespace Faux86;
 

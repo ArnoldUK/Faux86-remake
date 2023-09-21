@@ -26,6 +26,7 @@
 
 #include <circle/input/mouse.h>
 
+class CKernel;
 class CUSBKeyboardDevice;
 class CMouseDevice;
 class CDeviceNameService;
@@ -48,7 +49,11 @@ namespace Faux86
 		virtual RenderSurface* getSurface() override;		
 		virtual void setPalette(Palette* palette) override;
 		//virtual void present() override;
+		#if (DEPTH == 16)
+		virtual void blit(uint16_t *pixels, int w, int h, int stride) override;
+		#else
 		virtual void blit(uint32_t *pixels, int w, int h, int stride) override;
+		#endif
 
 		CBcmFrameBuffer* frameBuffer = nullptr;
 	private:
@@ -86,7 +91,8 @@ namespace Faux86
 	{
 	public:
 		//CircleHostInterface(CDeviceNameService& deviceNameService, CInterruptSystem& interruptSystem, CVCHIQDevice& inVchiqDevice, CScreenDevice& screenDevice, C2DGraphics 2DGraphics);
-		CircleHostInterface(CDeviceNameService& deviceNameService, CInterruptSystem& interruptSystem, CVCHIQDevice& inVchiqDevice, CScreenDevice& screenDevice);
+		//CircleHostInterface(CDeviceNameService& deviceNameService, CInterruptSystem& interruptSystem, CVCHIQDevice& inVchiqDevice, CScreenDevice& screenDevice);
+		CircleHostInterface(CKernel& kernelInstance, CDeviceNameService& deviceNameService, CInterruptSystem& interruptSystem, CVCHIQDevice& inVchiqDevice, CScreenDevice& screenDevice);
 		
 		virtual void init(VM* inVM) override;
 		virtual void resize(uint32_t desiredWidth, uint32_t desiredHeight) override;
@@ -130,6 +136,7 @@ namespace Faux86
 		static void keyStatusHandlerRaw(unsigned char ucModifiers, const unsigned char RawKeys[6]);
 		static void keyRemovedHandler(CDevice *pDevice, void *pContext);
 		static void mouseRemovedHandler(CDevice *pDevice, void *pContext);
+		static void shutdownHandler(void);
 
 		CircleFrameBufferInterface frameBuffer;
 		CircleAudioInterface audio;
@@ -137,6 +144,7 @@ namespace Faux86
 
 		static CircleHostInterface* instance;
 		
+		CKernel* kernel;
 		CScreenDevice* screen;
 		C2DGraphics* p2DGraphics;
 		CUSBKeyboardDevice* keyboard;

@@ -21,6 +21,8 @@
 #pragma once
 
 #include <circle/device.h>
+
+#include "Config.h"
 #include "DriveManager.h"
 
 namespace Faux86

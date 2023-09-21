@@ -26,19 +26,22 @@
 #include <circle/interrupt.h>
 #include <circle/sched/scheduler.h>
 #include <circle/util.h>
-#include "CircleHostInterface.h"
 #include "FatFsDisk.h"
 #include "Keymap.h" 
 #include "VM.h"
 #include "kernel.h"
 #include "PWMSound.h"
 #include "VCHIQSound.h"
-
 #include "MemUtils.h"
+#include "CircleHostInterface.h"
 
 //#pragma GCC optimize("O2,inline")
 
+#if (DEPTH == 16)
+extern uint16_t *vga_framebuffer;
+#else
 extern uint32_t vga_framebuffer[800][800];
+#endif
 
 static unsigned uBlitLoops = 0;
 static unsigned uChipsetloops = 0;
@@ -128,8 +131,8 @@ void CircleFrameBufferInterface::resize(uint32_t desiredWidth, uint32_t desiredH
 	#endif
 	
 	//delete frameBuffer;
-	//CTimer::Get()->SimpleMsDelay(1000);
-	CTimer::Get()->SimpleMsDelay(500);
+	//CTimer::Get()->SimpleMsDelay(500);
+	CTimer::Get()->SimpleMsDelay(250);
 	
 	//frameBuffer = new CBcmFrameBuffer(desiredWidth, desiredHeight, 8);
 	//frameBuffer = new CBcmFrameBuffer (desiredWidth, desiredHeight, 16);
@@ -200,19 +203,25 @@ static uint16_t RGB32toRGB16_2(uint32_t _pixel) {
 
 static unsigned g_seed;
 static unsigned randomNumber(void) {
-	g_seed = (214013*g_seed+2531011);
-	return (g_seed>>16)&0x7fff;
+	g_seed = (214013 * g_seed + 2531011);
+	return (g_seed >> 16) & 0x7fff;
 }
 
+#if (DEPTH == 16)
+void CircleFrameBufferInterface::blit(uint16_t *pixels, int w, int h, int stride)
+#else
 void CircleFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride)
+#endif
 {
-	//renderer.fb->setPalette(vm.video.getCurrentPalette());
-	//if (screenModeChanged)
-	//{
-	//	fb->resize(nativeWidth, nativeHeight);
-	//	createScaleMap();
-	//	screenModeChanged = false;
-	//}
+	/*
+	renderer.fb->setPalette(vm.video.getCurrentPalette());
+	if (screenModeChanged)
+	{
+		fb->resize(nativeWidth, nativeHeight);
+		createScaleMap();
+		screenModeChanged = false;
+	}
+	*/
 	
 	//uTimeStart = BeginCodeTiming();
 	
@@ -228,51 +237,37 @@ void CircleFrameBufferInterface::blit(uint32_t *pixels, int w, int h, int stride
 	//uint8_t cRed = randomNumber() % 31;
 	//uint8_t cGreen = randomNumber() % 31;
 	//uint8_t cBlue = randomNumber() % 31;
-	/*
-	for (int y = 0; y < h; y++) { //sh
-		//MemUtils::memcpy(surface->pixels + (y * surface->pitch), pixels + (y * stride), surface->width);
-		//memcpy(surface->pixels + (y * surface->pitch), pixels + (y * stride), surface->width);
-		//memcpy(pScreenBuffer + (y * sp), pixels + (y * stride), sw);
-		//pScreenBuffer[y] = y * 10;
-		//MemUtils::memcpy((uint8_t*)pScreenBuffer + sp * y, (uint8_t*)pixels + stride * y, stride);
-		//memcpy((uint8_t*)pScreenBuffer + sp * y, (uint8_t*)pixels + stride * y, stride);
-		//for (int i = 0; i < sp; i++) {
-		for (int i = 0; i < w; i++) { //sw
-			uint32_t vs = *pixels; //*pixels + (y * (stride/sizeof(uint32_t)));
-			sColor = RGB32toRGB16(vs); //vs & 0xFF0000FF;  //RGB32toRGB16(vs);
-			//sColor = COLOR16(cRed, cGreen, cBlue);
-      pScreenBuffer[i + (y * sw)] = sColor;
-			pixels++;
-    }
-		//CScheduler::Get()->Yield();
-	}
-	CScheduler::Get()->Yield();
-	return;
-	*/
 	
 	if (menuActivated) {
 		for(unsigned i = 100; i < 100 + 200; i++)	{
 			for(unsigned j = 100; j < 100 + 200; j++) {
-				pScreenBuffer[i * 200 + j] = RED_COLOR;
+				pScreenBuffer[i * 100 + j] = RED_COLOR;
 			}
 		}
 		return;
 	}
+	
 	//uint32_t _pixel;
 	//unsigned int red, green, blue;
 	//int x, y;
-	for (int y = 0; y < h; y++) { //400
-		for (int x = 0; x < w; x++) { //640
+	for (uint16_t y = 0; y < h; y++) { //400
+		for (uint16_t x = 0; x < w; x++) { //640
+			#if (DEPTH == 16)
+			sColor = vga_framebuffer[y * VGA_FRAMEBUFFER_WIDTH + x];
+			pScreenBuffer[x + (y * sw)] = sColor;
+			#else
 			//vidptr = y * 640 + x;
 			//sColor = pixels[y+x]; //RGB32toRGB16(pixels[y][x]);
 			//sColor = COLOR16(cRed, cGreen, cBlue);
 			//sColor = RGB32toRGB16(vga_framebuffer[y][x]);
 			//sColor = vga_framebuffer[y][x];
 			sColor = RGB32toRGB16(vga_framebuffer[y][x]);
+			//sColor = VGAtoRGB(vga_framebuffer[y][x]);
 			//sColor = TScreenColor(vga_framebuffer[y][x]);
 			pScreenBuffer[x + (y * sw)] = sColor;
 			//screen->SetPizel(x, y, sColor);
 			//p2DGraphics->DrawPixel(x, y, sColor);
+			#endif
 		}
 		//CScheduler::Get()->Yield();
 	}
@@ -339,10 +334,12 @@ DiskInterface* CircleHostInterface::openFile(const char* filename)
 } 
 
 //CircleHostInterface::CircleHostInterface(CDeviceNameService& deviceNameService, CInterruptSystem& interruptSystem, CVCHIQDevice& inVchiqDevice, CScreenDevice& screenDevice, C2DGraphics 2DGraphics)
-CircleHostInterface::CircleHostInterface(CDeviceNameService& deviceNameService, CInterruptSystem& interruptSystem, CVCHIQDevice& inVchiqDevice, CScreenDevice& screenDevice)
+//CircleHostInterface::CircleHostInterface(CDeviceNameService& deviceNameService, CInterruptSystem& interruptSystem, CVCHIQDevice& inVchiqDevice, CScreenDevice& screenDevice)
+CircleHostInterface::CircleHostInterface(CKernel& kernelInstance, CDeviceNameService& deviceNameService, CInterruptSystem& interruptSystem, CVCHIQDevice& inVchiqDevice, CScreenDevice& screenDevice)
 : audio(interruptSystem, inVchiqDevice)
 {
 	instance = this;
+	kernel = (CKernel*)&kernelInstance;
 	
 	screen = (CScreenDevice*)&screenDevice;
 	//p2DGraphics = (C2DGraphics*)&2DGraphics;
@@ -354,6 +351,7 @@ CircleHostInterface::CircleHostInterface(CDeviceNameService& deviceNameService, 
 	if(keyboard) {
 		keyboard->RegisterKeyStatusHandlerRaw(keyStatusHandlerRaw, TRUE);
 		keyboard->RegisterRemovedHandler(keyRemovedHandler);
+		keyboard->RegisterShutdownHandler(shutdownHandler);
 		log(Log, "[CircleHostInterface] USB Keyboard device detected and registered");
 	} else log(Log, "[CircleHostInterface] USB Keyboard device not detected");
 	
@@ -388,10 +386,17 @@ void CircleHostInterface::resize(uint32_t desiredWidth, uint32_t desiredHeight)
 {
 	log(Log, "[CircleHostInterface] resize %lu x %lu", desiredWidth, desiredHeight);
 	if ( (screen->GetWidth() == desiredWidth) && (screen->GetHeight() == desiredHeight) ) return;
+	if (mouse) {
+		mouse->Release();
+	}
+		
 	screen->Resize(desiredWidth, desiredHeight);
 	vm->config.resw = desiredWidth;
 	vm->config.resh = desiredHeight;
-	//if (mouse) mouse->Setup(desiredWidth, desiredHeight);
+
+	if (mouse) {
+		mouse->Setup(desiredWidth, desiredHeight);
+	}
 }
 
 //void CircleHostInterface::tick(VM& vm)
@@ -567,6 +572,8 @@ void CircleHostInterface::mouseEventHandler(TMouseEvent Event, unsigned nButtons
 
 void CircleHostInterface::mouseStatusHandler (unsigned nButtons, int nDisplacementX, int nDisplacementY, int nWheelMove)
 {
+	return;
+	
 	InputEvent newEvent;
 	
 	// Mouse presses
@@ -679,24 +686,32 @@ void CircleHostInterface::keyStatusHandlerRaw(unsigned char ucModifiers, const u
 	}
 	
 	instance->lastModifiers = ucModifiers;
-	
+
 	for(int n = 0; n < 6; n++) {
 		if (instance->lastRawKeys[n] != 0) {
 			instance->queueEvent(EventType::KeyRelease, usb2xtMapping[instance->lastRawKeys[n]]);
 		}
+		//if (RawKeys[n] != 0) {
+		//	instance->queueEvent(EventType::KeyPress, usb2xtMapping[RawKeys[n]]);
+		//}
+		//instance->lastRawKeys[n] = RawKeys[n];
 	}
 	
 	for(int n = 0; n < 6; n++) {
 		if (RawKeys[n] != 0) {
 			instance->queueEvent(EventType::KeyPress, usb2xtMapping[RawKeys[n]]);
 		}
-	}
+		instance->lastRawKeys[n] = RawKeys[n];
+	}	
 	
+	/*
 	for(int n = 0; n < 6; n++) {
 		instance->lastRawKeys[n] = RawKeys[n];
 	}
+	*/
 	
-		/*
+	
+	/*
 	for(int n = 0; n < 6; n++) {
 		if(RawKeys[n] != 0) {
 			if (instance->lastRawKeys[n] != RawKeys[n]) {
@@ -705,24 +720,6 @@ void CircleHostInterface::keyStatusHandlerRaw(unsigned char ucModifiers, const u
 			} else {
 			if (instance->lastRawKeys[n] != 0) {
 				instance->queueEvent(EventType::KeyRelease, usb2xtMapping[instance->lastRawKeys[n]]);
-			}
-		}
-	}
-	*/
-	
-	/*
-	for(int n = 0; n < 6; n++) {
-		if(instance->lastRawKeys[n] != 0)	{
-			for(int i = 0; i < 6; i++) {
-				if(instance->lastRawKeys[n] == RawKeys[i]) {
-					instance->queueEvent(EventType::KeyRelease, usb2xtMapping[instance->lastRawKeys[n]]);
-					instance->lastRawKeys[n] = 0;
-				}
-			}
-		} else {
-			if (RawKeys[n] != 0) {
-				instance->lastRawKeys[n] = RawKeys[n];
-				instance->queueEvent(EventType::KeyPress, usb2xtMapping[RawKeys[n]]);
 			}
 		}
 	}
@@ -789,4 +786,11 @@ void CircleHostInterface::mouseRemovedHandler(CDevice *pDevice, void *pContext)
 	//CLogger::Get()->Write(FromKernel, LogDebug, "CircleHostInterface::mouseRemovedHandler");
 
 	instance->mouse = 0;
+}
+
+void CircleHostInterface::shutdownHandler(void)
+{
+	//assert(instance != 0);
+	//instance->shutdownMode = ShutdownReboot;
+	instance->kernel->Reboot();
 }

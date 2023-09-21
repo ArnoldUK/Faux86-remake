@@ -49,6 +49,9 @@ DEFINE += -DDEPTH=16
 DEFINE += -DKERNEL_MAX_SIZE=0x2000000
 
 # Bootloader Serial Flash
+# To debug over serial port using terminal screen command:
+# screen -L -Logfile serial.log /dev/ttyUSB0 115200output
+
 # SERIALPORT=COM4
 SERIALPORT=/dev/ttyUSB0
 FLASHBAUD=115200

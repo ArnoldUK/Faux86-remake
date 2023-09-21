@@ -18,12 +18,15 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-#include "kernel.h"
 #include <circle/string.h>
-#include "CircleHostInterface.h"
+
+#include "Config.h"
 #include "VM.h"
+#include "CircleHostInterface.h"
 #include "CircleDeviceDisk.h"
 #include "settings.h"
+
+#include "kernel.h"
 
 // Embedded disks / ROMS
 #if USE_EMBEDDED_BOOT_FLOPPY
@@ -40,16 +43,8 @@
 #define REQUIRED_KERNEL_MEMORY (0x2000000)
 
 #if KERNEL_MAX_SIZE < REQUIRED_KERNEL_MEMORY
-//#error "Not enough kernel space: change KERNEL_MAX_SIZE in circle/sysconfig.h to at least 32 megabytes and recompile circle"
+	#error "Not enough kernel space: change KERNEL_MAX_SIZE in circle/sysconfig.h to at least 32 megabytes and recompile circle"
 #endif
-
-//#ifdef RASPPI1
-//#error "RASPPI1 DEFINED"
-//#endif
-
-//#define AUDIO_SAMPLE_RATE 48000
-//#define AUDIO_SAMPLE_RATE 44100
-//#define AUDIO_SAMPLE_RATE 22050
 
 static const char FromKernel[] = "kernel";
 
@@ -79,6 +74,7 @@ CKernel::CKernel(void) :
 	//CircleHostInterface(&m_Screen, &m_2DGraphics, &FatFsInterface, &AudioInterface)
 {
 	instance = this;
+	shutdownMode = ShutdownNone;
 	m_ActLED.Blink(3);
 }
 
@@ -88,6 +84,14 @@ CKernel::~CKernel(void)
 
 CKernel* CKernel::Get(void) {
 	return instance;
+}
+
+void CKernel::Shutdown(void) {
+	shutdownMode = ShutdownHalt;
+}
+
+void CKernel::Reboot(void) {
+	shutdownMode = ShutdownReboot;
 }
 
 boolean CKernel::Initialize(void)
@@ -173,7 +177,8 @@ boolean CKernel::Initialize(void)
 		log(Log, "[KERNEL] create circlehostinterface");
 		//HostInterface = new CircleHostInterface(&m_Screen, &m_2DGraphics, &FatFsInterface, &AudioInterface)
 		//HostInterface = new CircleHostInterface(m_DeviceNameService, m_Interrupt, m_VCHIQ, m_Screen, m_2DGraphics);
-		HostInterface = new CircleHostInterface(m_DeviceNameService, m_Interrupt, m_VCHIQ, m_Screen);
+		//HostInterface = new CircleHostInterface(m_DeviceNameService, m_Interrupt, m_VCHIQ, m_Screen);
+		HostInterface = new CircleHostInterface(*this, m_DeviceNameService, m_Interrupt, m_VCHIQ, m_Screen);
 		vmConfig = new Config(HostInterface);
 		
 		log(Log, "[KERNEL] loading emulation settings file %s", VM_SETTINGS_FILE);
@@ -232,21 +237,25 @@ boolean CKernel::Initialize(void)
 		vmConfig->useDisneySoundSource = vmSettings->GetInt("snddisney", 0);
 		vmConfig->useSoundBlaster = vmSettings->GetInt("sndblaster", 0);
 		vmConfig->useAdlib = vmSettings->GetInt("sndadlib", 0);
+		vmConfig->useOPL3 = vmSettings->GetInt("sndopl3", 0);
 		vmConfig->usePCSpeaker = vmSettings->GetInt("sndspeaker", 1);
 		vmConfig->slowSystem = vmSettings->GetInt("slowsys", 1);
-		vmConfig->frameDelay = vmSettings->GetInt("delay", 120);
-		vmConfig->audio.sampleRate = vmSettings->GetInt("samprate", 22050);
-		vmConfig->audio.latency = vmSettings->GetInt("latency", 200);
-		vmConfig->framebuffer.width = vmSettings->GetInt("fbwidth", 800);
-		vmConfig->framebuffer.height = vmSettings->GetInt("fbheight", 800);
-		vmConfig->resw = vmSettings->GetInt("resw", 640);
-		vmConfig->resh = vmSettings->GetInt("resh", 350);
-		vmConfig->renderQuality = vmSettings->GetInt("render", 1);
-		vmConfig->monitorDisplay = vmSettings->GetInt("monitor", 0);
-		vmConfig->cpuSpeed = vmSettings->GetInt("speed", 8);
+		vmConfig->frameDelay = vmSettings->GetInt("delay", VIDEO_RENDER_DELAY);
+		vmConfig->audio.sampleRate = vmSettings->GetInt("samprate", AUDIO_DEFAULT_SAMPLE_RATE);
+		vmConfig->audio.latency = vmSettings->GetInt("latency", AUDIO_DEFAULT_LATENCY);
+		//vmConfig->audio.volume = vmSettings->GetInt("volume", 128);
+		vmConfig->framebuffer.width = vmSettings->GetInt("fbwidth", VIDEO_FRAMEBUFFER_WIDTH);
+		vmConfig->framebuffer.height = vmSettings->GetInt("fbheight", VIDEO_FRAMEBUFFER_HEIGHT);
+		vmConfig->resw = vmSettings->GetInt("resw", HOST_WINDOW_WIDTH);
+		vmConfig->resh = vmSettings->GetInt("resh", HOST_WINDOW_HEIGHT);
+		vmConfig->renderQuality = vmSettings->GetInt("render", RENDER_QUALITY_LINEAR);
+		vmConfig->monitorDisplay = vmSettings->GetInt("monitor", MONITOR_DISPLAY_COLOR);
+		vmConfig->cpuType = vmSettings->GetInt("cpu", CPU_TYPE_V20);
+		vmConfig->cpuSpeed = vmSettings->GetInt("speed", CPU_DEFAULT_SPEED);
+		vmConfig->cpuTiming = vmSettings->GetInt("timing", TIMING_INTERVAL);
 		
+		//override command parameters here for testing
 		
-		//override command parameters
 		/*
 		vmConfig->singleThreaded = true;
 		vmConfig->enableAudio = true;
@@ -266,41 +275,45 @@ boolean CKernel::Initialize(void)
 		vmConfig->cpuSpeed = 8;
 		*/
 		
-		
-		
 		#ifdef RASPPI1
 		//RPI 1 Optimized with Sound
-		/*
-		vmConfig->slowSystem = true;
-		vmConfig->cpuSpeed = 8;
-		vmConfig->singleThreaded = true;
-		vmConfig->enableAudio = true;
-		vmConfig->useAdlib = true;
-		vmConfig->audio.sampleRate = 22050; //32000;
-		vmConfig->audio.latency = 160;
-		vmConfig->frameDelay = 120;
-		vmConfig->monitorDisplay = 0;
-		*/
+		//vmConfig->slowSystem = true;
+		//vmConfig->cpuSpeed = 10;
+		//vmConfig->cpuTiming = 31;
+		//vmConfig->singleThreaded = true;
+		//vmConfig->enableAudio = true;
+		//vmConfig->useAdlib = true;
+		//vmConfig->useOPL3 = false;
+		//vmConfig->audio.sampleRate = 22050; //32000
+		//vmConfig->audio.latency = 160;
+		//vmConfig->frameDelay = 50; //no sound
+		//vmConfig->frameDelay = 70; //with sound
+		//vmConfig->monitorDisplay = 0;
+		
 		#endif
 		
 		#ifdef RASPPI2
 		//RPI 2 Optimized with Sound
 		//vmConfig->slowSystem = 1;
 		//vmConfig->cpuSpeed = 12;
+		//vmConfig->cpuTiming = 31;
 		//vmConfig->frameDelay = 120;
 		//vmConfig->audio.sampleRate = 32000;
 		//vmConfig->audio.latency = 120;
 		//vmConfig->useAdlib = true;
+		//vmConfig->monitorDisplay = 0;
 		#endif
 		
 		#ifdef RASPPI3
 		//RPI 3 Optimized with Sound
 		//vmConfig->slowSystem = 1;
 		//vmConfig->cpuSpeed = 12;
+		//vmConfig->cpuTiming = 31;
 		//vmConfig->frameDelay = 70;
 		//vmConfig->audio.sampleRate = 32000;
 		//vmConfig->audio.latency = 120;
 		//vmConfig->useAdlib = true;
+		//vmConfig->monitorDisplay = 0;
 		#endif
 		
 		log(Log, "[KERNEL] Creating Virtual Machine");
@@ -371,7 +384,7 @@ TShutdownMode CKernel::Run(void)
 	unsigned int rcount = 0;
 	//#endif
 	
-	while(true)
+	while(shutdownMode == ShutdownNone)
 	{
 		vm->simulate();
 		//HostInterface->tick(*vm);
@@ -394,6 +407,6 @@ TShutdownMode CKernel::Run(void)
 		//m_Timer.MsDelay(1);
 	}
 	
-	return ShutdownHalt;
+	return shutdownMode;
 }
 

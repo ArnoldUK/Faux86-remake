@@ -1,5 +1,6 @@
-#ifndef _INCLUDE_SETTINGS_H_
-#define _INCLUDE_SETTINGS_H_
+
+#ifndef _SETTINGS_H_
+#define _SETTINGS_H_
 
 #include <circle/string.h>
 #include <circle/util.h>
@@ -27,8 +28,10 @@ defaultconfig = {
 	{ "nosound", "0" },
 	{ "fullscreen", "0" },
 	{ "verbose", "1" },
+	{ "cpu", "2" },
 	{ "speed", "10" },
-	{ "delay", "120" },
+	{ "timing", "31" },
+	{ "delay", "60" },
 	{ "slowsys", "1" },
 	{ "multithreaded", "0" },
 	{ "resw", "640" },
@@ -39,8 +42,9 @@ defaultconfig = {
 	{ "snddisney", "0" },
 	{ "sndblaster", "0" },
 	{ "sndadlib", "1" },
+	{ "sndopl3", "1" },
 	{ "sndspeaker", "1" },
-	{ "latency", "200" },
+	{ "latency", "120" },
 	{ "samprate", "32000" },
 	{ "console", "1" },
 	{ "menu", "1" }

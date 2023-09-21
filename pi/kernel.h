@@ -104,13 +104,15 @@ namespace Faux86
 class CKernel
 {
 public:
-	CKernel (void);
-	~CKernel (void);
+	CKernel(void);
+	~CKernel(void);
 	static CKernel* Get(void);
 
-	boolean Initialize (void);
+	boolean Initialize(void);
 
-	TShutdownMode Run (void);
+	TShutdownMode Run(void);
+	void Shutdown(void);
+	void Reboot(void);
 
 
 private:
@@ -149,8 +151,9 @@ private:
 	Faux86::Config								*vmConfig;
 	Faux86::Settings							*vmSettings;
 	Faux86::VM										*vm;
-	
 	static CKernel								*instance;
+	
+	volatile TShutdownMode				shutdownMode;
 };
 
 #endif
