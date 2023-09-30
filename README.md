@@ -49,7 +49,7 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Serial Port 2-Button mouse.
 
 ## Screenshots
-- Booting BIOS and RAM Test
+### Booting BIOS and RAM Test
 ![screenshot1](/screenshots/faux86-remake-screenshot-1.png)
 - Planet X3 EGA Color Mode
 ![screenshot2](/screenshots/faux86-remake-screenshot-2.png)
