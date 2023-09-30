@@ -49,19 +49,19 @@ Faux86-remake is still work in progress but fixes many issues and adds more feat
 - Serial Port 2-Button mouse.
 
 ## Screenshots
-Booting BIOS and RAM Test
+- Booting BIOS and RAM Test
 ![screenshot1](/screenshots/faux86-remake-screenshot-1.png)
-Planet X3 EGA Color Mode
+- Planet X3 EGA Color Mode
 ![screenshot2](/screenshots/faux86-remake-screenshot-2.png)
-SysChk System Info
+- SysChk System Info
 ![screenshot3](/screenshots/faux86-remake-screenshot-3.png)
-Windows 3.0 VGA 16 Colors
+- Windows 3.0 VGA 16 Colors
 ![screenshot4](/screenshots/faux86-remake-screenshot-4.png)
-Monitor Emulation Amber Terminal
+- Monitor Emulation Amber Terminal
 ![screenshot5](/screenshots/faux86-remake-screenshot-5.png)
-Monitor Emulation Green Terminal
+- Monitor Emulation Green Terminal
 ![screenshot6](/screenshots/faux86-remake-screenshot-6.png)
-Borland BGI Demo DOS Colors
+- Borland BGI Demo DOS Colors
 ![screenshot7](/screenshots/faux86-remake-screenshot-7.png)
 
 # Emulator Requirements
