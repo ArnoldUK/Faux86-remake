@@ -26,7 +26,7 @@
 
 #pragma once
 
-#define BUILD_STRING "Faux86-remake v1.22"
+#define BUILD_STRING "Faux86-remake v1.23"
 
 //#ifdef RASPPI1
 //#error "RASPPI1 DEFINED"
