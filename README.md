@@ -8,21 +8,15 @@ Most of the code has been updated and re-written in C++ but the core CPU emulati
 
 ## Current Status
 
-21-09-2023 Release build v1.22 for 32/64Bit Windows
-[Faux86-remake Release Build V1.22 Win32](https://github.com/ArnoldUK/Faux86-remake/releases/tag/v1.22-Win32)
+05-10-2023 Release build v1.23 for 32/64Bit Windows
+[Faux86-remake Release Build V1.23 Win32](https://github.com/ArnoldUK/Faux86-remake/releases/tag/v1.23-Win32)
 
-21-09-2023 Release build V1.22 for ARM RPi 1,2,3,4
-[Faux86-remake Release Build V1.22 ARM-RPi](https://github.com/ArnoldUK/Faux86-remake/releases/tag/v1.22-RPi)
+05-10-2023 Release build V1.23 for ARM RPi 1,2,3,4
+[Faux86-remake Release Build V1.23 ARM-RPi](https://github.com/ArnoldUK/Faux86-remake/releases/tag/v1.23-RPi)
 
-- Updated keyboard input and fixed repeated cursor keys.
-- Huge increase in emulation speed on slower computers and all RPi models. 
-- Upto 50% Text and Video rendering improvements. Thanks to [moononournation](https://github.com/moononournation)
-- Upto 25% Audio performance increase when using basic OPL2 emulation.
-- Added option `cpu=#` to settings file for the CPU type and opcode emulation. Default 2 for NEC V20.
-- Added option `sndopl3=1` to settings file to enable/disable full Yamaha OPL3 emulation.
-- Added more emulated monitor modes to `monitor=#` in settings file.
-- Compiler support for ARDUINO. Thanks to [moononournation](https://github.com/moononournation)
-- Minor fixes and code refactoring.
+- Minor update.
+- Improved blinking cursor in text modes. Thanks to [moononournation](https://github.com/moononournation)
+- Improved video updates and processing. Thanks to [moononournation](https://github.com/moononournation)
 
 # Release Notes
 Faux86-remake is still work in progress but fixes many issues and adds more features including:
