@@ -9,9 +9,9 @@ Libs=D:\AVR-GCC\projects\SDL\SDL-V22\lib\x86
 PrivateResource=faux86_private.rc
 ResourceIncludes=
 MakeIncludes=
-Compiler=
-CppCompiler=_@@_
-Linker=../../SDL/SDL-V22/lib/x86/SDL2main.lib_@@_../../SDL/SDL-V22/lib/x86/SDL2.lib_@@_../../../../Dev/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib32/libcomdlg32.a_@@_
+Compiler=-lSDL2_@@_
+CppCompiler=-lSDL2_@@_
+Linker=../../SDL/SDL-V22/lib/x86/SDL2main.lib_@@_../../SDL/SDL-V22/lib/x86/SDL2.lib_@@_../../../../Dev/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib32/libcomdlg32.a_@@_
 IsCpp=1
 Icon=faux86.ico
 ExeOutput=bin
@@ -28,7 +28,7 @@ Folders=src
 IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=3
-CompilerSettings=000000b1g0000000000001000
+CompilerSettings=0;0;0;0;0;0;3;1;8;0;0;0;0;0;0;1;0;0;0;0;0;1;0;0;0;0
 UnitCount=75
 
 [VersionInfo]
