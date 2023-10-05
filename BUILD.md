@@ -24,7 +24,7 @@ apt update && apt install -y make gcc-arm-linux-gnueabihf gcc-arm-none-eabi
 ```
 
 ## Setup Config Files
-- Edit Faux86-remake/pi/Config.mk (Set RPi Model 1-4 RASPPI=3)
+- Edit Faux86-remake/pi/Config.mk (Set RPi Model 1-4 in line RASPPI=3)
 - Copy Faux86-remake/pi/Config.mk to Circle SDK root folder
 
 ## Edit Circle SDK Config Rules
@@ -35,6 +35,7 @@ apt update && apt install -y make gcc-arm-linux-gnueabihf gcc-arm-none-eabi
 ```
 
 ## Compile and Build Circle SDK
+- Replace 3 with the target RPi Model 1-4 in the first line below.
 ```
 cd /git/circle/ && ./configure -f -r 3 && ./makeall
 cd /git/circle/addon/SDCard && make
